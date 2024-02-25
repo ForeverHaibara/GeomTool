@@ -4,7 +4,7 @@ class Construction:
     def __init__(self, in_method, in_item):
         self.method = in_method # The method of consturction
         self.item = in_item # The items we used in construction
-        self.result = (self.method.apply)(self.item)
+        self.result = self.method.apply(self.item)
     def generate(self):
         pass
 
@@ -22,11 +22,12 @@ class Method:
         self.apply = lambda in_item: Geom_object(in_item[0], self.gen_type, self, in_item) # The function apply to generate a geom_object with trivial nondegenerate condition
         self.fun = in_fun
         self.check = lambda in_item: True # Trivial check
-        self.errorinfo = lambda errorinfo: "" # The error info output function
+        self.errorinfo = lambda errorinfo: "" # Trivial errorinfo
 
 """
-Type: Point, Segment, Ray, Line, Circle, AngleValue2pi(mod 2pi), Length, Vector, Triangle, 
+Type: Point, Segment, Ray, Line, Circle, Angle, Length, Vector, Triangle, Others
 """
+
 class Geom_object:
     def __init__(self, in_name, in_type, in_method, in_item):
         self.name = in_name # Name of the object
@@ -35,6 +36,22 @@ class Geom_object:
         self.item = in_item # The items used to generate the object
     def getc(self, in_tuple):
         self.c = in_tuple # The coordinate or the equation coefficients of the object
+    def calcc(self):
+        self.c = self.method.fun(self.item) # Calculate the coordinate without error check and errorinfo print
+    def check(self):
+        if len(self.item) != len(self.method.item_type) + 1:
+            return False
+        for item_num in range(1, len(self.item)):
+            if self.method.item_type[item_num - 1] != "Others" and self.item[item_num].type != self.method.item_type[item_num - 1]:
+                return False
+        return self.method.check(self.item)
+    def errorinfo(self):
+        if len(self.item) != len(self.method.item_type) + 1:
+            return "Method supposed to use " + str(len(self.method.item_type) + 1) + " Items but got " + str(len(self.item))
+        for item_num in range(1, len(self.item)):
+            if self.method.item_type[item_num - 1] != "Others" and self.item[item_num].type != self.method.item_type[item_num - 1]:
+                return "Item " + str(item_num) + " supposed to be Type " + self.method.item_type[item_num - 1] + " but got " + self.item[item_num].type
+        return self.method.errorinfo(self.item)
 
 ERROR = 1e-12
 
@@ -44,7 +61,7 @@ free_pt.generate_check_triv(free_pt_fun)
 
 line = Method("line", "Line", ("Point", "Point"))
 line_check = lambda in_item: (abs(in_item[1].c[0] - in_item[2].c[0]) > ERROR) and (abs(in_item[1].c[1] - in_item[2].c[1]) > ERROR)
-line_errorinfo = lambda in_item: in_item[1].name + " and Point " + in_item[2].name + " coincide" if not(line_check(in_item)) else ""
+line_errorinfo = lambda in_item: "Point " + in_item[1].name + " and Point " + in_item[2].name + " coincide" if not(line_check(in_item)) else ""
 line_fun = lambda in_item: (in_item[1].c[1] - in_item[2].c[1], in_item[2].c[0] - in_item[1].c[0], in_item[1].c[0] * in_item[2].c[1] - in_item[2].c[0] * in_item[1].c[1])
 line.generate(line_fun, line_check, line_errorinfo)
 
@@ -76,7 +93,37 @@ para_line = Method("para_line", "Line", ("Point", "Line"))
 para_line_fun = lambda in_item: (in_item[2].c[0], in_item[2].c[1], -in_item[2].c[0] * in_item[1].c[0] - in_item[2].c[1] * in_item[1].c[1])
 para_line.generate_check_triv(para_line_fun)
 
-perp_line = Method("perp_line")
+perp_line = Method("perp_line", "Line", ("Point", "Line"))
+perp_line_fun = lambda in_item: (in_item[2].c[1], -in_item[2].c[0], -in_item[2].c[1] * in_item[1].c[0] + in_item[2].c[0] * in_item[1].c[1])
+perp_line.generate_check_triv(perp_line_fun)
+
+perp_bis = Method("perp_bis", "Line", ("Point", "Point"))
+perp_bis_check = line_check
+perp_bis_errorinfo = line_errorinfo
+def perp_bis_fun(in_item):
+    p1 = mid_pt.apply(["", in_item[1], in_item[2]])
+    p1.calcc()
+    l1 = line.apply(["", in_item[1], in_item[2]])
+    l1.calcc()
+    l2 = perp_line.apply(["", p1, l1])
+    l2.calcc()
+    return l2.c
+perp_bis.generate(perp_bis_fun, perp_bis_check, perp_bis_errorinfo)
+
+inx_line_line = Method("inx_line_line", "Point", ("Line", "Line"))
+inx_line_line_check = lambda in_item: abs(in_item[1].c[0] * in_item[2].c[1] - in_item[1].c[1] * in_item[2].c[0]) > ERROR
+inx_line_line_errorinfo = lambda in_item: "Line " + in_item[1].name + " and Line " + in_item[2].name + " are parallel" if not(inx_line_line_check(in_item)) else ""
+inx_line_line_fun = lambda in_item: ((in_item[1].c[1] * in_item[2].c[2] - in_item[1].c[2] * in_item[2].c[1]) / (in_item[1].c[0] * in_item[2].c[1] - in_item[1].c[1] * in_item[2].c[0]), (in_item[1].c[2] * in_item[2].c[0] - in_item[1].c[0] * in_item[2].c[2]) / (in_item[1].c[0] * in_item[2].c[1] - in_item[1].c[1] * in_item[2].c[0]))
+inx_line_line.generate(inx_line_line_fun, inx_line_line_check, inx_line_line_errorinfo)
+
+perp_foot = Method("perp_foot", "Point", ("Point", "Line"))
+def perp_foot_fun(in_item):
+    l1 = perp_line.apply(["", in_item[1], in_item[2]])
+    l1.calcc()
+    p1 = inx_line_line.apply(["", in_item[2], l1])
+    p1.calcc()
+    return p1.c
+perp_foot.generate_check_triv(perp_foot_fun)
 
 class Geom_construction:
     def __init__(self): 
