@@ -2,8 +2,8 @@ import time
 import pygame
 import sys
 
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 800
 BACKGROUND_COLOR = (255, 255, 255)
 DRAW_WIDTH = 600
 DRAW_HEIGHT = 600
@@ -16,6 +16,13 @@ BUTTON_COLOR_DARK = (100, 164, 230)
 
 # Geometry setting
 ERROR = 1e-13
+
+def numberform(realnum):
+    if abs(realnum) < 1e-2 or abs(realnum) > 1e3:
+        return "{:.3e}".format(realnum)
+    else:
+        return "{:.3f}".format(realnum)
+        
 
 class GeomUI:
     def __init__(self, fig = []):
@@ -138,7 +145,7 @@ class GeomUI:
         self.draw_init()
         last_mouse_in = -1
         last_event_type = None
-        moving = False
+        moving_background = False
         
         while True:
             
@@ -174,20 +181,28 @@ class GeomUI:
                     self.draw_choose = mouse_in
                     
                 if mouse_in == -1 and self.draw_choose == 0:
-                    moving = True
-                    moving_start = mouse
-                    moving_start_cx = self.cx
-                    moving_start_cy = self.cy
+                    moving_background = True
+                    moving_background_start = mouse
+                    moving_background_start_cx = self.cx
+                    moving_background_start_cy = self.cy
             
-            if moving:
-                self.cx = mouse[0] - moving_start[0] + moving_start_cx
-                self.cy = mouse[1] - moving_start[1] + moving_start_cy
+            if moving_background:
+                self.cx = mouse[0] - moving_background_start[0] + moving_background_start_cx
+                self.cy = mouse[1] - moving_background_start[1] + moving_background_start_cy
                 self.draw_init()
+            
+            if (event.type == pygame.MOUSEMOTION):
+                mouse_coordxprt = 'x = ' + numberform(self.cc2(mouse)[0])
+                mouse_coordyprt = 'y = ' + numberform(self.cc2(mouse)[1])
+                pygame.draw.rect(self.screen, BACKGROUND_COLOR, pygame.Rect(2, 2, 122, 42))
+                pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [2, 2, 122, 42], 1)
+                self.screen.blit(pygame.font.SysFont('Consolas', 15, bold=False).render(mouse_coordxprt , True , FIGURE_COLOR), (5, 5))
+                self.screen.blit(pygame.font.SysFont('Consolas', 15, bold=False).render(mouse_coordyprt , True , FIGURE_COLOR), (5, 25))
             
             if (event.type == pygame.MOUSEBUTTONUP) and (last_event_type != pygame.MOUSEBUTTONUP):
                 # the moment when the mouse is unclicked
-                if moving:
-                    moving = False
+                if moving_background:
+                    moving_background = False
                     
             last_event_type = event.type
             
