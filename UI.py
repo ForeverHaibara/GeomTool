@@ -12,17 +12,31 @@ BUTTON_COLOR_MID = (205, 228, 252)
 BUTTON_COLOR_LIGHT = (220, 237, 254)
 BUTTON_COLOR_DARK = (100, 164, 230)
 
+# Geometry setting
+ERROR = 1e-13
 
 class GeomUI:
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption('Geometry Plot')
+        
+        
+        self.draw_choose = 0
+        self.cx = 300
+        self.cy = 300
+        self.r = 60
+    
+    def draw_init(self):
         self.screen.fill(BACKGROUND_COLOR)
-        self.draw_mouse_button(30, 100, 1)
-        self.draw_point_button(30, 150, -1)
-        self.draw_line_button(30, 200, -1)
-        self.draw_circle_button(30, 250, -1)
+        self.draw_mouse_button(30, 100, 1 if self.draw_choose == 0 else -1)
+        self.draw_point_button(30, 150, 1 if self.draw_choose == 1 else -1)
+        self.draw_line_button(30, 200, 1 if self.draw_choose == 2 else -1)
+        self.draw_circle_button(30, 250, 1 if self.draw_choose == 3 else -1)
+    
+    # coordinate change function
+    def cc(self, in_c):
+        return (self.cx + in_c[0] * self.r, self.cy - in_c[1] * self.r)
     
     def draw_mouse_button(self, width, height, pressed):
         # pressed = -1, 0, 1
@@ -80,11 +94,37 @@ class GeomUI:
         pygame.draw.circle(self.screen, BUTTON_COLOR_DARK, center=(width, height-8), radius=3, width=2)
         pygame.draw.circle(self.screen, BUTTON_COLOR_DARK, center=(width, height-8), radius=9, width=2)
         self.screen.blit(pygame.font.SysFont('Corbel', 18, bold=True).render("circ" , True , BUTTON_COLOR_DARK), (width-12, height))
+
+    def draw_point(self, c, color, width):
+        realc = self.cc(c)
+        pygame.draw.circle(self.screen, color, center=realc, radius=width, width=width)
         
+    def draw_line(self, c, color, width):
+        if abs(c[0]) < ERROR:
+            ht = self.cc((0, -c[2]/c[1]))[1]
+            p1 = (0, ht)
+            p2 = (SCREEN_WIDTH, ht)
+        else:
+            if abs(c[1]) < ERROR:
+                wd = self.cc((-c[2]/c[0], 0))[0]
+                p1 = (wd, 0)
+                p2 = (wd, SCREEN_HEIGHT)
+            else:
+                lf = -self.cx / self.r
+                rt = (SCREEN_WIDTH - self.cx) / self.r
+                p1 = self.cc((lf, (-c[2]-c[0]*lf)/c[1]))
+                p2 = self.cc((rt, (-c[2]-c[0]*rt)/c[1]))
+        pygame.draw.line(self.screen, color, p1, p2, width=width)
+        
+    def draw_circle(self, c, color, width):
+        realc = self.cc((c[0], c[1]))
+        pygame.draw.circle(self.screen, color, center=realc, radius=c[2].self.r, width=width)
+
     def run(self):
+        self.draw_init()
         last_mouse_in = -1
         last_event_type = None
-        draw_choose = 0
+        
         while True:
             
             mouse = pygame.mouse.get_pos()
@@ -97,7 +137,7 @@ class GeomUI:
                     mouse_in = button_num
             if mouse_in != last_mouse_in:
                 if last_mouse_in >= 0:
-                    if draw_choose == last_mouse_in:
+                    if self.draw_choose == last_mouse_in:
                         button_draw_fun[last_mouse_in](button_range[last_mouse_in][0], button_range[last_mouse_in][1], 1)
                     else:
                         button_draw_fun[last_mouse_in](button_range[last_mouse_in][0], button_range[last_mouse_in][1], -1)
@@ -113,17 +153,13 @@ class GeomUI:
                 #if the mouse is clicked on the 
                 # button the game is terminated 
                 if mouse_in >= 0:
-                    button_draw_fun[draw_choose](button_range[draw_choose][0], button_range[draw_choose][1], -1)
+                    button_draw_fun[self.draw_choose](button_range[self.draw_choose][0], button_range[self.draw_choose][1], -1)
                     button_draw_fun[mouse_in](button_range[mouse_in][0], button_range[mouse_in][1], 1)
-                    draw_choose = mouse_in
+                    self.draw_choose = mouse_in
             last_event_type = event.type
             
             pygame.display.update()
         
-    def draw_line(self):
-        for _ in range(300):
-            pygame.draw.rect(self.screen, (0, 0, 255), [100, 100 + _ * 0.5, 4000, 8000], 1)
-        # pygame.display.update()
         
 test = GeomUI()
 test.run()

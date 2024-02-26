@@ -19,7 +19,7 @@ while running:
             running = False
 
     screen.fill(GRAY)
-    pygame.draw.rect(screen, RED, rect)
+    pygame.draw.rect(screen, RED, pygame.Rect(50, 60, 200, 80))
     pygame.display.flip()
 
 pygame.quit()
