@@ -145,6 +145,27 @@ inx_line_line_fun = lambda in_item: ((in_item[1].c[1] * in_item[2].c[2] - in_ite
 inx_line_line.generate(inx_line_line_fun, inx_line_line_check, inx_line_line_errorinfo)
 
 inx_line_line2 = Method("inx_line_line2", "Point", ("Point", "Point", "Point", "Point"))
+def inx_line_line2_check(in_item):
+    if not (line_check(["", in_item[1], in_item[2]]) and line_check(["", in_item[3], in_item[4]])):
+        return False
+    l1 = line.apply(["", in_item[1], in_item[2]])
+    l2 = line.apply(["", in_item[3], in_item[4]])
+    return inx_line_line_check(["", l1, l2])
+def inx_line_line2_errorinfo(in_item):
+    if not line_check(["", in_item[1], in_item[2]]):
+        return line_errorinfo(["", in_item[1], in_item[2]])
+    if not line_check(["", in_item[3], in_item[4]]):
+        return line_errorinfo(["", in_item[3], in_item[4]])
+    l1 = line.apply(["", in_item[1], in_item[2]])
+    l2 = line.apply(["", in_item[3], in_item[4]])
+    return inx_line_line_check(["", l1, l2])
+def inx_line_line2_fun(in_item):
+    l1 = line.apply(["", in_item[1], in_item[2]])
+    l2 = line.apply(["", in_item[3], in_item[4]])
+    p1 = inx_line_line.apply(["", l1, l2])
+    p1.calcc()
+    return p1.c
+inx_line_line2.generate(inx_line_line2_fun, inx_line_line2_check, inx_line_line2_errorinfo)
 
 perp_foot = Method("perp_foot", "Point", ("Point", "Line"))
 def perp_foot_fun(in_item):
@@ -156,7 +177,16 @@ def perp_foot_fun(in_item):
 perp_foot.generate_check_triv(perp_foot_fun)
 
 perp_foot2 = Method("perp_foot2", "Point", ("Point", "Point", "Point"))
+perp_foot2_check = lambda in_item: line_check(["", in_item[2], in_item[3]])
+perp_foot2_errorinfo = lambda in_item: line_errorinfo(["", in_item[2], in_item[3]])
+def perp_foot2_fun(in_item):
+    l1 = line.apply(["", in_item[2], in_item[3]])
+    p1 = perp_foot.apply(["", in_item[1], l1])
+    p1.calcc()
+    return p1.c
+perp_foot2.generate(perp_foot2_fun, perp_foot2_check, perp_foot2_errorinfo)
 
+bary_cent = Method()
 circ_cent = Method("circ_cent", "Point", ("Point", "Point", "Point"))
 
 class Geom_construction:
