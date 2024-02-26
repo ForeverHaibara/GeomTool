@@ -8,6 +8,8 @@ BACKGROUND_COLOR = (255, 255, 255)
 DRAW_WIDTH = 600
 DRAW_HEIGHT = 600
 
+FIGURE_COLOR = (0, 0, 0)
+
 BUTTON_COLOR_MID = (205, 228, 252)
 BUTTON_COLOR_LIGHT = (220, 237, 254)
 BUTTON_COLOR_DARK = (100, 164, 230)
@@ -16,19 +18,29 @@ BUTTON_COLOR_DARK = (100, 164, 230)
 ERROR = 1e-13
 
 class GeomUI:
-    def __init__(self):
+    def __init__(self, fig = []):
         pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption('Geometry Plot')
-        
         
         self.draw_choose = 0
         self.cx = 300
         self.cy = 300
         self.r = 60
+        
+        self.figure_list = fig
     
     def draw_init(self):
         self.screen.fill(BACKGROUND_COLOR)
+        
+        for fig in self.figure_list:
+            if fig[0] == 'Point':
+                self.draw_point(fig[1], fig[2], fig[3])
+            if fig[0] == 'Line':
+                self.draw_line(fig[1], fig[2], fig[3])
+            if fig[0] == 'Circle':
+                self.draw_circle(fig[1], fig[2], fig[3])
+        
         self.draw_mouse_button(30, 100, 1 if self.draw_choose == 0 else -1)
         self.draw_point_button(30, 150, 1 if self.draw_choose == 1 else -1)
         self.draw_line_button(30, 200, 1 if self.draw_choose == 2 else -1)
@@ -37,6 +49,8 @@ class GeomUI:
     # coordinate change function
     def cc(self, in_c):
         return (self.cx + in_c[0] * self.r, self.cy - in_c[1] * self.r)
+    def cc2(self, in_c):
+        return ((in_c[0] - self.cx) / self.r, (self.cy - in_c[1]) / self.r)
     
     def draw_mouse_button(self, width, height, pressed):
         # pressed = -1, 0, 1
@@ -110,20 +124,21 @@ class GeomUI:
                 p1 = (wd, 0)
                 p2 = (wd, SCREEN_HEIGHT)
             else:
-                lf = -self.cx / self.r
-                rt = (SCREEN_WIDTH - self.cx) / self.r
+                lf = self.cc2((0, 0))[0]
+                rt = self.cc2((SCREEN_WIDTH, 0))[0]
                 p1 = self.cc((lf, (-c[2]-c[0]*lf)/c[1]))
                 p2 = self.cc((rt, (-c[2]-c[0]*rt)/c[1]))
         pygame.draw.line(self.screen, color, p1, p2, width=width)
         
     def draw_circle(self, c, color, width):
         realc = self.cc((c[0], c[1]))
-        pygame.draw.circle(self.screen, color, center=realc, radius=c[2].self.r, width=width)
+        pygame.draw.circle(self.screen, color, center=realc, radius=c[2]*self.r, width=width)
 
     def run(self):
         self.draw_init()
         last_mouse_in = -1
         last_event_type = None
+        moving = False
         
         while True:
             
@@ -136,6 +151,7 @@ class GeomUI:
                 if bt[0]-20 <= mouse[0] <= bt[0]+20 and bt[1]-20 <= mouse[1] <= bt[1]+20:
                     mouse_in = button_num
             if mouse_in != last_mouse_in:
+                # Update buttons
                 if last_mouse_in >= 0:
                     if self.draw_choose == last_mouse_in:
                         button_draw_fun[last_mouse_in](button_range[last_mouse_in][0], button_range[last_mouse_in][1], 1)
@@ -148,18 +164,35 @@ class GeomUI:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
+                
             
             if (event.type == pygame.MOUSEBUTTONDOWN) and (last_event_type != pygame.MOUSEBUTTONDOWN):
-                #if the mouse is clicked on the 
-                # button the game is terminated 
+                # the moment when the mouse is clicked on the button
                 if mouse_in >= 0:
                     button_draw_fun[self.draw_choose](button_range[self.draw_choose][0], button_range[self.draw_choose][1], -1)
                     button_draw_fun[mouse_in](button_range[mouse_in][0], button_range[mouse_in][1], 1)
                     self.draw_choose = mouse_in
+                    
+                if mouse_in == -1 and self.draw_choose == 0:
+                    moving = True
+                    moving_start = mouse
+                    moving_start_cx = self.cx
+                    moving_start_cy = self.cy
+            
+            if moving:
+                self.cx = mouse[0] - moving_start[0] + moving_start_cx
+                self.cy = mouse[1] - moving_start[1] + moving_start_cy
+                self.draw_init()
+            
+            if (event.type == pygame.MOUSEBUTTONUP) and (last_event_type != pygame.MOUSEBUTTONUP):
+                # the moment when the mouse is unclicked
+                if moving:
+                    moving = False
+                    
             last_event_type = event.type
             
             pygame.display.update()
         
         
-test = GeomUI()
+test = GeomUI([("Circle", (0,0,1), FIGURE_COLOR, 1),("Line", (-1,0,0), FIGURE_COLOR, 1),("Line", (0,-1,0), FIGURE_COLOR, 1),("Line", (2,3,4), FIGURE_COLOR, 1),("Point", (0,0), FIGURE_COLOR, 3)])
 test.run()
