@@ -1,2 +1,2 @@
 # GeomTool
- A tool in Euclidean Geometry based on python
+ A GeoGebra like tool in Studying Euclidean Geometry based on python and pygame
