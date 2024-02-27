@@ -1,24 +1,22 @@
 import random, math
 
 class ObjBase : 
-    def __init__(self) -> None:
-        pass
+    def __init__(self, in_name, in_type) -> None:
+        self.name = in_name
+        self.type = in_type
 
 class GeomObj(ObjBase):
     def __init__(self, in_name, in_type, in_method, in_item):
-        super().__init__()
+        super().__init__(in_name, in_type)
+        self.method = in_method # The method used to generate the object --in
+        self.item = in_item # The items used to generate the object -- out 
+        self.hasc = False
+        self.parent
+    def getc(self, in_tuple):
+        NotImplemented
+    def calcc(self):
         NotImplemented
 
-class DPNode(GeomObj):
-    def __init__(self, in_name, in_type, in_method, in_item):
-        super().__init__(in_name, in_type, in_method, in_item)
-
-class RelationObj(ObjBase):
-    def __init__(self) -> None:
-        super().__init__()
-
-class DDNode(ObjBase):
-    def __init__()
 class Action: 
     def __init__(self, fn: function, parameter: list) -> None:
         self.action = fn
@@ -37,9 +35,15 @@ class ModifyDPGraph(Action):
 
 class ModifyDD(Action):
     def __init__(self, functions: list, parameters: list) -> None:
-        super().__init__(functions, parameters)
+        NotImplemented
 
-class FullAction
+class FullAction:
+    def __init__(self, actions : list) -> None:
+        self.actions = actions
+    def perform (self) :
+        for act in self.actions :
+            act
+        return
 
 # the coordinate of the points will not be calculated until one calls function calcc of every object
 
