@@ -63,6 +63,8 @@ class Geom_object:
                 return "Item " + str(item_num) + " not computed"
         return self.method.errorinfo(self.item)
 
+# Geometric Methods
+
 ERROR = 1e-13
 
 free_pt = Method("free_pt", "Point", ())
@@ -186,12 +188,20 @@ def perp_foot2_fun(in_item):
     return point1.c
 perp_foot2.generate(perp_foot2_fun, perp_foot2_check, perp_foot2_errorinfo)
 
+tgnt_line = Method("tgnt_line", "Point", ("Point", "Point"))
 bary_cent = Method("circ_cent", "Point", ("Point", "Point", "Point"))
 circ_cent = Method("circ_cent", "Point", ("Point", "Point", "Point"))
 
+class Geom_node:
+    def __init__(self, obj):
+        self.obj = obj
+        self.parent_list = []
+        self.children_list = []
+
 class Geom_construction:
-    def __init__(self): 
-        pass
+    def __init__(self):
+        self.node_list = []
+        self.root_list = []
 
 # Simple test
 
