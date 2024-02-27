@@ -27,6 +27,14 @@ GEOM_PICK_DIST = 8
 # Geometry setting
 ERROR = 1e-13
 
+def choose_order_of_object(in_type):
+    if in_type == "Line":
+        return 1
+    if in_type == "Circle":
+        return 2
+    if in_type == "Point":
+        return 3
+
 def numberform(realnum):
     # String a number in a relatively short form
     if abs(realnum) < 1e-2 or abs(realnum) > 1e3:
@@ -60,45 +68,32 @@ class GeomUI:
         self.geom_chosen = [0 for fig_num in range(len(in_geom_list))] # Chosen geom objects 0, >0
         self.geom_picked_list = []
     
-    def choose_fig(self, mouse):
+    def choose_fig_list(self, mouse):
         # Choose a fig in geom_list that has geom_show
-        min_dist = 1e10
-        min_num = 0
-        geom_picked = ""
+        out_fig_list = []
         for fig_num in range(len(self.geom_list)):
             if self.geom_show[fig_num] and self.geom_list[fig_num].hasc:
                 dist = self.geomdist(mouse, self.geom_list[fig_num].type, self.geom_list[fig_num].c)
-                if self.geom_list[fig_num].type == "Point":
-                    if dist < GEOM_PICK_DIST and geom_picked not in ("0", "Point"):
-                        geom_picked = "Point"
-                        min_dist = dist
-                        min_num = fig_num
-                    if dist < min(GEOM_PICK_DIST, min_dist):
-                        geom_picked = "Point"
-                        min_dist = dist
-                        min_num = fig_num
-                if self.geom_list[fig_num].type == "Circle":
-                    if dist < GEOM_PICK_DIST and geom_picked not in ("Point", "Circle"):
-                        geom_picked = "Circle"
-                        min_dist = dist
-                        min_num = fig_num
-                    if dist < min(GEOM_PICK_DIST, min_dist) and geom_picked not in ("0", "Point"):
-                        geom_picked = "Circle"
-                        min_dist = dist
-                        min_num = fig_num
-                if self.geom_list[fig_num].type == "Line":
-                    if dist < GEOM_PICK_DIST and geom_picked not in ("Point", "Circle", "Line"):
-                        geom_picked = "Line"
-                        min_dist = dist
-                        min_num = fig_num
-                    if dist < min(GEOM_PICK_DIST, min_dist) and geom_picked not in ("Point", "Circle"):
-                        geom_picked = "Line"
-                        min_dist = dist
-                        min_num = fig_num
-        if geom_picked != "":
-            self.geom_picked_list = [min_num]
+                if dist < GEOM_PICK_DIST:
+                    out_fig_list.append((fig_num, -choose_order_of_object(self.geom_list[fig_num].type) + dist/(2 * GEOM_PICK_DIST)))
+        out_fig_list.sort(key = lambda x: x[1])
+        return list(_[0] for _ in out_fig_list)
+    
+    def choose_fig1(self, mouse):
+        # Choose a fig in geom_list that has geom_show
+        lst = self.choose_fig_list(mouse)
+        if len(lst) < 2:
+            self.geom_picked_list = lst
         else:
-            self.geom_picked_list = []
+            self.geom_picked_list = [lst[0]]
+            
+    def choose_fig2(self, mouse):
+        # Choose a fig in geom_list that has geom_show
+        lst = self.choose_fig_list(mouse)
+        if len(lst) < 3:
+            self.geom_picked_list = lst
+        else:
+            self.geom_picked_list = [lst[0], lst[1]]
     
     def draw_fig(self):
         
@@ -362,7 +357,7 @@ class GeomUI:
                 
                 # Picking Geometric Figures
                 
-                self.choose_fig(mouse)
+                self.choose_fig1(mouse)
                 if len(self.geom_picked_list) == 0:
                     mouse_in = -1
                 else:
