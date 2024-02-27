@@ -36,7 +36,7 @@ def numberform(realnum):
 
 
 class GeomUI:
-    def __init__(self, fig):
+    def __init__(self, in_geom_list):
         pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption('Geometry Plot')
@@ -55,21 +55,86 @@ class GeomUI:
         self.cy = DRAW_HEIGHT / 2 + 0.01145141919810
         self.r = (DRAW_WIDTH + DRAW_HEIGHT) / 9 + 0.114514 + 0.1919810 + ERROR
         
-        self.geom_list = []
-        self.figure_list = fig
-        # Temp
+        self.geom_list = in_geom_list # All geom objects
+        self.geom_show = [True for fig_num in range(len(in_geom_list))] # A True False sequence that show a geom object or not
+        self.geom_chosen = [0 for fig_num in range(len(in_geom_list))] # Chosen geom objects 0, >0
+        self.geom_picked_list = []
+    
+    def choose_fig(self, mouse):
+        # Choose a fig in geom_list that has geom_show
+        min_dist = 1e10
+        min_num = 0
+        geom_picked = ""
+        for fig_num in range(len(self.geom_list)):
+            if self.geom_show[fig_num] and self.geom_list[fig_num].hasc:
+                dist = self.geomdist(mouse, self.geom_list[fig_num].type, self.geom_list[fig_num].c)
+                if self.geom_list[fig_num].type == "Point":
+                    if dist < GEOM_PICK_DIST and geom_picked not in ("0", "Point"):
+                        geom_picked = "Point"
+                        min_dist = dist
+                        min_num = fig_num
+                    if dist < min(GEOM_PICK_DIST, min_dist):
+                        geom_picked = "Point"
+                        min_dist = dist
+                        min_num = fig_num
+                if self.geom_list[fig_num].type == "Circle":
+                    if dist < GEOM_PICK_DIST and geom_picked not in ("Point", "Circle"):
+                        geom_picked = "Circle"
+                        min_dist = dist
+                        min_num = fig_num
+                    if dist < min(GEOM_PICK_DIST, min_dist) and geom_picked not in ("0", "Point"):
+                        geom_picked = "Circle"
+                        min_dist = dist
+                        min_num = fig_num
+                if self.geom_list[fig_num].type == "Line":
+                    if dist < GEOM_PICK_DIST and geom_picked not in ("Point", "Circle", "Line"):
+                        geom_picked = "Line"
+                        min_dist = dist
+                        min_num = fig_num
+                    if dist < min(GEOM_PICK_DIST, min_dist) and geom_picked not in ("Point", "Circle"):
+                        geom_picked = "Line"
+                        min_dist = dist
+                        min_num = fig_num
+        if geom_picked != "":
+            self.geom_picked_list = [min_num]
+        else:
+            self.geom_picked_list = []
+    
+    def draw_fig(self):
+        
+        for fig_num in range(len(self.geom_list)):
+            if self.geom_show[fig_num] and self.geom_list[fig_num].hasc and self.geom_list[fig_num].type == 'Line':
+                if (self.geom_chosen[fig_num] == 0) and (fig_num not in self.geom_picked_list):
+                    self.draw_line(self.geom_list[fig_num].c, FIGURE_COLOR, 1)
+                if (self.geom_chosen[fig_num] > 0) and (fig_num not in self.geom_picked_list):
+                    self.draw_line(self.geom_list[fig_num].c, CHOSEN_FIGURE_COLOR, 2)
+                if (fig_num in self.geom_picked_list):
+                    self.draw_line(self.geom_list[fig_num].c, PICKED_FIGURE_COLOR, 2)
+        
+        for fig_num in range(len(self.geom_list)):
+            if self.geom_show[fig_num] and self.geom_list[fig_num].hasc and self.geom_list[fig_num].type == 'Circle':
+                if (self.geom_chosen[fig_num] == 0) and (fig_num not in self.geom_picked_list):
+                    self.draw_circle(self.geom_list[fig_num].c, FIGURE_COLOR, 1)
+                if (self.geom_chosen[fig_num] > 0) and (fig_num not in self.geom_picked_list):
+                    self.draw_circle(self.geom_list[fig_num].c, CHOSEN_FIGURE_COLOR, 2)
+                if (fig_num in self.geom_picked_list):
+                    self.draw_circle(self.geom_list[fig_num].c, PICKED_FIGURE_COLOR, 2)
+                    
+        for fig_num in range(len(self.geom_list)):
+            if self.geom_show[fig_num] and self.geom_list[fig_num].hasc and self.geom_list[fig_num].type == 'Point':
+                if (self.geom_chosen[fig_num] == 0) and (fig_num not in self.geom_picked_list):
+                    self.draw_point(self.geom_list[fig_num].c, FIGURE_COLOR, 4)
+                if (self.geom_chosen[fig_num] > 0) and (fig_num not in self.geom_picked_list):
+                    self.draw_point(self.geom_list[fig_num].c, CHOSEN_FIGURE_COLOR, 5)
+                if (fig_num in self.geom_picked_list):
+                    self.draw_point(self.geom_list[fig_num].c, PICKED_FIGURE_COLOR, 5)
     
     def draw_init(self):
-        # Draw geometric objects by figure_list order and draw buttons
+        # Draw geometric objects and buttons
+        
         self.screen.fill(BACKGROUND_COLOR)
         
-        for fig in self.figure_list:
-            if fig[0] == 'Point':
-                self.draw_point(fig[1], fig[2], fig[3])
-            if fig[0] == 'Line':
-                self.draw_line(fig[1], fig[2], fig[3])
-            if fig[0] == 'Circle':
-                self.draw_circle(fig[1], fig[2], fig[3])
+        self.draw_fig()
         
         # Draw buttons
         
@@ -231,19 +296,19 @@ class GeomUI:
     def draw_line(self, c, color, width):
         if abs(c[0]) < ERROR:
             ht = self.cc((0, -c[2]/c[1]))[1]
-            p1 = (0, ht)
-            p2 = (SCREEN_WIDTH, ht)
+            point1 = (0, ht)
+            point2 = (SCREEN_WIDTH, ht)
         else:
             if abs(c[1]) < ERROR:
                 wd = self.cc((-c[2]/c[0], 0))[0]
-                p1 = (wd, 0)
-                p2 = (wd, SCREEN_HEIGHT)
+                point1 = (wd, 0)
+                point2 = (wd, SCREEN_HEIGHT)
             else:
                 lf = self.cc2((0, 0))[0]
                 rt = self.cc2((SCREEN_WIDTH, 0))[0]
-                p1 = self.cc((lf, (-c[2]-c[0]*lf)/c[1]))
-                p2 = self.cc((rt, (-c[2]-c[0]*rt)/c[1]))
-        pygame.draw.line(self.screen, color, p1, p2, width=width)
+                point1 = self.cc((lf, (-c[2]-c[0]*lf)/c[1]))
+                point2 = self.cc((rt, (-c[2]-c[0]*rt)/c[1]))
+        pygame.draw.line(self.screen, color, point1, point2, width=width)
         
     def draw_circle(self, c, color, width):
         realc = self.cc((c[0], c[1]))
@@ -268,7 +333,6 @@ class GeomUI:
         last_mouse_in = -1
         last_eventlist = []
         moving_background = False
-        writing_command = False
         
         while True:
             
@@ -298,53 +362,18 @@ class GeomUI:
                 
                 # Picking Geometric Figures
                 
-                min_dist = 1e10
-                min_num = 0
-                geom_picked = ""
-                for fig_num in range(len(self.figure_list)):
-                    dist = self.geomdist(mouse, self.figure_list[fig_num][0], self.figure_list[fig_num][1])
-                    if self.figure_list[fig_num][0] == "Point":
-                        if dist < GEOM_PICK_DIST and geom_picked not in ("0", "Point"):
-                            geom_picked = "Point"
-                            min_dist = dist
-                            min_num = fig_num
-                        if dist < min(GEOM_PICK_DIST, min_dist):
-                            geom_picked = "Point"
-                            min_dist = dist
-                            min_num = fig_num
-                    if self.figure_list[fig_num][0] == "Circle":
-                        if dist < GEOM_PICK_DIST and geom_picked not in ("Point", "Circle"):
-                            geom_picked = "Circle"
-                            min_dist = dist
-                            min_num = fig_num
-                        if dist < min(GEOM_PICK_DIST, min_dist) and geom_picked not in ("0", "Point"):
-                            geom_picked = "Circle"
-                            min_dist = dist
-                            min_num = fig_num
-                    if self.figure_list[fig_num][0] == "Line":
-                        if dist < GEOM_PICK_DIST and geom_picked not in ("Point", "Circle", "Line"):
-                            geom_picked = "Line"
-                            min_dist = dist
-                            min_num = fig_num
-                        if dist < min(GEOM_PICK_DIST, min_dist) and geom_picked not in ("Point", "Circle"):
-                            geom_picked = "Line"
-                            min_dist = dist
-                            min_num = fig_num
-                if geom_picked != "":
-                    mouse_in = min_num + 100
+                self.choose_fig(mouse)
+                if len(self.geom_picked_list) == 0:
+                    mouse_in = -1
+                else:
+                    mouse_in = self.geom_picked_list[0] + 100
                     
             
             if mouse_in != last_mouse_in:
                 
                 # Update Geometric Figures
                 
-                if last_mouse_in >= 100 and last_mouse_in < 2000:
-                    self.figure_list[last_mouse_in - 100][2] = FIGURE_COLOR
-                    self.figure_list[last_mouse_in - 100][3] -= 1
-                    self.draw_init()
-                if mouse_in >= 100 and mouse_in < 2000:
-                    self.figure_list[mouse_in - 100][2] = PICKED_FIGURE_COLOR
-                    self.figure_list[mouse_in - 100][3] += 1
+                if mouse_in == -1 or mouse_in >= 100:
                     self.draw_init()
                 
                 # Update buttons
@@ -440,7 +469,7 @@ class GeomUI:
                     moving_background_start_cy = self.cy
                     
                 if mouse_in == -1 and self.draw_choose == 1:
-                    self.figure_list.append(["Point", self.cc2(mouse), FIGURE_COLOR, 4])
+                    pass
             
             if moving_background:
                 self.cx = mouse[0] - moving_background_start[0] + moving_background_start_cx
@@ -494,7 +523,20 @@ class GeomUI:
             
             pygame.display.update()
         
-        
-test = GeomUI([["Circle", (0,0,1), FIGURE_COLOR, 1],["Line", (-1,0,0), FIGURE_COLOR, 1],["Line", (0,-1,0), FIGURE_COLOR, 1],["Line", (2,3,4), FIGURE_COLOR, 1],["Point", (0,0), FIGURE_COLOR, 4]])
-# test = GeomUI()
+
+c1 = GeomTool.Geom_object("c1", "Circle", None, None)
+c1.getc((0,0,1))
+l1 = GeomTool.Geom_object("l1", "Line", None, None)
+l1.getc((-1,0,0))
+l2 = GeomTool.Geom_object("l2", "Line", None, None)
+l2.getc((0,-1,0))
+l3 = GeomTool.Geom_object("l3", "Line", None, None)
+l3.getc((2,3,4))
+p1 = GeomTool.Geom_object("p1", "Point", None, None)
+p1.getc((0,0))
+
+geom_list = [c1, l1, l2, l3, p1]
+test = GeomUI(geom_list)
 test.run()
+
+
