@@ -1,5 +1,6 @@
 import random, math
 
+'''
 class Construction:
     def __init__(self, in_method, in_item):
         self.method = in_method # The method of consturction
@@ -7,6 +8,7 @@ class Construction:
         self.result = self.method.apply(self.item)
     def generate(self):
         pass
+'''
 
 class Method:
     def __init__(self, in_name, in_gen_type, in_item_type):
@@ -27,13 +29,14 @@ class Method:
 """
 Type: Point, Segment, Ray, Line, Circle, Angle, Length, Vector, Triangle, Others
 """
+## Objects in type `Others`` will not be drawn
 
 class Geom_object:
     def __init__(self, in_name, in_type, in_method, in_item):
-        self.name = in_name # Name of the object
-        self.type = in_type # Type of the object
-        self.method = in_method # The method used to generate the object
-        self.item = in_item # The items used to generate the object
+        self.name = in_name # Name of the object --in
+        self.type = in_type # Type of the object --in
+        self.method = in_method # The method used to generate the object --in
+        self.item = in_item # The items used to generate the object -- out 
         self.hasc = False
     def getc(self, in_tuple):
         self.c = in_tuple # The coordinate or the equation coefficients of the object
@@ -66,6 +69,10 @@ class Geom_object:
 # Geometric Methods
 
 ERROR = 1e-13
+
+create_empty = Method ("empty", "Others", ()) 
+create_empty_fun = lambda in_item : None
+create_empty.generate_check_triv(create_empty_fun)
 
 free_pt = Method("free_pt", "Point", ())
 free_pt_fun = lambda in_item: (random.gauss(0, 1), random.gauss(0, 1))
