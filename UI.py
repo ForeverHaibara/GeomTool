@@ -9,13 +9,18 @@ KEY_EQUALS / KEY_PLUS: Zoom In
 KEY_CONTROL: Start CMD
 KEY_ALT: Print TAG
 KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT: Move Screen
+
+!!!
+Test Choose Code involved
+!!!
+
 """
 
 SCREEN_WIDTH = 1500
-SCREEN_HEIGHT = 800
+SCREEN_HEIGHT = 900
 BACKGROUND_COLOR = (244, 244, 244)
 DRAW_WIDTH = 800
-DRAW_HEIGHT = 800
+DRAW_HEIGHT = 700
 
 FIGURE_COLOR = (0, 0, 0)
 TEXT_COLOR = (0, 0, 0)
@@ -28,7 +33,10 @@ BUTTON_COLOR_DARK = (100, 164, 230)
 
 TAG_COLOR = (237, 56, 115)
 
-GEOM_PICK_DIST = 8
+GEOM_PICK_DIST = 9.4
+
+CMD_SHOW_LINE = 15
+CMD_LINE_HEIGHT = 25
 
 # Geometry setting
 ERROR = 1e-13
@@ -40,6 +48,7 @@ def choose_order_of_object(in_type):
         return 2
     if in_type == "Point":
         return 3
+    return 0
 
 def numberform(realnum):
     # String a number in a relatively short form
@@ -57,11 +66,13 @@ def fig_intersection(fig1, fig2):
                 return []
         if fig2.type == "Circle":
             Disc = (-(fig1.c[2] + fig1.c[0] * fig2.c[0] + fig1.c[1] * fig2.c[1])**2 + (fig1.c[0]**2 + fig1.c[1]**2) * fig2.c[2]**2)
-            if  Disc >= 0:
+            if  Disc >= -ERROR:
                 Delta = fig1.c[1]**2 * (-(fig1.c[2] + fig1.c[0] * fig2.c[0] + fig1.c[1] * fig2.c[1])**2 + (fig1.c[0]**2 + fig1.c[1]**2) * fig2.c[2]**2)
+                Delta = max(0, Delta)
                 x1 = -((-fig1.c[1]**2 * fig2.c[0] + fig1.c[0] * (fig1.c[2] + fig1.c[1] * fig2.c[1]) + Delta ** (1/2))/(fig1.c[0]**2 + fig1.c[1]**2))
                 x2 = -((-fig1.c[1]**2 * fig2.c[0] + fig1.c[0] * (fig1.c[2] + fig1.c[1] * fig2.c[1]) - Delta ** (1/2))/(fig1.c[0]**2 + fig1.c[1]**2))
                 Delta = fig1.c[0]**2 * (-(fig1.c[2] + fig1.c[1] * fig2.c[1] + fig1.c[0] * fig2.c[0])**2 + (fig1.c[1]**2 + fig1.c[0]**2) * fig2.c[2]**2)
+                Delta = max(0, Delta)
                 y1 = -((-fig1.c[0]**2 * fig2.c[1] + fig1.c[1] * (fig1.c[2] + fig1.c[0] * fig2.c[0]) + Delta ** (1/2))/(fig1.c[1]**2 + fig1.c[0]**2))
                 y2 = -((-fig1.c[0]**2 * fig2.c[1] + fig1.c[1] * (fig1.c[2] + fig1.c[0] * fig2.c[0]) - Delta ** (1/2))/(fig1.c[1]**2 + fig1.c[0]**2))
                 if Disc >= ERROR:
@@ -105,6 +116,10 @@ class GeomUI:
         self.geom_show = [True for fig_num in range(len(in_geom_list))] # A True False sequence that show a geom object or not
         self.geom_chosen = [0 for fig_num in range(len(in_geom_list))] # Chosen geom objects 0, >0
         self.geom_picked_list = []
+        
+        self.cmdlines = ["GTK: GeomToolKernel Version 1.0", "GTK: All rights reserved to Euclid", ""]
+        self.cmdline_from = [0, 0, 1]
+        self.cmdline_num = 0
     
     def choose_fig_list(self, mouse, allows = ("Point", "Line", "Circle")):
         # Choose a fig in geom_list that has geom_show
@@ -150,20 +165,20 @@ class GeomUI:
         for fig_num in range(len(self.geom_list)):
             if self.geom_show[fig_num] and self.geom_list[fig_num].hasc and self.geom_list[fig_num].type == 'Line':
                 if (self.geom_chosen[fig_num] == 0) and (fig_num not in self.geom_picked_list):
-                    self.draw_line(self.geom_list[fig_num].c, FIGURE_COLOR, 1)
+                    self.draw_line(self.geom_list[fig_num].c, FIGURE_COLOR, 2)
                 if (self.geom_chosen[fig_num] > 0) and (fig_num not in self.geom_picked_list):
-                    self.draw_line(self.geom_list[fig_num].c, CHOSEN_FIGURE_COLOR, 2)
+                    self.draw_line(self.geom_list[fig_num].c, CHOSEN_FIGURE_COLOR, 3)
                 if (fig_num in self.geom_picked_list):
-                    self.draw_line(self.geom_list[fig_num].c, PICKED_FIGURE_COLOR, 2)
+                    self.draw_line(self.geom_list[fig_num].c, PICKED_FIGURE_COLOR, 3)
         
         for fig_num in range(len(self.geom_list)):
             if self.geom_show[fig_num] and self.geom_list[fig_num].hasc and self.geom_list[fig_num].type == 'Circle':
                 if (self.geom_chosen[fig_num] == 0) and (fig_num not in self.geom_picked_list):
-                    self.draw_circle(self.geom_list[fig_num].c, FIGURE_COLOR, 1)
+                    self.draw_circle(self.geom_list[fig_num].c, FIGURE_COLOR, 2)
                 if (self.geom_chosen[fig_num] > 0) and (fig_num not in self.geom_picked_list):
-                    self.draw_circle(self.geom_list[fig_num].c, CHOSEN_FIGURE_COLOR, 2)
+                    self.draw_circle(self.geom_list[fig_num].c, CHOSEN_FIGURE_COLOR, 3)
                 if (fig_num in self.geom_picked_list):
-                    self.draw_circle(self.geom_list[fig_num].c, PICKED_FIGURE_COLOR, 2)
+                    self.draw_circle(self.geom_list[fig_num].c, PICKED_FIGURE_COLOR, 3)
                     
         for fig_num in range(len(self.geom_list)):
             if self.geom_show[fig_num] and self.geom_list[fig_num].hasc and self.geom_list[fig_num].type == 'Point':
@@ -195,8 +210,10 @@ class GeomUI:
     
         # Draw command area
         if self.yn_button_pressed[0] == 1:
-            pygame.draw.rect(self.screen, BACKGROUND_COLOR, pygame.Rect(2 + DRAW_WIDTH, 2, SCREEN_WIDTH - DRAW_WIDTH - 5, SCREEN_HEIGHT - 5))
-            pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [2 + DRAW_WIDTH, 2, SCREEN_WIDTH - DRAW_WIDTH - 5, SCREEN_HEIGHT - 5], 1)
+            pygame.draw.rect(self.screen, BACKGROUND_COLOR, pygame.Rect(2 + DRAW_WIDTH, 2, SCREEN_WIDTH - DRAW_WIDTH - 5, DRAW_HEIGHT - 5))
+            pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [2 + DRAW_WIDTH, 2, SCREEN_WIDTH - DRAW_WIDTH - 5, DRAW_HEIGHT - 5], 1)
+            for line_num in range(self.cmdline_num, min(len(self.cmdlines), self.cmdline_num + CMD_SHOW_LINE + 1)):
+                self.screen.blit(pygame.font.SysFont('Consolas', 20, bold=False).render(self.cmdlines[line_num] , True , TEXT_COLOR), (12 + DRAW_WIDTH, (line_num - self.cmdline_num) * CMD_LINE_HEIGHT + 12))
         
     # Coordinate change functions
     # cc for geom_coord to screen_coord, cc2 for screen_coord to geom_coord
@@ -320,6 +337,20 @@ class GeomUI:
         pygame.draw.circle(self.screen, BUTTON_COLOR_DARK, center=(width-10, height-8), radius=3, width=2)
         pygame.draw.circle(self.screen, BUTTON_COLOR_DARK, center=(width+8, height-8), radius=3, width=2)
         self.screen.blit(pygame.font.SysFont('Corbel', 18, bold=True).render("pbis" , True , BUTTON_COLOR_DARK), (width-15, height))
+        
+    def draw_abis_button(self, width, height, pressed):
+        # pressed = -1, 0, 1
+        if pressed == 1:
+            pygame.draw.rect(self.screen, BUTTON_COLOR_MID, pygame.Rect(width - 20, height - 20, 40, 40))
+        if pressed == -1:
+            pygame.draw.rect(self.screen, BACKGROUND_COLOR, pygame.Rect(width - 20, height - 20, 40, 40))
+        if pressed == 0:
+            pygame.draw.rect(self.screen, BUTTON_COLOR_LIGHT, pygame.Rect(width - 20, height - 20, 40, 40))
+        pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [width - 20, height - 20, 40, 40], 1)
+        pygame.draw.line(self.screen, BUTTON_COLOR_DARK, (width-10, height-5), (width+10, height-5), width=2)
+        pygame.draw.line(self.screen, BUTTON_COLOR_DARK, (width-10, height-5), (width+10, height-10), width=2)
+        pygame.draw.line(self.screen, BUTTON_COLOR_DARK, (width-10, height-5), (width+10, height-16), width=2)
+        self.screen.blit(pygame.font.SysFont('Corbel', 18, bold=True).render("abis" , True , BUTTON_COLOR_DARK), (width-15, height))
     
     # Functions to draw extra buttons
     
@@ -528,8 +559,8 @@ class GeomUI:
                         self.sub_button_draw_fun = [self.draw_mdpt_button]
                         
                     if mouse_in == 2:
-                        self.sub_button_range = [(80, 100), (80, 150), (80, 200)]
-                        self.sub_button_draw_fun = [self.draw_para_button, self.draw_perp_button, self.draw_pbis_button]
+                        self.sub_button_range = [(80, 100), (80, 150), (80, 200), (80, 250)]
+                        self.sub_button_draw_fun = [self.draw_para_button, self.draw_perp_button, self.draw_pbis_button, self.draw_abis_button]
                         
                     if mouse_in == 3:
                         self.sub_button_range = []
@@ -551,8 +582,30 @@ class GeomUI:
                     moving_background_start_cx = self.cx
                     moving_background_start_cy = self.cy
                     
+                    
+                    
+                    '''
+                    --- Test Choose Code ---
+                    '''
+                    self.geom_chosen = [0 for _ in self.geom_chosen]
+                    self.draw_init()
+                    
+                    
+                    
                 if mouse_in == -1 and self.draw_choose == 1:
                     pass
+                
+                
+                
+                '''
+                --- Test Choose Code ---
+                '''
+                if 100 <= mouse_in < 1000 and self.draw_choose == 0:
+                    self.geom_chosen = [0 for _ in self.geom_chosen]
+                    self.geom_chosen[mouse_in - 100] = 1
+                    self.draw_init()
+                
+            
             
             if moving_background:
                 self.cx = mouse[0] - moving_background_start[0] + moving_background_start_cx
@@ -564,13 +617,13 @@ class GeomUI:
                 mouse_coordxprt = 'x = ' + numberform(self.cc2(mouse)[0])
                 mouse_coordyprt = 'y = ' + numberform(self.cc2(mouse)[1])
                 if len(self.geom_picked_list) == 0:
-                    pygame.draw.rect(self.screen, BACKGROUND_COLOR, pygame.Rect(2, 2, 122, 42))
-                    pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [2, 2, 122, 42], 1)
+                    pygame.draw.rect(self.screen, BACKGROUND_COLOR, pygame.Rect(2, 2, 138, 42))
+                    pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [2, 2, 138, 42], 1)
                     self.screen.blit(pygame.font.SysFont('Consolas', 15, bold=False).render(mouse_coordxprt , True , TEXT_COLOR), (5, 5))
                     self.screen.blit(pygame.font.SysFont('Consolas', 15, bold=False).render(mouse_coordyprt , True , TEXT_COLOR), (5, 25))
                 if len(self.geom_picked_list) > 0:
-                    pygame.draw.rect(self.screen, BACKGROUND_COLOR, pygame.Rect(2, 2, 122, 62))
-                    pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [2, 2, 122, 62], 1)
+                    pygame.draw.rect(self.screen, BACKGROUND_COLOR, pygame.Rect(2, 2, 138, 62))
+                    pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [2, 2, 138, 62], 1)
                     self.screen.blit(pygame.font.SysFont('Consolas', 15, bold=False).render(mouse_coordxprt , True , TEXT_COLOR), (5, 5))
                     self.screen.blit(pygame.font.SysFont('Consolas', 15, bold=False).render(mouse_coordyprt , True , TEXT_COLOR), (5, 25))
                     self.screen.blit(pygame.font.SysFont('Consolas', 15, bold=False).render(", ".join([self.geom_list[_].name for _ in self.geom_picked_list]) , True , TEXT_COLOR), (5, 45))
@@ -585,22 +638,6 @@ class GeomUI:
                 self.draw_init()
             if ("K_ALT" in eventlist) and ("K_ALT" not in last_eventlist):
                 self.yn_button_pressed[1] = -self.yn_button_pressed[1]
-                self.draw_init()
-            if ("K_RIGHT" in eventlist) and ("K_RIGHT" not in last_eventlist):
-                RATIO = 1/7
-                self.cx -= DRAW_WIDTH * RATIO
-                self.draw_init()
-            if ("K_LEFT" in eventlist) and ("K_LEFT" not in last_eventlist):
-                RATIO = 1/7
-                self.cx += DRAW_WIDTH * RATIO
-                self.draw_init()
-            if ("K_UP" in eventlist) and ("K_UP" not in last_eventlist):
-                RATIO = 1/7
-                self.cy += DRAW_HEIGHT * RATIO
-                self.draw_init()
-            if ("K_DOWN" in eventlist) and ("K_DOWN" not in last_eventlist):
-                RATIO = 1/7
-                self.cy -= DRAW_HEIGHT * RATIO
                 self.draw_init()
                 
             
@@ -636,33 +673,64 @@ class GeomUI:
                     self.cy = DRAW_HEIGHT / 2 + 0.01145141919810
                     self.r = (DRAW_WIDTH + DRAW_HEIGHT) / 9 + 0.114514 + 0.1919810 + ERROR
                     self.draw_init()
+                    
+                if ("K_RIGHT" in eventlist) and ("K_RIGHT" not in last_eventlist):
+                    RATIO = 1/7
+                    self.cx -= DRAW_WIDTH * RATIO
+                    self.draw_init()
+                if ("K_LEFT" in eventlist) and ("K_LEFT" not in last_eventlist):
+                    RATIO = 1/7
+                    self.cx += DRAW_WIDTH * RATIO
+                    self.draw_init()
+                if ("K_UP" in eventlist) and ("K_UP" not in last_eventlist):
+                    RATIO = 1/7
+                    self.cy += DRAW_HEIGHT * RATIO
+                    self.draw_init()
+                if ("K_DOWN" in eventlist) and ("K_DOWN" not in last_eventlist):
+                    RATIO = 1/7
+                    self.cy -= DRAW_HEIGHT * RATIO
+                    self.draw_init()
             
             last_eventlist = eventlist
             
             pygame.display.update()
         
+if __name__ == "__main__":
+    c1 = GeomTool.Geom_object("c1", "Circle", None, None)
+    c1.getc((0,0,1))
+    c2 = GeomTool.Geom_object("c2", "Circle", None, None)
+    c2.getc((3,3,3.24))
+    c3 = GeomTool.Geom_object("c3", "Circle", None, None)
+    c3.getc((0.7,0.7,0.3))
+    c4 = GeomTool.Geom_object("c3", "Circle", None, None)
+    c4.getc((-0.8,-0.4,2.3))
+    l1 = GeomTool.Geom_object("l1", "Line", None, None)
+    l1.getc((-1,0,0))
+    l2 = GeomTool.Geom_object("l2", "Line", None, None)
+    l2.getc((0,-1,0))
+    l3 = GeomTool.Geom_object("l3", "Line", None, None)
+    l3.getc((2,3,2.5))
+    l4 = GeomTool.Geom_object("l4", "Line", None, None)
+    l4.getc((-1,1,0.3))
+    l5 = GeomTool.Geom_object("l5", "Line", None, None)
+    l5.getc((-1,0.1,0.5))
+    l6 = GeomTool.Geom_object("l6", "Line", None, None)
+    l6.getc((0.6,0.8,1))
+    l7 = GeomTool.Geom_object("l7", "Line", None, None)
+    l7.getc((-1,0,1))
+    l8 = GeomTool.Geom_object("l8", "Line", None, None)
+    l8.getc((0,-1,1))
+    p1 = GeomTool.Geom_object("p1", "Point", None, None)
+    p1.getc((0,0))
+    p2 = GeomTool.Geom_object("p2", "Point", None, None)
+    p2.getc((1,1))
+    p3 = GeomTool.Geom_object("p3", "Point", None, None)
+    p3.getc((0.7,0.5))
+    p4 = GeomTool.Geom_object("p4", "Point", None, None)
+    p4.getc((0.6,0.8))
 
-c1 = GeomTool.Geom_object("c1", "Circle", None, None)
-c1.getc((0,0,1))
-c2 = GeomTool.Geom_object("c2", "Circle", None, None)
-c2.getc((3,3,3.24))
-c3 = GeomTool.Geom_object("c3", "Circle", None, None)
-c3.getc((0.7,0.72,0.3))
-l1 = GeomTool.Geom_object("l1", "Line", None, None)
-l1.getc((-1,0,0))
-l2 = GeomTool.Geom_object("l2", "Line", None, None)
-l2.getc((0,-1,0))
-l3 = GeomTool.Geom_object("l3", "Line", None, None)
-l3.getc((2,3,2.5))
-l4 = GeomTool.Geom_object("l4", "Line", None, None)
-l4.getc((-1,1,0.3))
-l5 = GeomTool.Geom_object("l5", "Line", None, None)
-l5.getc((-1,0.1,0.5))
-p1 = GeomTool.Geom_object("p1", "Point", None, None)
-p1.getc((0,0))
-
-geom_list = [c1, c2, c3, l1, l2, l3, l4, l5, p1]
-test = GeomUI(geom_list)
-test.run()
+    geom_list = [c1, c2, c3, c4, l1, l2, l3, l4, l5, l6, l7, l8, p1, p2, p3, p4]
+    test = GeomUI(geom_list)
+    test.run()
 
 
