@@ -1,5 +1,5 @@
 import pygame
-import sys
+import GeomTool
 
 """
 KEY_ESCAPE: Exit
@@ -15,7 +15,8 @@ DRAW_WIDTH = 800
 DRAW_HEIGHT = 800
 
 FIGURE_COLOR = (0, 0, 0)
-PICKED_FIGURE_COLOR = (249, 176, 79)
+PICKED_FIGURE_COLOR = (131, 251, 128)
+CHOSEN_FIGURE_COLOR = (249, 176, 79)
 
 BUTTON_COLOR_MID = (205, 228, 252)
 BUTTON_COLOR_LIGHT = (220, 237, 254)
@@ -34,7 +35,7 @@ def numberform(realnum):
 
 
 class GeomUI:
-    def __init__(self, fig = []):
+    def __init__(self, fig):
         pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption('Geometry Plot')
@@ -222,6 +223,7 @@ class GeomUI:
         if geomtype == "Circle":
             c0 = self.cc2(mouse)
             return self.r * abs(c[2] - ((c0[0] - c[0]) * (c0[0] - c[0]) + (c0[1] - c[1]) * (c0[1] - c[1])) ** (1/2))
+        return 1e10
 
     def run(self):
         self.draw_init()
@@ -332,7 +334,7 @@ class GeomUI:
             
             
             if ("K_ESCAPE" in eventlist) or ("QUIT" in eventlist):
-                    pygame.quit()
+                pygame.quit()
             
             if ("MOUSEBUTTONDOWN" in eventlist) and ("MOUSEBUTTONDOWN" not in last_eventlist):
                 # the moment when the mouse is clicked on the button
@@ -387,7 +389,6 @@ class GeomUI:
                     moving_background = False
                     
             if ("K_MINUS" in eventlist) and ("K_MINUS" not in last_eventlist):
-                center_coord = self.cc2((DRAW_WIDTH/2, DRAW_HEIGHT/2))
                 RATIO = 5 / 6
                 self.r *= RATIO
                 self.cx = DRAW_WIDTH/2 + (self.cx - DRAW_WIDTH/2) * RATIO
@@ -395,7 +396,6 @@ class GeomUI:
                 self.draw_init()
                 
             if ("K_EQUALS" in eventlist) and ("K_EQUALS" not in last_eventlist):
-                center_coord = self.cc2((DRAW_WIDTH/2, DRAW_HEIGHT/2))
                 RATIO = 6 / 5
                 self.r *= RATIO
                 self.cx = DRAW_WIDTH/2 + (self.cx - DRAW_WIDTH/2) * RATIO
@@ -408,8 +408,7 @@ class GeomUI:
                 self.r = (DRAW_WIDTH + DRAW_HEIGHT) / 9 + 0.114514 + 0.1919810 + ERROR
                 self.draw_init()
             
-            
-            last_event_type = event.type
+            last_eventlist = eventlist
             
             pygame.display.update()
         
