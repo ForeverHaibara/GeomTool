@@ -5,12 +5,14 @@ import GeomTool
 KEY_ESCAPE: Exit
 KEY_r: Reset Zoom
 KEY_MINUS: Zoom Out
-KEY_EQUALS: Zoom In
+KEY_EQUALS / KEY_PLUS: Zoom In
+KEY_CONTROL: Start CMD
+KEY_ALT: Print TAG
 """
 
 SCREEN_WIDTH = 1500
 SCREEN_HEIGHT = 800
-BACKGROUND_COLOR = (255, 255, 255)
+BACKGROUND_COLOR = (244, 244, 244)
 DRAW_WIDTH = 800
 DRAW_HEIGHT = 800
 
@@ -21,6 +23,8 @@ CHOSEN_FIGURE_COLOR = (249, 176, 79)
 BUTTON_COLOR_MID = (205, 228, 252)
 BUTTON_COLOR_LIGHT = (220, 237, 254)
 BUTTON_COLOR_DARK = (100, 164, 230)
+
+TAG_COLOR = (237, 56, 115)
 
 GEOM_PICK_DIST = 8
 
@@ -53,9 +57,9 @@ class GeomUI:
         self.button_draw_fun = [self.draw_mouse_button, self.draw_point_button, self.draw_line_button, self.draw_circle_button]
         self.sub_button_range = []
         self.sub_button_draw_fun = []
-        self.yn_button_range = [(30, 400)]
-        self.yn_button_draw_fun = [self.draw_cmd_button]
-        self.yn_button_pressed = [-1]
+        self.yn_button_range = [(30, 400), (30, 450)]
+        self.yn_button_draw_fun = [self.draw_cmd_button, self.draw_tag_button]
+        self.yn_button_pressed = [-1, 1]
         self.draw_choose = 0
         self.sub_draw_choose = -1
         
@@ -123,6 +127,9 @@ class GeomUI:
                     self.draw_point(self.geom_list[fig_num].c, CHOSEN_FIGURE_COLOR, 5)
                 if (fig_num in self.geom_picked_list):
                     self.draw_point(self.geom_list[fig_num].c, PICKED_FIGURE_COLOR, 5)
+                if self.yn_button_pressed[1] == 1:
+                    self.screen.blit(pygame.font.SysFont('TimesNewRoman', 20, bold=True).render(self.geom_list[fig_num].name , True , TAG_COLOR), self.cc(self.geom_list[fig_num].c))
+            
     
     def draw_init(self):
         # Draw geometric objects and buttons
@@ -281,6 +288,20 @@ class GeomUI:
         pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [width - 20, height - 20, 40, 40], 1)
         self.screen.blit(pygame.font.SysFont('Corbel', 15, bold=True).render(">>>" , True , BUTTON_COLOR_DARK), (width-12, height-14))
         self.screen.blit(pygame.font.SysFont('Corbel', 18, bold=True).render("cmd" , True , BUTTON_COLOR_DARK), (width-17, height))
+        
+    def draw_tag_button(self, width, height, pressed):
+        # pressed = -1, 0, 1
+        if pressed == 1:
+            pygame.draw.rect(self.screen, BUTTON_COLOR_MID, pygame.Rect(width - 20, height - 20, 40, 40))
+        if pressed == -1:
+            pygame.draw.rect(self.screen, BACKGROUND_COLOR, pygame.Rect(width - 20, height - 20, 40, 40))
+        if pressed == 0:
+            pygame.draw.rect(self.screen, BUTTON_COLOR_LIGHT, pygame.Rect(width - 20, height - 20, 40, 40))
+        pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [width - 20, height - 20, 40, 40], 1)
+        pygame.draw.circle(self.screen, BUTTON_COLOR_DARK, center=(width-8, height-8), radius=3, width=2)
+        pts = [(width-14, height-14), (width-14, height-2), (width+6, height-2), (width+12, height-8), (width+6, height-14)]
+        pygame.draw.lines(self.screen, BUTTON_COLOR_DARK, closed=True, points=pts, width=2)
+        self.screen.blit(pygame.font.SysFont('Corbel', 18, bold=True).render("tag" , True , BUTTON_COLOR_DARK), (width-13, height))
     
     # Functions to draw Geometric Figures
     
@@ -412,14 +433,18 @@ class GeomUI:
                     eventlist.append("KEYDOWN")
                 if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_ESCAPE):
                     eventlist.append("K_ESCAPE")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_MINUS):
+                if (event.type == pygame.KEYDOWN) and ((event.key == pygame.K_MINUS) or (event.key == pygame.K_KP_MINUS)):
                     eventlist.append("K_MINUS")
                 if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_EQUALS):
                     eventlist.append("K_EQUALS")
+                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP_PLUS):
+                    eventlist.append("K_PLUS")
                 if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_r):
                     eventlist.append("K_r")
                 if (event.type == pygame.KEYDOWN) and ((event.key == pygame.K_LCTRL) or (event.key == pygame.K_RCTRL)):
                     eventlist.append("K_CTRL")
+                if (event.type == pygame.KEYDOWN) and ((event.key == pygame.K_LALT) or (event.key == pygame.K_RALT)):
+                    eventlist.append("K_ALT")
             
             if ("K_ESCAPE" in eventlist) or ("QUIT" in eventlist):
                 # Quit UI
@@ -488,6 +513,9 @@ class GeomUI:
             if ("K_CTRL" in eventlist) and ("K_CTRL" not in last_eventlist):
                 self.yn_button_pressed[0] = -self.yn_button_pressed[0]
                 self.draw_init()
+            if ("K_ALT" in eventlist) and ("K_ALT" not in last_eventlist):
+                self.yn_button_pressed[1] = -self.yn_button_pressed[1]
+                self.draw_init()
             
             if ("KEYDOWN" in eventlist) and ("KEYDOWN" not in last_eventlist) and (self.yn_button_pressed[0] == -1):
                 
@@ -500,6 +528,14 @@ class GeomUI:
                     self.draw_init()
                     
                 if ("K_EQUALS" in eventlist) and ("K_EQUALS" not in last_eventlist):
+                    # The moment when K_EQUALS is pressed
+                    RATIO = 6 / 5
+                    self.r *= RATIO
+                    self.cx = DRAW_WIDTH/2 + (self.cx - DRAW_WIDTH/2) * RATIO
+                    self.cy = DRAW_HEIGHT/2 + (self.cy - DRAW_HEIGHT/2) * RATIO
+                    self.draw_init()
+                
+                if ("K_PLUS" in eventlist) and ("K_PLUS" not in last_eventlist):
                     # The moment when K_EQUALS is pressed
                     RATIO = 6 / 5
                     self.r *= RATIO
