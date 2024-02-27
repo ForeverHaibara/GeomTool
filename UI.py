@@ -8,7 +8,7 @@ KEY_MINUS: Zoom Out
 KEY_EQUALS: Zoom In
 """
 
-SCREEN_WIDTH = 800
+SCREEN_WIDTH = 1500
 SCREEN_HEIGHT = 800
 BACKGROUND_COLOR = (255, 255, 255)
 DRAW_WIDTH = 800
@@ -36,7 +36,7 @@ def numberform(realnum):
 
 
 class GeomUI:
-    def __init__(self):
+    def __init__(self, fig):
         pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption('Geometry Plot')
@@ -45,6 +45,9 @@ class GeomUI:
         self.button_draw_fun = [self.draw_mouse_button, self.draw_point_button, self.draw_line_button, self.draw_circle_button]
         self.sub_button_range = []
         self.sub_button_draw_fun = []
+        self.yn_button_range = [(30, 400)]
+        self.yn_button_draw_fun = [self.draw_cmd_button]
+        self.yn_button_pressed = [-1]
         self.draw_choose = 0
         self.sub_draw_choose = -1
         
@@ -53,7 +56,8 @@ class GeomUI:
         self.r = (DRAW_WIDTH + DRAW_HEIGHT) / 9 + 0.114514 + 0.1919810 + ERROR
         
         self.geom_list = []
-        self.figure_list = []
+        self.figure_list = fig
+        # Temp
     
     def draw_init(self):
         # Draw geometric objects by figure_list order and draw buttons
@@ -67,11 +71,20 @@ class GeomUI:
             if fig[0] == 'Circle':
                 self.draw_circle(fig[1], fig[2], fig[3])
         
+        # Draw buttons
+        
         for button_num in range(len(self.button_range)):
             self.button_draw_fun[button_num](self.button_range[button_num][0], self.button_range[button_num][1], 1 if self.draw_choose == button_num else -1)
         for button_num in range(len(self.sub_button_range)):
             self.sub_button_draw_fun[button_num](self.sub_button_range[button_num][0], self.sub_button_range[button_num][1], 1 if self.sub_draw_choose == button_num else -1)
+        for button_num in range(len(self.yn_button_range)):
+            self.yn_button_draw_fun[button_num](self.yn_button_range[button_num][0], self.yn_button_range[button_num][1], self.yn_button_pressed[button_num])
     
+        # Draw command area
+        if self.yn_button_pressed[0] == 1:
+            pygame.draw.rect(self.screen, BACKGROUND_COLOR, pygame.Rect(2 + DRAW_WIDTH, 2, SCREEN_WIDTH - DRAW_WIDTH - 5, SCREEN_HEIGHT - 5))
+            pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [2 + DRAW_WIDTH, 2, SCREEN_WIDTH - DRAW_WIDTH - 5, SCREEN_HEIGHT - 5], 1)
+        
     # Coordinate change functions
     # cc for geom_coord to screen_coord, cc2 for screen_coord to geom_coord
     def cc(self, in_c):
@@ -195,6 +208,20 @@ class GeomUI:
         pygame.draw.circle(self.screen, BUTTON_COLOR_DARK, center=(width+8, height-8), radius=3, width=2)
         self.screen.blit(pygame.font.SysFont('Corbel', 18, bold=True).render("pbis" , True , BUTTON_COLOR_DARK), (width-15, height))
     
+    # Functions to draw extra buttons
+    
+    def draw_cmd_button(self, width, height, pressed):
+        # pressed = -1, 0, 1
+        if pressed == 1:
+            pygame.draw.rect(self.screen, BUTTON_COLOR_MID, pygame.Rect(width - 20, height - 20, 40, 40))
+        if pressed == -1:
+            pygame.draw.rect(self.screen, BACKGROUND_COLOR, pygame.Rect(width - 20, height - 20, 40, 40))
+        if pressed == 0:
+            pygame.draw.rect(self.screen, BUTTON_COLOR_LIGHT, pygame.Rect(width - 20, height - 20, 40, 40))
+        pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [width - 20, height - 20, 40, 40], 1)
+        self.screen.blit(pygame.font.SysFont('Corbel', 15, bold=True).render(">>>" , True , BUTTON_COLOR_DARK), (width-12, height-14))
+        self.screen.blit(pygame.font.SysFont('Corbel', 18, bold=True).render("cmd" , True , BUTTON_COLOR_DARK), (width-17, height))
+    
     # Functions to draw Geometric Figures
     
     def draw_point(self, c, color, width):
@@ -241,6 +268,7 @@ class GeomUI:
         last_mouse_in = -1
         last_eventlist = []
         moving_background = False
+        writing_command = False
         
         while True:
             
@@ -260,6 +288,11 @@ class GeomUI:
                 bt = self.sub_button_range[button_num]
                 if bt[0]-20 <= mouse[0] <= bt[0]+20 and bt[1]-20 <= mouse[1] <= bt[1]+20:
                     mouse_in = button_num + 10
+                    
+            for button_num in range(len(self.yn_button_range)):
+                bt = self.yn_button_range[button_num]
+                if bt[0]-20 <= mouse[0] <= bt[0]+20 and bt[1]-20 <= mouse[1] <= bt[1]+20:
+                    mouse_in = button_num + 20
             
             if mouse_in == -1:
                 
@@ -332,6 +365,11 @@ class GeomUI:
                 if mouse_in >= 10 and mouse_in < 20:
                     self.sub_button_draw_fun[mouse_in - 10](self.sub_button_range[mouse_in - 10][0], self.sub_button_range[mouse_in - 10][1], 0)
                     
+                if last_mouse_in >= 20 and last_mouse_in < 30:
+                    self.yn_button_draw_fun[last_mouse_in - 20](self.yn_button_range[last_mouse_in - 20][0], self.yn_button_range[last_mouse_in - 20][1], self.yn_button_pressed[last_mouse_in - 20])
+                if mouse_in >= 20 and mouse_in < 30:
+                    self.yn_button_draw_fun[mouse_in - 20](self.yn_button_range[mouse_in - 20][0], self.yn_button_range[mouse_in - 20][1], 0)
+                    
             last_mouse_in = mouse_in
             
             # MOUSE and KEY events
@@ -346,6 +384,8 @@ class GeomUI:
                     eventlist.append("MOUSEMOTION")
                 if (event.type == pygame.MOUSEBUTTONUP):
                     eventlist.append("MOUSEBUTTONUP")
+                if (event.type == pygame.KEYDOWN):
+                    eventlist.append("KEYDOWN")
                 if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_ESCAPE):
                     eventlist.append("K_ESCAPE")
                 if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_MINUS):
@@ -354,6 +394,8 @@ class GeomUI:
                     eventlist.append("K_EQUALS")
                 if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_r):
                     eventlist.append("K_r")
+                if (event.type == pygame.KEYDOWN) and ((event.key == pygame.K_LCTRL) or (event.key == pygame.K_RCTRL)):
+                    eventlist.append("K_CTRL")
             
             if ("K_ESCAPE" in eventlist) or ("QUIT" in eventlist):
                 # Quit UI
@@ -387,6 +429,10 @@ class GeomUI:
                     self.sub_draw_choose = mouse_in - 10
                     self.draw_init()
                     
+                if mouse_in >= 20 and mouse_in < 30:
+                    self.yn_button_pressed[mouse_in - 20] = -self.yn_button_pressed[mouse_in - 20]
+                    self.draw_init()
+                    
                 if mouse_in == -1 and self.draw_choose == 0:
                     moving_background = True
                     moving_background_start = mouse
@@ -414,35 +460,41 @@ class GeomUI:
                 # The moment when the mouse is unclicked
                 if moving_background:
                     moving_background = False
-                    
-            if ("K_MINUS" in eventlist) and ("K_MINUS" not in last_eventlist):
-                # The moment when K_MINUS is pressed
-                RATIO = 5 / 6
-                self.r *= RATIO
-                self.cx = DRAW_WIDTH/2 + (self.cx - DRAW_WIDTH/2) * RATIO
-                self.cy = DRAW_HEIGHT/2 + (self.cy - DRAW_HEIGHT/2) * RATIO
-                self.draw_init()
-                
-            if ("K_EQUALS" in eventlist) and ("K_EQUALS" not in last_eventlist):
-                # The moment when K_EQUALS is pressed
-                RATIO = 6 / 5
-                self.r *= RATIO
-                self.cx = DRAW_WIDTH/2 + (self.cx - DRAW_WIDTH/2) * RATIO
-                self.cy = DRAW_HEIGHT/2 + (self.cy - DRAW_HEIGHT/2) * RATIO
+            
+            if ("K_CTRL" in eventlist) and ("K_CTRL" not in last_eventlist):
+                self.yn_button_pressed[0] = -self.yn_button_pressed[0]
                 self.draw_init()
             
-            if ("K_r" in eventlist) and ("K_r" not in last_eventlist):
-                # The moment when K_r is pressed
-                self.cx = DRAW_WIDTH / 2 + 0.01919810114514
-                self.cy = DRAW_HEIGHT / 2 + 0.01145141919810
-                self.r = (DRAW_WIDTH + DRAW_HEIGHT) / 9 + 0.114514 + 0.1919810 + ERROR
-                self.draw_init()
+            if ("KEYDOWN" in eventlist) and ("KEYDOWN" not in last_eventlist) and (self.yn_button_pressed[0] == -1):
+                
+                if ("K_MINUS" in eventlist) and ("K_MINUS" not in last_eventlist):
+                    # The moment when K_MINUS is pressed
+                    RATIO = 5 / 6
+                    self.r *= RATIO
+                    self.cx = DRAW_WIDTH/2 + (self.cx - DRAW_WIDTH/2) * RATIO
+                    self.cy = DRAW_HEIGHT/2 + (self.cy - DRAW_HEIGHT/2) * RATIO
+                    self.draw_init()
+                    
+                if ("K_EQUALS" in eventlist) and ("K_EQUALS" not in last_eventlist):
+                    # The moment when K_EQUALS is pressed
+                    RATIO = 6 / 5
+                    self.r *= RATIO
+                    self.cx = DRAW_WIDTH/2 + (self.cx - DRAW_WIDTH/2) * RATIO
+                    self.cy = DRAW_HEIGHT/2 + (self.cy - DRAW_HEIGHT/2) * RATIO
+                    self.draw_init()
+                
+                if ("K_r" in eventlist) and ("K_r" not in last_eventlist):
+                    # The moment when K_r is pressed
+                    self.cx = DRAW_WIDTH / 2 + 0.01919810114514
+                    self.cy = DRAW_HEIGHT / 2 + 0.01145141919810
+                    self.r = (DRAW_WIDTH + DRAW_HEIGHT) / 9 + 0.114514 + 0.1919810 + ERROR
+                    self.draw_init()
             
             last_eventlist = eventlist
             
             pygame.display.update()
         
         
-# test = GeomUI([["Circle", (0,0,1), FIGURE_COLOR, 1],["Line", (-1,0,0), FIGURE_COLOR, 1],["Line", (0,-1,0), FIGURE_COLOR, 1],["Line", (2,3,4), FIGURE_COLOR, 1],["Point", (0,0), FIGURE_COLOR, 4]])
-test = GeomUI()
+test = GeomUI([["Circle", (0,0,1), FIGURE_COLOR, 1],["Line", (-1,0,0), FIGURE_COLOR, 1],["Line", (0,-1,0), FIGURE_COLOR, 1],["Line", (2,3,4), FIGURE_COLOR, 1],["Point", (0,0), FIGURE_COLOR, 4]])
+# test = GeomUI()
 test.run()
