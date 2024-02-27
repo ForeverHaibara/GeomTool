@@ -46,6 +46,38 @@ def numberform(realnum):
     else:
         return "{:.3f}".format(realnum)
 
+def fig_intersection(fig1, fig2):
+    if fig1.type == "Line":
+        if fig2.type == "Line":
+            if abs(fig1.c[1] * fig2.c[0] - fig1.c[0] * fig2.c[1]) > ERROR:
+                return [((fig1.c[2] * fig2.c[1] - fig1.c[1] * fig2.c[2])/(fig1.c[1] * fig2.c[0] - fig1.c[0] * fig2.c[1]), (-fig1.c[2] * fig2.c[0] + fig1.c[0] * fig2.c[2])/(fig1.c[1] * fig2.c[0] - fig1.c[0] * fig2.c[1]))]
+            else:
+                return []
+        if fig2.type == "Circle":
+            Disc = (-(fig1.c[2] + fig1.c[0] * fig2.c[0] + fig1.c[1] * fig2.c[1])**2 + (fig1.c[0]**2 + fig1.c[1]**2) * fig2.c[2]**2)
+            if  Disc >= 0:
+                Delta = fig1.c[1]**2 * (-(fig1.c[2] + fig1.c[0] * fig2.c[0] + fig1.c[1] * fig2.c[1])**2 + (fig1.c[0]**2 + fig1.c[1]**2) * fig2.c[2]**2)
+                x1 = -((-fig1.c[1]**2 * fig2.c[0] + fig1.c[0] * (fig1.c[2] + fig1.c[1] * fig2.c[1]) + Delta ** (1/2))/(fig1.c[0]**2 + fig1.c[1]**2))
+                x2 = -((-fig1.c[1]**2 * fig2.c[0] + fig1.c[0] * (fig1.c[2] + fig1.c[1] * fig2.c[1]) - Delta ** (1/2))/(fig1.c[0]**2 + fig1.c[1]**2))
+                Delta = fig1.c[0]**2 * (-(fig1.c[2] + fig1.c[1] * fig2.c[1] + fig1.c[0] * fig2.c[0])**2 + (fig1.c[1]**2 + fig1.c[0]**2) * fig2.c[2]**2)
+                y1 = -((-fig1.c[0]**2 * fig2.c[1] + fig1.c[1] * (fig1.c[2] + fig1.c[0] * fig2.c[0]) + Delta ** (1/2))/(fig1.c[1]**2 + fig1.c[0]**2))
+                y2 = -((-fig1.c[0]**2 * fig2.c[1] + fig1.c[1] * (fig1.c[2] + fig1.c[0] * fig2.c[0]) - Delta ** (1/2))/(fig1.c[1]**2 + fig1.c[0]**2))
+                if Disc >= ERROR:
+                    if abs(fig1.c[0] * x1 + fig1.c[1] * y1 + fig1.c[2]) < ERROR:
+                        return [(x1, y1), (x2, y2)]
+                    else:
+                        return [(x1, y2), (x2, y1)]
+                else:
+                    return [(x1, y1)]
+    if fig1.type == "Circle":
+        if fig2.type == "Line":
+            return fig_intersection(fig2, fig1)
+        if fig2.type == "Circle":
+            if abs(fig1.c[0] - fig2.c[0]) > ERROR or abs(fig1.c[1] - fig2.c[1]) > ERROR:
+                fig3 = GeomTool.Geom_object("fig3", "Line", None, None)
+                fig3.c = (2 * (fig2.c[0] - fig1.c[0]), 2 * (fig2.c[1] - fig1.c[1]), (fig1.c[0]**2 + fig1.c[1]**2 - fig1.c[2]**2) - (fig2.c[0]**2 + fig2.c[1]**2 - fig2.c[2]**2))
+                return fig_intersection(fig3, fig1)
+    return []
 
 class GeomUI:
     def __init__(self, in_geom_list):
@@ -72,11 +104,11 @@ class GeomUI:
         self.geom_chosen = [0 for fig_num in range(len(in_geom_list))] # Chosen geom objects 0, >0
         self.geom_picked_list = []
     
-    def choose_fig_list(self, mouse):
+    def choose_fig_list(self, mouse, allows = ("Point", "Line", "Circle")):
         # Choose a fig in geom_list that has geom_show
         out_fig_list = []
         for fig_num in range(len(self.geom_list)):
-            if self.geom_show[fig_num] and self.geom_list[fig_num].hasc:
+            if self.geom_show[fig_num] and self.geom_list[fig_num].hasc and (self.geom_list[fig_num].type in allows):
                 dist = self.geomdist(mouse, self.geom_list[fig_num].type, self.geom_list[fig_num].c)
                 if dist < GEOM_PICK_DIST:
                     out_fig_list.append((fig_num, -choose_order_of_object(self.geom_list[fig_num].type) + dist/(2 * GEOM_PICK_DIST)))
@@ -93,11 +125,23 @@ class GeomUI:
             
     def choose_fig2(self, mouse):
         # Choose a fig in geom_list that has geom_show
-        lst = self.choose_fig_list(mouse)
-        if len(lst) < 3:
+        lst = self.choose_fig_list(mouse, ("Line", "Circle"))
+        inxlst = []
+        outlst = []
+        if len(lst) < 2:
             self.geom_picked_list = lst
         else:
-            self.geom_picked_list = [lst[0], lst[1]]
+            for fig_num1 in range(len(lst)):
+                for fig_num2 in range(fig_num1 + 1, len(lst)):
+                    inxlst += list((fig_num1, fig_num2, _) for _ in fig_intersection(self.geom_list[lst[fig_num1]], self.geom_list[lst[fig_num2]]))
+            for _ in inxlst:
+                if self.geomdist(mouse, "Point", _[2]) < GEOM_PICK_DIST:
+                    outlst.append((_, self.geomdist(mouse, "Point", _[2])))
+            outlst.sort(key = lambda x: x[1])
+            if len(outlst) > 0:
+                self.geom_picked_list = [lst[outlst[0][0][0]], lst[outlst[0][0][1]]]
+            else:
+                self.geom_picked_list = [lst[0]]
     
     def draw_fig(self):
         
@@ -377,12 +421,20 @@ class GeomUI:
             if mouse_in == -1:
                 
                 # Picking Geometric Figures
-                
-                self.choose_fig1(mouse)
-                if len(self.geom_picked_list) == 0:
-                    mouse_in = -1
-                else:
-                    mouse_in = self.geom_picked_list[0] + 100
+                if self.draw_choose in (1, 2, 3):
+                    self.choose_fig2(mouse)
+                    if len(self.geom_picked_list) == 0:
+                        mouse_in = -1
+                    elif len(self.geom_picked_list) == 1:
+                        mouse_in = self.geom_picked_list[0] + 100
+                    else:
+                        mouse_in = (self.geom_picked_list[0] + 100) * 1000 + (self.geom_picked_list[1] + 100)
+                if self.draw_choose == 0:
+                    self.choose_fig1(mouse)
+                    if len(self.geom_picked_list) == 0:
+                        mouse_in = -1
+                    else:
+                        mouse_in = self.geom_picked_list[0] + 100
                     
             
             if mouse_in != last_mouse_in:
@@ -557,16 +609,22 @@ class GeomUI:
 
 c1 = GeomTool.Geom_object("c1", "Circle", None, None)
 c1.getc((0,0,1))
+c2 = GeomTool.Geom_object("c2", "Circle", None, None)
+c2.getc((3,3,3.24))
+c3 = GeomTool.Geom_object("c3", "Circle", None, None)
+c3.getc((0.7,0.72,0.3))
 l1 = GeomTool.Geom_object("l1", "Line", None, None)
 l1.getc((-1,0,0))
 l2 = GeomTool.Geom_object("l2", "Line", None, None)
 l2.getc((0,-1,0))
 l3 = GeomTool.Geom_object("l3", "Line", None, None)
-l3.getc((2,3,4))
+l3.getc((2,3,2.5))
+l4 = GeomTool.Geom_object("l4", "Line", None, None)
+l4.getc((-1,1,0.3))
 p1 = GeomTool.Geom_object("p1", "Point", None, None)
 p1.getc((0,0))
 
-geom_list = [c1, l1, l2, l3, p1]
+geom_list = [c1, c2, c3, l1, l2, l3, l4, p1]
 test = GeomUI(geom_list)
 test.run()
 
