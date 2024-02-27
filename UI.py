@@ -8,6 +8,7 @@ KEY_MINUS: Zoom Out
 KEY_EQUALS / KEY_PLUS: Zoom In
 KEY_CONTROL: Start CMD
 KEY_ALT: Print TAG
+KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT: Move Screen
 """
 
 SCREEN_WIDTH = 1500
@@ -17,6 +18,7 @@ DRAW_WIDTH = 800
 DRAW_HEIGHT = 800
 
 FIGURE_COLOR = (0, 0, 0)
+TEXT_COLOR = (0, 0, 0)
 PICKED_FIGURE_COLOR = (131, 251, 128)
 CHOSEN_FIGURE_COLOR = (249, 176, 79)
 
@@ -561,10 +563,17 @@ class GeomUI:
                 # Moving Mouse
                 mouse_coordxprt = 'x = ' + numberform(self.cc2(mouse)[0])
                 mouse_coordyprt = 'y = ' + numberform(self.cc2(mouse)[1])
-                pygame.draw.rect(self.screen, BACKGROUND_COLOR, pygame.Rect(2, 2, 122, 42))
-                pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [2, 2, 122, 42], 1)
-                self.screen.blit(pygame.font.SysFont('Consolas', 15, bold=False).render(mouse_coordxprt , True , FIGURE_COLOR), (5, 5))
-                self.screen.blit(pygame.font.SysFont('Consolas', 15, bold=False).render(mouse_coordyprt , True , FIGURE_COLOR), (5, 25))
+                if len(self.geom_picked_list) == 0:
+                    pygame.draw.rect(self.screen, BACKGROUND_COLOR, pygame.Rect(2, 2, 122, 42))
+                    pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [2, 2, 122, 42], 1)
+                    self.screen.blit(pygame.font.SysFont('Consolas', 15, bold=False).render(mouse_coordxprt , True , TEXT_COLOR), (5, 5))
+                    self.screen.blit(pygame.font.SysFont('Consolas', 15, bold=False).render(mouse_coordyprt , True , TEXT_COLOR), (5, 25))
+                if len(self.geom_picked_list) > 0:
+                    pygame.draw.rect(self.screen, BACKGROUND_COLOR, pygame.Rect(2, 2, 122, 62))
+                    pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [2, 2, 122, 62], 1)
+                    self.screen.blit(pygame.font.SysFont('Consolas', 15, bold=False).render(mouse_coordxprt , True , TEXT_COLOR), (5, 5))
+                    self.screen.blit(pygame.font.SysFont('Consolas', 15, bold=False).render(mouse_coordyprt , True , TEXT_COLOR), (5, 25))
+                    self.screen.blit(pygame.font.SysFont('Consolas', 15, bold=False).render(", ".join([self.geom_list[_].name for _ in self.geom_picked_list]) , True , TEXT_COLOR), (5, 45))
             
             if ("MOUSEBUTTONUP" in eventlist) and ("MOUSEBUTTONUP" not in last_eventlist):
                 # The moment when the mouse is unclicked
@@ -647,10 +656,12 @@ l3 = GeomTool.Geom_object("l3", "Line", None, None)
 l3.getc((2,3,2.5))
 l4 = GeomTool.Geom_object("l4", "Line", None, None)
 l4.getc((-1,1,0.3))
+l5 = GeomTool.Geom_object("l5", "Line", None, None)
+l5.getc((-1,0.1,0.5))
 p1 = GeomTool.Geom_object("p1", "Point", None, None)
 p1.getc((0,0))
 
-geom_list = [c1, c2, c3, l1, l2, l3, l4, p1]
+geom_list = [c1, c2, c3, l1, l2, l3, l4, l5, p1]
 test = GeomUI(geom_list)
 test.run()
 
