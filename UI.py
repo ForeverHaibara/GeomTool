@@ -251,17 +251,29 @@ class GeomUI:
                 for fig_num in range(len(self.figure_list)):
                     dist = self.geomdist(mouse, self.figure_list[fig_num][0], self.figure_list[fig_num][1])
                     if self.figure_list[fig_num][0] == "Point":
-                        if dist < GEOM_PICK_DIST:
+                        if dist < GEOM_PICK_DIST and geom_picked not in ("0", "Point"):
+                            geom_picked = "Point"
+                            min_dist = dist
+                            min_num = fig_num
+                        if dist < min(GEOM_PICK_DIST, min_dist):
                             geom_picked = "Point"
                             min_dist = dist
                             min_num = fig_num
                     if self.figure_list[fig_num][0] == "Circle":
-                        if dist < GEOM_PICK_DIST and geom_picked not in ("0", "Point"):
+                        if dist < GEOM_PICK_DIST and geom_picked not in ("Point", "Circle"):
+                            geom_picked = "Circle"
+                            min_dist = dist
+                            min_num = fig_num
+                        if dist < min(GEOM_PICK_DIST, min_dist) and geom_picked not in ("0", "Point"):
                             geom_picked = "Circle"
                             min_dist = dist
                             min_num = fig_num
                     if self.figure_list[fig_num][0] == "Line":
-                        if dist < GEOM_PICK_DIST and geom_picked not in ("Point", "Circle"):
+                        if dist < GEOM_PICK_DIST and geom_picked not in ("Point", "Circle", "Line"):
+                            geom_picked = "Line"
+                            min_dist = dist
+                            min_num = fig_num
+                        if dist < min(GEOM_PICK_DIST, min_dist) and geom_picked not in ("Point", "Circle"):
                             geom_picked = "Line"
                             min_dist = dist
                             min_num = fig_num
