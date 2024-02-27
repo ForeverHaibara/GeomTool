@@ -37,6 +37,7 @@ GEOM_PICK_DIST = 9.4
 
 CMD_SHOW_LINE = 15
 CMD_LINE_HEIGHT = 25
+CMD_LINE_CHAR = 50
 
 # Geometry setting
 ERROR = 1e-13
@@ -117,7 +118,7 @@ class GeomUI:
         self.geom_chosen = [0 for fig_num in range(len(in_geom_list))] # Chosen geom objects 0, >0
         self.geom_picked_list = []
         
-        self.cmdlines = ["GTK: GeomToolKernel Version 1.0", "GTK: All rights reserved to Euclid", ""]
+        self.cmdlines = ["GeomToolKernel Version 1.0", "All rights reserved to Euclid", ""]
         self.cmdline_from = [0, 0, 1]
         self.cmdline_num = 0
     
@@ -166,7 +167,7 @@ class GeomUI:
             if self.geom_show[fig_num] and self.geom_list[fig_num].hasc and self.geom_list[fig_num].type == 'Line':
                 if (self.geom_chosen[fig_num] == 0) and (fig_num not in self.geom_picked_list):
                     self.draw_line(self.geom_list[fig_num].c, FIGURE_COLOR, 2)
-                if (self.geom_chosen[fig_num] > 0) and (fig_num not in self.geom_picked_list):
+                if (self.geom_chosen[fig_num] != 0) and (fig_num not in self.geom_picked_list):
                     self.draw_line(self.geom_list[fig_num].c, CHOSEN_FIGURE_COLOR, 3)
                 if (fig_num in self.geom_picked_list):
                     self.draw_line(self.geom_list[fig_num].c, PICKED_FIGURE_COLOR, 3)
@@ -175,7 +176,7 @@ class GeomUI:
             if self.geom_show[fig_num] and self.geom_list[fig_num].hasc and self.geom_list[fig_num].type == 'Circle':
                 if (self.geom_chosen[fig_num] == 0) and (fig_num not in self.geom_picked_list):
                     self.draw_circle(self.geom_list[fig_num].c, FIGURE_COLOR, 2)
-                if (self.geom_chosen[fig_num] > 0) and (fig_num not in self.geom_picked_list):
+                if (self.geom_chosen[fig_num] != 0) and (fig_num not in self.geom_picked_list):
                     self.draw_circle(self.geom_list[fig_num].c, CHOSEN_FIGURE_COLOR, 3)
                 if (fig_num in self.geom_picked_list):
                     self.draw_circle(self.geom_list[fig_num].c, PICKED_FIGURE_COLOR, 3)
@@ -184,7 +185,7 @@ class GeomUI:
             if self.geom_show[fig_num] and self.geom_list[fig_num].hasc and self.geom_list[fig_num].type == 'Point':
                 if (self.geom_chosen[fig_num] == 0) and (fig_num not in self.geom_picked_list):
                     self.draw_point(self.geom_list[fig_num].c, FIGURE_COLOR, 4)
-                if (self.geom_chosen[fig_num] > 0) and (fig_num not in self.geom_picked_list):
+                if (self.geom_chosen[fig_num] != 0) and (fig_num not in self.geom_picked_list):
                     self.draw_point(self.geom_list[fig_num].c, CHOSEN_FIGURE_COLOR, 5)
                 if (fig_num in self.geom_picked_list):
                     self.draw_point(self.geom_list[fig_num].c, PICKED_FIGURE_COLOR, 5)
@@ -212,9 +213,20 @@ class GeomUI:
         if self.yn_button_pressed[0] == 1:
             pygame.draw.rect(self.screen, BACKGROUND_COLOR, pygame.Rect(2 + DRAW_WIDTH, 2, SCREEN_WIDTH - DRAW_WIDTH - 5, DRAW_HEIGHT - 5))
             pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [2 + DRAW_WIDTH, 2, SCREEN_WIDTH - DRAW_WIDTH - 5, DRAW_HEIGHT - 5], 1)
-            for line_num in range(self.cmdline_num, min(len(self.cmdlines), self.cmdline_num + CMD_SHOW_LINE + 1)):
-                self.screen.blit(pygame.font.SysFont('Consolas', 20, bold=False).render(self.cmdlines[line_num] , True , TEXT_COLOR), (12 + DRAW_WIDTH, (line_num - self.cmdline_num) * CMD_LINE_HEIGHT + 12))
-        
+            textlist = []
+            for line_num in range(self.cmdline_num, len(self.cmdlines)):
+                linetext = ('>>> ' if self.cmdline_from[line_num] == 1 else 'GT: ') + self.cmdlines[line_num]
+                newline = True
+                while len(textlist) < CMD_SHOW_LINE and len(linetext) > 0:
+                    textlist.append(('    ' if (not newline) else '') + linetext[:CMD_LINE_CHAR - 4])
+                    linetext = linetext[CMD_LINE_CHAR - 4:]
+                    newline = False
+            line_num = 0
+            for linetext in textlist:
+                self.screen.blit(pygame.font.SysFont('Consolas', 20, bold=False).render(linetext , True , TEXT_COLOR), (12 + DRAW_WIDTH, line_num * CMD_LINE_HEIGHT + 12))
+                line_num += 1
+
+
     # Coordinate change functions
     # cc for geom_coord to screen_coord, cc2 for screen_coord to geom_coord
     def cc(self, in_c):
@@ -566,6 +578,16 @@ class GeomUI:
                         self.sub_button_range = []
                         self.sub_button_draw_fun = []
                     
+                    
+                    
+                    '''
+                    --- Test Choose Code ---
+                    '''
+                    if mouse_in in (1, 2, 3):
+                        self.geom_chosen = [0 for _ in self.geom_chosen]
+                    
+                    
+                    
                     self.draw_init()
                     
                 if mouse_in >= 10 and mouse_in < 20:
@@ -601,7 +623,6 @@ class GeomUI:
                 --- Test Choose Code ---
                 '''
                 if 100 <= mouse_in < 1000 and self.draw_choose == 0:
-                    self.geom_chosen = [0 for _ in self.geom_chosen]
                     self.geom_chosen[mouse_in - 100] = 1
                     self.draw_init()
                 
