@@ -420,7 +420,7 @@ class GeomUI:
             
             if mouse_in == -1:
                 
-                # Picking Geometric Figures
+                # Picking Geometric Figures but depend on the draw_choose mode
                 if self.draw_choose in (1, 2, 3):
                     self.choose_fig2(mouse)
                     if len(self.geom_picked_list) == 0:
@@ -497,6 +497,15 @@ class GeomUI:
                     eventlist.append("K_CTRL")
                 if (event.type == pygame.KEYDOWN) and ((event.key == pygame.K_LALT) or (event.key == pygame.K_RALT)):
                     eventlist.append("K_ALT")
+                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_UP):
+                    eventlist.append("K_UP")
+                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_DOWN):
+                    eventlist.append("K_DOWN")
+                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_LEFT):
+                    eventlist.append("K_LEFT")
+                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_RIGHT):
+                    eventlist.append("K_RIGHT")
+                    
             
             if ("K_ESCAPE" in eventlist) or ("QUIT" in eventlist):
                 # Quit UI
@@ -568,6 +577,23 @@ class GeomUI:
             if ("K_ALT" in eventlist) and ("K_ALT" not in last_eventlist):
                 self.yn_button_pressed[1] = -self.yn_button_pressed[1]
                 self.draw_init()
+            if ("K_RIGHT" in eventlist) and ("K_RIGHT" not in last_eventlist):
+                RATIO = 1/7
+                self.cx -= DRAW_WIDTH * RATIO
+                self.draw_init()
+            if ("K_LEFT" in eventlist) and ("K_LEFT" not in last_eventlist):
+                RATIO = 1/7
+                self.cx += DRAW_WIDTH * RATIO
+                self.draw_init()
+            if ("K_UP" in eventlist) and ("K_UP" not in last_eventlist):
+                RATIO = 1/7
+                self.cy += DRAW_HEIGHT * RATIO
+                self.draw_init()
+            if ("K_DOWN" in eventlist) and ("K_DOWN" not in last_eventlist):
+                RATIO = 1/7
+                self.cy -= DRAW_HEIGHT * RATIO
+                self.draw_init()
+                
             
             if ("KEYDOWN" in eventlist) and ("KEYDOWN" not in last_eventlist) and (self.yn_button_pressed[0] == -1):
                 
