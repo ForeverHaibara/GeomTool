@@ -1,4 +1,4 @@
-import pygame, tkinter, math
+import pygame, tkinter
 import GeomTool
 import Explainer
 
