@@ -1162,6 +1162,7 @@ class GeomUI:
             pygame.display.update()
         
 if __name__ == "__main__":
+    """
     c1 = GeomTool.Geom_object("c1", "Circle", None, None)
     c1.getc((0,0,1))
     c2 = GeomTool.Geom_object("c2", "Circle", None, None)
@@ -1196,6 +1197,21 @@ if __name__ == "__main__":
     p4.getc((0.6,0.8))
 
     geom_list = [c1, c2, c3, c4, l1, l2, l3, l4, l5, l6, l7, l8, p1, p2, p3, p4]
+
+    """
+    p1 = GeomTool.free_pt.apply("p1",[])
+    p2 = GeomTool.free_pt.apply("p2",[])
+    p3 = GeomTool.mid_pt.apply("p3", [p1, p2])
+    l1 = GeomTool.perp_bis.apply("l1", [p1, p2])
+    l2 = GeomTool.para_line2.apply("l2", [p1, p2, p3])
+    l = GeomTool.line.apply("l", [p1, p3])
+    p4 = GeomTool.perp_foot.apply("p4", [p1, l1])
+    l2.calcc()
+    l1.calcc()
+    p4.calcc()
+    l.calcc()
+    print(GeomTool.line_errorinfo("", [p3, p4]))
+    geom_list = [p1,p2,p3,l1,l2,l,p4]
     test = GeomUI(geom_list)
     test.run()
 
