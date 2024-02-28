@@ -135,7 +135,7 @@ class GeomUI:
         self.sub_button_draw_fun = []
         self.yn_button_range = [(30, 450), (30, 500), (30, 550)]
         self.yn_button_draw_fun = [self.draw_cmd_button, self.draw_tag_button, self.draw_fullscreen_button]
-        self.yn_button_pressed = [-1, 1, -1]
+        self.yn_button_pressed = [-1, -1, -1]
         self.draw_choose = 0
         self.sub_draw_choose = -1
         
