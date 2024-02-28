@@ -42,6 +42,21 @@ class Geom_object:
         for parent_item in in_item:
             parent_item.affect_item += [ self ]
         print("init_run", self.name)
+        
+        
+        """--------------------------------------
+        The Following functions are in test!!
+        --------------------------------------"""
+        self.visible = True
+        self.movable = (self.type == "Point")
+    def move(self, in_c):
+        self.hasc = True
+        self.c = in_c
+        """--------------------------------------
+        Test Part End
+        --------------------------------------"""
+        
+        
     def getc(self, in_tuple):
         self.c = in_tuple # The coordinate or the equation coefficients of the object
         self.hasc = True
