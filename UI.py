@@ -23,7 +23,7 @@ in CMD mode KEY_SHIFT + KEY_BACKSPACE: Clearline
 
 ORIGINAL_SCREEN_WIDTH = 1400
 ORIGINAL_SCREEN_HEIGHT = 800
-ORIGINAL_DRAW_WIDTH = 800
+# ORIGINAL_DRAW_WIDTH = 900
 ORIGINAL_DRAW_HEIGHT = 800
 
 
@@ -110,6 +110,9 @@ def fig_intersection(fig1, fig2):
 class GeomUI:
     def __init__(self, in_geom_list):
         
+        ''' TEST '''
+        # self.drawcount = 0
+        
         root = tkinter.Tk()
         self.FULLWIDTH = root.winfo_screenwidth()
         self.FULLHEIGHT = root.winfo_screenheight()
@@ -119,18 +122,18 @@ class GeomUI:
         
         self.SCREEN_WIDTH = ORIGINAL_SCREEN_WIDTH
         self.SCREEN_HEIGHT = ORIGINAL_SCREEN_HEIGHT
-        self.DRAW_WIDTH = ORIGINAL_DRAW_WIDTH
+        self.DRAW_WIDTH = int(self.SCREEN_WIDTH * 9 / 14)
         self.DRAW_HEIGHT = ORIGINAL_DRAW_HEIGHT
         
         # self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), pygame.FULLSCREEN)
         self.screen = pygame.display.set_mode((ORIGINAL_SCREEN_WIDTH, ORIGINAL_SCREEN_HEIGHT))
         pygame.display.set_caption('GeomUI')
         
-        self.button_range = [(30, 100), (30, 150), (30, 200), (30, 250)]
-        self.button_draw_fun = [self.draw_mouse_button, self.draw_point_button, self.draw_line_button, self.draw_circle_button]
+        self.button_range = [(30, 100), (30, 150), (30, 200), (30, 250), (30, 300)]
+        self.button_draw_fun = [self.draw_mouse_button, self.draw_point_button, self.draw_line_button, self.draw_circle_button, self.draw_meas_button]
         self.sub_button_range = []
         self.sub_button_draw_fun = []
-        self.yn_button_range = [(30, 400), (30, 450), (30, 500)]
+        self.yn_button_range = [(30, 450), (30, 500), (30, 550)]
         self.yn_button_draw_fun = [self.draw_cmd_button, self.draw_tag_button, self.draw_fullscreen_button]
         self.yn_button_pressed = [-1, 1, -1]
         self.draw_choose = 0
@@ -143,6 +146,9 @@ class GeomUI:
         self.geom_list = in_geom_list # All geom objects
         self.geom_chosen = [] # Chosen geom objects 0, >0
         self.geom_picked_list = []
+        
+        self.moving_background = False
+        self.moving_point = False
         
         self.cmdlines = ["GeomToolKernel Version 1.0", "All rights reserved to Euclid", ""]
         self.cmdline_from = [0, 0, 1]
@@ -211,7 +217,7 @@ class GeomUI:
                     ordernum = 3
                     width = 4
                     drawtool = self.draw_point
-                    if self.yn_button_pressed[1] == 1:
+                    if self.yn_button_pressed[1] == 1 and (not self.moving_background) and (not self.moving_point):
                         self.screen.blit(pygame.font.SysFont('TimesNewRoman', 20, bold=True).render(self.geom_list[fig_num].name , True , TAG_COLOR), self.cc(self.geom_list[fig_num].c))
                 if (fig_num not in self.geom_chosen) and (fig_num not in self.geom_picked_list):
                     ordernum += 0.1
@@ -233,6 +239,10 @@ class GeomUI:
     def draw_init(self):
         # Draw geometric objects and buttons
         
+        '''  TEST  '''
+        # self.drawcount += 1
+        # print("draw" + str(self.drawcount))
+        
         self.screen.fill(BACKGROUND_COLOR)
         
         self.draw_fig()
@@ -247,7 +257,7 @@ class GeomUI:
             self.yn_button_draw_fun[button_num](self.yn_button_range[button_num][0], self.yn_button_range[button_num][1], self.yn_button_pressed[button_num])
     
         # Draw command area
-        if self.yn_button_pressed[0] == 1:
+        if self.yn_button_pressed[0] == 1 and (not self.moving_background) and (not self.moving_point):
             pygame.draw.rect(self.screen, BACKGROUND_COLOR, pygame.Rect(2 + self.DRAW_WIDTH, 2, self.SCREEN_WIDTH - self.DRAW_WIDTH - 5, self.DRAW_HEIGHT - 5))
             pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [2 + self.DRAW_WIDTH, 2, self.SCREEN_WIDTH - self.DRAW_WIDTH - 5, self.DRAW_HEIGHT - 5], 1)
             textlist = []
@@ -298,7 +308,8 @@ class GeomUI:
             pygame.draw.rect(self.screen, BUTTON_COLOR_LIGHT, pygame.Rect(width - 20, height - 20, 40, 40))
         pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [width - 20, height - 20, 40, 40], 1)
         pygame.draw.circle(self.screen, BUTTON_COLOR_DARK, center=(width, height-8), radius=3, width=2)
-        self.screen.blit(pygame.font.SysFont('Corbel', 18, bold=True).render("pt" , True , BUTTON_COLOR_DARK), (width-8, height))
+        if (not self.moving_background) and (not self.moving_point):
+            self.screen.blit(pygame.font.SysFont('Corbel', 18, bold=True).render("pt" , True , BUTTON_COLOR_DARK), (width-8, height))
         
     def draw_line_button(self, width, height, pressed):
         # pressed = -1, 0, 1
@@ -314,7 +325,8 @@ class GeomUI:
         pygame.draw.line(self.screen, BUTTON_COLOR_DARK, (width+10, height-9), (width+14, height-9), width=2)
         pygame.draw.circle(self.screen, BUTTON_COLOR_DARK, center=(width-8, height-8), radius=3, width=2)
         pygame.draw.circle(self.screen, BUTTON_COLOR_DARK, center=(width+8, height-8), radius=3, width=2)
-        self.screen.blit(pygame.font.SysFont('Corbel', 18, bold=True).render("line" , True , BUTTON_COLOR_DARK), (width-12, height))
+        if (not self.moving_background) and (not self.moving_point):
+            self.screen.blit(pygame.font.SysFont('Corbel', 18, bold=True).render("line" , True , BUTTON_COLOR_DARK), (width-12, height))
         
     def draw_circle_button(self, width, height, pressed):
         # pressed = -1, 0, 1
@@ -327,7 +339,25 @@ class GeomUI:
         pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [width - 20, height - 20, 40, 40], 1)
         pygame.draw.circle(self.screen, BUTTON_COLOR_DARK, center=(width, height-8), radius=3, width=2)
         pygame.draw.circle(self.screen, BUTTON_COLOR_DARK, center=(width, height-8), radius=9, width=2)
-        self.screen.blit(pygame.font.SysFont('Corbel', 18, bold=True).render("circ" , True , BUTTON_COLOR_DARK), (width-12, height))
+        if (not self.moving_background) and (not self.moving_point):
+            self.screen.blit(pygame.font.SysFont('Corbel', 18, bold=True).render("circ" , True , BUTTON_COLOR_DARK), (width-12, height))
+        
+    def draw_meas_button(self, width, height, pressed):
+        # pressed = -1, 0, 1
+        if pressed == 1:
+            pygame.draw.rect(self.screen, BUTTON_COLOR_MID, pygame.Rect(width - 20, height - 20, 40, 40))
+        if pressed == -1:
+            pygame.draw.rect(self.screen, BACKGROUND_COLOR, pygame.Rect(width - 20, height - 20, 40, 40))
+        if pressed == 0:
+            pygame.draw.rect(self.screen, BUTTON_COLOR_LIGHT, pygame.Rect(width - 20, height - 20, 40, 40))
+        pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [width - 20, height - 20, 40, 40], 1)
+        pygame.draw.line(self.screen, BUTTON_COLOR_DARK, (width-6, height-9), (width-12, height-9), width=2)
+        pygame.draw.line(self.screen, BUTTON_COLOR_DARK, (width-12, height-12), (width-12, height-6), width=2)
+        pygame.draw.line(self.screen, BUTTON_COLOR_DARK, (width+4, height-9), (width+10, height-9), width=2)
+        pygame.draw.line(self.screen, BUTTON_COLOR_DARK, (width+10, height-12), (width+10, height-6), width=2)
+        self.screen.blit(pygame.font.SysFont('Corbel', 15, bold=True).render("?" , True , BUTTON_COLOR_DARK), (width-3, height-15))
+        if (not self.moving_background) and (not self.moving_point):
+            self.screen.blit(pygame.font.SysFont('Corbel', 15, bold=True).render("meas" , True , BUTTON_COLOR_DARK), (width-17, height+1))
         
     # Functions to draw sub_buttons
     
@@ -345,7 +375,8 @@ class GeomUI:
         pygame.draw.line(self.screen, BUTTON_COLOR_DARK, (width-12, height-12), (width-12, height-6), width=2)
         pygame.draw.line(self.screen, BUTTON_COLOR_DARK, (width+2, height-9), (width+10, height-9), width=2)
         pygame.draw.line(self.screen, BUTTON_COLOR_DARK, (width+10, height-12), (width+10, height-6), width=2)
-        self.screen.blit(pygame.font.SysFont('Corbel', 15, bold=True).render("mdpt" , True , BUTTON_COLOR_DARK), (width-17, height+1))
+        if (not self.moving_background) and (not self.moving_point):
+            self.screen.blit(pygame.font.SysFont('Corbel', 15, bold=True).render("mdpt" , True , BUTTON_COLOR_DARK), (width-17, height+1))
         
     def draw_para_button(self, width, height, pressed):
         # pressed = -1, 0, 1
@@ -358,7 +389,8 @@ class GeomUI:
         pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [width - 20, height - 20, 40, 40], 1)
         pygame.draw.line(self.screen, BUTTON_COLOR_DARK, (width-10, height-4), (width, height-14), width=3)
         pygame.draw.line(self.screen, BUTTON_COLOR_DARK, (width, height-4), (width+10, height-14), width=3)
-        self.screen.blit(pygame.font.SysFont('Corbel', 17, bold=True).render("para" , True , BUTTON_COLOR_DARK), (width-16, height+1))
+        if (not self.moving_background) and (not self.moving_point):
+            self.screen.blit(pygame.font.SysFont('Corbel', 17, bold=True).render("para" , True , BUTTON_COLOR_DARK), (width-16, height+1))
         
     def draw_perp_button(self, width, height, pressed):
         # pressed = -1, 0, 1
@@ -371,7 +403,8 @@ class GeomUI:
         pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [width - 20, height - 20, 40, 40], 1)
         pygame.draw.line(self.screen, BUTTON_COLOR_DARK, (width, height-4), (width, height-14), width=2)
         pygame.draw.line(self.screen, BUTTON_COLOR_DARK, (width-12, height-4), (width+12, height-4), width=2)
-        self.screen.blit(pygame.font.SysFont('Corbel', 17, bold=True).render("perp" , True , BUTTON_COLOR_DARK), (width-16, height+1))
+        if (not self.moving_background) and (not self.moving_point):
+            self.screen.blit(pygame.font.SysFont('Corbel', 17, bold=True).render("perp" , True , BUTTON_COLOR_DARK), (width-16, height+1))
         
     def draw_pbis_button(self, width, height, pressed):
         # pressed = -1, 0, 1
@@ -385,7 +418,8 @@ class GeomUI:
         pygame.draw.line(self.screen, BUTTON_COLOR_DARK, (width-2, height-13), (width-2, height-3), width=2)
         pygame.draw.circle(self.screen, BUTTON_COLOR_DARK, center=(width-10, height-8), radius=3, width=2)
         pygame.draw.circle(self.screen, BUTTON_COLOR_DARK, center=(width+8, height-8), radius=3, width=2)
-        self.screen.blit(pygame.font.SysFont('Corbel', 18, bold=True).render("pbis" , True , BUTTON_COLOR_DARK), (width-15, height))
+        if (not self.moving_background) and (not self.moving_point):
+            self.screen.blit(pygame.font.SysFont('Corbel', 18, bold=True).render("pbis" , True , BUTTON_COLOR_DARK), (width-15, height))
         
     def draw_abis_button(self, width, height, pressed):
         # pressed = -1, 0, 1
@@ -399,7 +433,8 @@ class GeomUI:
         pygame.draw.line(self.screen, BUTTON_COLOR_DARK, (width-10, height-5), (width+10, height-5), width=2)
         pygame.draw.line(self.screen, BUTTON_COLOR_DARK, (width-10, height-5), (width+10, height-10), width=2)
         pygame.draw.line(self.screen, BUTTON_COLOR_DARK, (width-10, height-5), (width+10, height-16), width=2)
-        self.screen.blit(pygame.font.SysFont('Corbel', 18, bold=True).render("abis" , True , BUTTON_COLOR_DARK), (width-15, height))
+        if (not self.moving_background) and (not self.moving_point):
+            self.screen.blit(pygame.font.SysFont('Corbel', 18, bold=True).render("abis" , True , BUTTON_COLOR_DARK), (width-15, height))
     
     # Functions to draw extra buttons
     
@@ -413,7 +448,8 @@ class GeomUI:
             pygame.draw.rect(self.screen, BUTTON_COLOR_LIGHT, pygame.Rect(width - 20, height - 20, 40, 40))
         pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [width - 20, height - 20, 40, 40], 1)
         self.screen.blit(pygame.font.SysFont('Corbel', 15, bold=True).render(">>>" , True , BUTTON_COLOR_DARK), (width-12, height-14))
-        self.screen.blit(pygame.font.SysFont('Corbel', 18, bold=True).render("cmd" , True , BUTTON_COLOR_DARK), (width-17, height))
+        if (not self.moving_background) and (not self.moving_point):
+            self.screen.blit(pygame.font.SysFont('Corbel', 18, bold=True).render("cmd" , True , BUTTON_COLOR_DARK), (width-17, height))
         
     def draw_tag_button(self, width, height, pressed):
         # pressed = -1, 0, 1
@@ -427,7 +463,8 @@ class GeomUI:
         pygame.draw.circle(self.screen, BUTTON_COLOR_DARK, center=(width-8, height-8), radius=3, width=2)
         pts = [(width-14, height-14), (width-14, height-2), (width+6, height-2), (width+12, height-8), (width+6, height-14)]
         pygame.draw.lines(self.screen, BUTTON_COLOR_DARK, closed=True, points=pts, width=2)
-        self.screen.blit(pygame.font.SysFont('Corbel', 18, bold=True).render("tag" , True , BUTTON_COLOR_DARK), (width-13, height))
+        if (not self.moving_background) and (not self.moving_point):
+            self.screen.blit(pygame.font.SysFont('Corbel', 18, bold=True).render("tag" , True , BUTTON_COLOR_DARK), (width-13, height))
         
     def draw_fullscreen_button(self, width, height, pressed):
         # pressed = -1, 0, 1
@@ -844,6 +881,7 @@ class GeomUI:
         Kernel Run Here
         '''
         
+        self.cmdlines[-1] += ' '
         self.cmdlines.append("")
         self.cmdline_from.append(1)
         self.cmd_clearline(-1)
@@ -852,8 +890,6 @@ class GeomUI:
         self.draw_init()
         last_mouse_in = -1
         last_eventlist = []
-        moving_background = False
-        moving_point = False
         self.shifted = False
         cvalue = None
         
@@ -906,7 +942,9 @@ class GeomUI:
                 
                 # Update Geometric Figures
                 
-                if mouse_in == -1 or mouse_in >= 100:
+                if mouse_in == -1 and last_mouse_in >= 100:
+                    self.draw_init()
+                if mouse_in >= 100:
                     self.draw_init()
                 
                 # Update buttons
@@ -987,12 +1025,14 @@ class GeomUI:
                     if mouse_in - 20 == 2 and self.yn_button_pressed[2] == 1:
                         self.SCREEN_WIDTH = self.FULLWIDTH
                         self.SCREEN_HEIGHT = self.FULLHEIGHT
+                        self.DRAW_WIDTH = int(self.SCREEN_WIDTH * 9 / 14)
                         self.CMD_SHOW_LINE = int((self.DRAW_HEIGHT - 60)/CMD_LINE_HEIGHT)
                         self.CMD_LINE_CHAR = int((self.SCREEN_WIDTH - self.DRAW_WIDTH - 30) / 12)
                         pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), pygame.FULLSCREEN)
                     if mouse_in - 20 == 2 and self.yn_button_pressed[2] == -1:
                         self.SCREEN_WIDTH = ORIGINAL_SCREEN_WIDTH
                         self.SCREEN_HEIGHT = ORIGINAL_SCREEN_HEIGHT
+                        self.DRAW_WIDTH = int(self.SCREEN_WIDTH * 9 / 14)
                         self.CMD_SHOW_LINE = int((self.DRAW_HEIGHT - 60)/CMD_LINE_HEIGHT)
                         self.CMD_LINE_CHAR = int((self.SCREEN_WIDTH - self.DRAW_WIDTH - 30) / 12)
                         pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
@@ -1003,17 +1043,17 @@ class GeomUI:
                     cvalue = None
                     if mouse_in == -1:
                         if "LEFTMOUSEDOWN" in eventlist:
-                            moving_background = True
-                            moving_background_start = mouse
-                            moving_background_start_cx = self.cx
-                            moving_background_start_cy = self.cy
+                            self.moving_background = True
+                            self.moving_background_start = mouse
+                            self.moving_background_start_cx = self.cx
+                            self.moving_background_start_cy = self.cy
                         if "RIGHTMOUSEDOWN" in eventlist:
                             self.cmdlines[-1] = dellastword(self.cmdlines[-1])
                             self.load_chosen_and_mode_from_cmdline(-1)
                     if 100 <= mouse_in < 1000:
                         if self.geom_list[mouse_in - 100].movable:
-                            moving_point = True
-                            moving_point_start = mouse
+                            self.moving_point = True
+                            self.moving_point_start = mouse
                             moving_num = mouse_in - 100
                         else:
                             if "LEFTMOUSEDOWN" in eventlist:
@@ -1063,28 +1103,32 @@ class GeomUI:
                     self.screen.blit(pygame.font.SysFont('Consolas', 15, bold=False).render(mouse_coordxprt , True , TEXT_COLOR), (5, 5))
                     self.screen.blit(pygame.font.SysFont('Consolas', 15, bold=False).render(mouse_coordyprt , True , TEXT_COLOR), (5, 25))
                     self.screen.blit(pygame.font.SysFont('Consolas', 15, bold=False).render(", ".join([self.geom_list[_].name for _ in self.geom_picked_list]) , True , TEXT_COLOR), (5, 45))
-                if moving_background:
-                    self.cx = mouse[0] - moving_background_start[0] + moving_background_start_cx
-                    self.cy = mouse[1] - moving_background_start[1] + moving_background_start_cy
+                if self.moving_background:
+                    self.cx = mouse[0] - self.moving_background_start[0] + self.moving_background_start_cx
+                    self.cy = mouse[1] - self.moving_background_start[1] + self.moving_background_start_cy
                     self.draw_init()
-                if moving_point:
+                if self.moving_point:
                     self.geom_list[moving_num].move(self.cc2(mouse))
                     self.draw_init()
             
             if ("MOUSEBUTTONUP" in eventlist) and ("MOUSEBUTTONUP" not in last_eventlist):
                 # The moment when the mouse is unclicked
-                if moving_background:
-                    moving_background = False
-                    if (mouse[0] - moving_background_start[0])**2 + (mouse[1] - moving_background_start[1])**2 < QUICK_CHOOSE_DIST**2:
+                if self.moving_background:
+                    self.moving_background = False
+                    if (mouse[0] - self.moving_background_start[0])**2 + (mouse[1] - self.moving_background_start[1])**2 < QUICK_CHOOSE_DIST**2:
                         self.cmd_clearline(-1)
-                if moving_point:
-                    moving_point = False
-                    if (mouse[0] - moving_point_start[0])**2 + (mouse[1] - moving_point_start[1])**2 < QUICK_CHOOSE_DIST**2:
+                    else:
+                        self.draw_init()
+                if self.moving_point:
+                    self.moving_point = False
+                    if (mouse[0] - self.moving_point_start[0])**2 + (mouse[1] - self.moving_point_start[1])**2 < QUICK_CHOOSE_DIST**2:
                         if "LEFTMOUSEUP" in eventlist:
                             self.cmdlines[-1] += self.geom_list[mouse_in - 100].name + ' '
                         elif "RIGHTMOUSEUP" in eventlist:
                             self.cmdlines[-1] = self.cmdlines[-1][::-1].replace((self.geom_list[mouse_in - 100].name + ' ')[::-1], "", 1)[::-1]
                         self.load_chosen_and_mode_from_cmdline(-1)
+                    else:
+                        self.draw_init()
             
             if ("K_CTRL" in eventlist) and ("K_CTRL" not in last_eventlist):
                 self.yn_button_pressed[0] = -self.yn_button_pressed[0]
@@ -1097,12 +1141,14 @@ class GeomUI:
                 if self.yn_button_pressed[2] == 1:
                     self.SCREEN_WIDTH = self.FULLWIDTH
                     self.SCREEN_HEIGHT = self.FULLHEIGHT
+                    self.DRAW_WIDTH = int(self.SCREEN_WIDTH * 9 / 14)
                     self.CMD_SHOW_LINE = int((self.DRAW_HEIGHT - 60)/CMD_LINE_HEIGHT)
                     self.CMD_LINE_CHAR = int((self.SCREEN_WIDTH - self.DRAW_WIDTH - 30) / 12)
                     pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), pygame.FULLSCREEN)
                 if self.yn_button_pressed[2] == -1:
                     self.SCREEN_WIDTH = ORIGINAL_SCREEN_WIDTH
                     self.SCREEN_HEIGHT = ORIGINAL_SCREEN_HEIGHT
+                    self.DRAW_WIDTH = int(self.SCREEN_WIDTH * 9 / 14)
                     self.CMD_SHOW_LINE = int((self.DRAW_HEIGHT - 60)/CMD_LINE_HEIGHT)
                     self.CMD_LINE_CHAR = int((self.SCREEN_WIDTH - self.DRAW_WIDTH - 30) / 12)
                     pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
@@ -1217,6 +1263,11 @@ if __name__ == "__main__":
 
     """
     p1 = GeomTool.free_pt.apply("p1",[])
+    exlst = []
+    for _ in range(80):
+        exlst.append(GeomTool.free_pt.apply("p" + str(_ + 10),[]))
+    for _ in exlst:
+        _.calcc()
     p2 = GeomTool.free_pt.apply("p2",[])
     p3 = GeomTool.mid_pt.apply("p3", [p1, p2])
     l1 = GeomTool.perp_bis.apply("l1", [p1, p2])
@@ -1227,7 +1278,7 @@ if __name__ == "__main__":
     l1.calcc()
     p4.calcc()
     l.calcc()
-    geom_list = [p1,p2,p3,l1,l2,l,p4]
+    geom_list = [p1,p2,p3,l1,l2,l,p4] + exlst
     test = GeomUI(geom_list)
     test.run()
 
