@@ -191,36 +191,38 @@ class GeomUI:
     
     def draw_fig(self):
         
+        draw_temp_list = []
         for fig_num in range(len(self.geom_list)):
-            if (fig_num in self.geom_show) and self.geom_list[fig_num].hasc and self.geom_list[fig_num].type == 'Line':
+            if (fig_num in self.geom_show) and self.geom_list[fig_num].hasc:
+                if self.geom_list[fig_num].type == 'Line':
+                    ordernum = 1
+                    width = 2
+                    drawtool = self.draw_line
+                if self.geom_list[fig_num].type == 'Circle':
+                    ordernum = 2
+                    width = 2
+                    drawtool = self.draw_circle
+                if self.geom_list[fig_num].type == 'Point':
+                    ordernum = 3
+                    width = 4
+                    drawtool = self.draw_point
                 if (fig_num not in self.geom_chosen) and (fig_num not in self.geom_picked_list):
-                    self.draw_line(self.geom_list[fig_num].c, FIGURE_COLOR, 2)
+                    ordernum += 0.1
+                    color = FIGURE_COLOR
                 if (fig_num in self.geom_chosen) and (fig_num not in self.geom_picked_list):
-                    self.draw_line(self.geom_list[fig_num].c, CHOSEN_FIGURE_COLOR, 3)
+                    ordernum += 0.2
+                    color = CHOSEN_FIGURE_COLOR
+                    width += 1
                 if (fig_num in self.geom_picked_list):
-                    self.draw_line(self.geom_list[fig_num].c, PICKED_FIGURE_COLOR, 3)
-        
-        for fig_num in range(len(self.geom_list)):
-            if (fig_num in self.geom_show) and self.geom_list[fig_num].hasc and self.geom_list[fig_num].type == 'Circle':
-                if (fig_num not in self.geom_chosen) and (fig_num not in self.geom_picked_list):
-                    self.draw_circle(self.geom_list[fig_num].c, FIGURE_COLOR, 2)
-                if (fig_num in self.geom_chosen) and (fig_num not in self.geom_picked_list):
-                    self.draw_circle(self.geom_list[fig_num].c, CHOSEN_FIGURE_COLOR, 3)
-                if (fig_num in self.geom_picked_list):
-                    self.draw_circle(self.geom_list[fig_num].c, PICKED_FIGURE_COLOR, 3)
-                    
-        for fig_num in range(len(self.geom_list)):
-            if (fig_num in self.geom_show) and self.geom_list[fig_num].hasc and self.geom_list[fig_num].type == 'Point':
-                if (fig_num not in self.geom_chosen) and (fig_num not in self.geom_picked_list):
-                    self.draw_point(self.geom_list[fig_num].c, FIGURE_COLOR, 4)
-                if (fig_num in self.geom_chosen) and (fig_num not in self.geom_picked_list):
-                    self.draw_point(self.geom_list[fig_num].c, CHOSEN_FIGURE_COLOR, 5)
-                if (fig_num in self.geom_picked_list):
-                    self.draw_point(self.geom_list[fig_num].c, PICKED_FIGURE_COLOR, 5)
-                if self.yn_button_pressed[1] == 1:
-                    self.screen.blit(pygame.font.SysFont('TimesNewRoman', 20, bold=True).render(self.geom_list[fig_num].name , True , TAG_COLOR), self.cc(self.geom_list[fig_num].c))
+                    ordernum += 0.3
+                    color = PICKED_FIGURE_COLOR
+                    width += 1
+                draw_temp_list.append((ordernum, drawtool, self.geom_list[fig_num].c, color, width))
+        draw_temp_list.sort(key = lambda x: x[0])
+        for stuff in draw_temp_list:
+            stuff[1](stuff[2], stuff[3], stuff[4])
             
-    
+
     def draw_init(self):
         # Draw geometric objects and buttons
         
