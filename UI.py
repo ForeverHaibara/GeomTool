@@ -66,6 +66,7 @@ def numberform(realnum):
     else:
         return "{:.3f}".format(realnum)
 
+# A Tool used to calculate fig_intersection
 def fig_intersection(fig1, fig2):
     if fig1.type == "Line":
         if fig2.type == "Line":
@@ -206,6 +207,8 @@ class GeomUI:
                     ordernum = 3
                     width = 4
                     drawtool = self.draw_point
+                    if self.yn_button_pressed[1] == 1:
+                        self.screen.blit(pygame.font.SysFont('TimesNewRoman', 20, bold=True).render(self.geom_list[fig_num].name , True , TAG_COLOR), self.cc(self.geom_list[fig_num].c))
                 if (fig_num not in self.geom_chosen) and (fig_num not in self.geom_picked_list):
                     ordernum += 0.1
                     color = FIGURE_COLOR
