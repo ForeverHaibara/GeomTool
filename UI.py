@@ -21,9 +21,9 @@ in CMD mode KEY_SHIFT + KEY_BACKSPACE: Clearline
 
 """
 
-ORIGINAL_SCREEN_WIDTH = 1600
+ORIGINAL_SCREEN_WIDTH = 1400
 ORIGINAL_SCREEN_HEIGHT = 800
-ORIGINAL_DRAW_WIDTH = 1100
+ORIGINAL_DRAW_WIDTH = 800
 ORIGINAL_DRAW_HEIGHT = 800
 
 
@@ -1019,7 +1019,7 @@ class GeomUI:
                     self.cmdlines[-1] += self.geom_list[fig1 - 100].name + ' '
                     self.cmdlines[-1] += self.geom_list[fig2 - 100].name + ' '
                     if cvalue != None:
-                        self.cmdlines[-1] += str(cvalue[0]) + ' ' + str(cvalue[1]) + ' '
+                        self.cmdlines[-1] += numberform(cvalue[0]) + ' ' + numberform(cvalue[1]) + ' '
                     self.load_chosen_and_mode_from_cmdline(-1)
                 
             
