@@ -1,0 +1,56 @@
+# Memo
+
+## Need a class that corresponds to button (Action Sequence)
+A method is an atomic action
+We need actions such as destroy all tree and recreate an empty root node
+add a new free pt (depends on the empty empty root node)
+
+GeomObj is good enough to serve as DPNodes, only need to add a from_list (already item[1:]), and a to_list(not implemented), also add a list of all nodes in Graph. A obj has another tag, draw or not draw.
+
+DPGraph need to preserve a root empty node and a list of all nodes. clear all/init action discard all nodes and creat a unique empty node.
+
+method that returns
+free, hasfree, all nodes
+
+FullAction = Create GeomObj + Create DD
+
+解析construction rules 递归的
+
+built_in_rules: free_pt , pt_on_line, pt_on_circle,  midpt, intersect_ll, interect_lc1, intersect_lc2, intersect_cc1, intersect_cc2, para_line, perp_line, angbis
+
+forward_intersection (l : Line) (c : Circle) : Point
+intersect l c
+-- 定义内置
+on_line p l, on_circle p c
+
+angbis_l "AngBis" l : Line -- name, button, output name, output type 
+l1 l2 : Line Line -- input name, input type
+npara l1 l2 -- condition (must be a built_in fun) -- need to change
+a = intersect_ll l1 l2, l = angbis l1 l2  -- l 的定义内置 always check if a same definition point already exists, do not define repeatedly 
+eqangle l1 l l l2, on_line a l -- (on_line a l1, on_line a l2, on_line a l) are included in definition of intersect_ll
+
+angbis_p "AngBis" l : Line
+A B C : Point
+ncoll A B C
+l1 = line A B, l2 = line B C, l = angbis_l l1 l2
+-- (on_line A l1, on_line B l1, on_line B l2, on_line C l2) these are included in def of line A B
+
+perp_bis "PerpBis" l : Line
+A B : Point
+ptne A B
+C = midpt A B, l = perp_line C A B
+
+
+p
+
+angbis (a : Point) (b : Point) (c : Point) : (l0 : Line) -- 输入输出的类型,依赖于谁
+ncoll a b c --前提条件
+o = circle a a c, l = on_line a b, d = forward_intersection l o, m = midpt d C, l0 = on_line a m --定义
+l : eqangle -- 满足的DD中的条件 
+
+角平分线 =  Point Point Point
+
+check 构造方式相同的点 不能允许存在??
+proof same Point
+check same Point
+
