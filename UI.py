@@ -66,6 +66,11 @@ def numberform(realnum):
     else:
         return "{:.3f}".format(realnum)
 
+def dellastword(instr):
+    instr = ' ' + instr
+    instr = ((instr[::-1])[instr[::-1].find(' ', 1):])[::-1]
+    return instr[1:]
+
 # A Tool used to calculate fig_intersection
 def fig_intersection(fig1, fig2):
     if fig1.type == "Line":
@@ -562,6 +567,16 @@ class GeomUI:
                 eventlist.append("MOUSEMOTION")
             if (event.type == pygame.MOUSEBUTTONUP):
                 eventlist.append("MOUSEBUTTONUP")
+            
+            if (event.type == pygame.MOUSEBUTTONDOWN) and (event.button == 1):
+                eventlist.append("LEFTMOUSEDOWN")
+            if (event.type == pygame.MOUSEBUTTONDOWN) and (event.button == 3):
+                eventlist.append("RIGHTMOUSEDOWN")
+            if (event.type == pygame.MOUSEBUTTONUP) and (event.button == 1):
+                eventlist.append("LEFTMOUSEUP")
+            if (event.type == pygame.MOUSEBUTTONUP) and (event.button == 3):
+                eventlist.append("RIGHTMOUSEUP")
+                
             if (event.type == pygame.KEYDOWN):
                 eventlist.append("KEYDOWN")
             if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_ESCAPE):
@@ -987,29 +1002,42 @@ class GeomUI:
                 if self.draw_choose == 0:
                     cvalue = None
                     if mouse_in == -1:
-                        moving_background = True
-                        moving_background_start = mouse
-                        moving_background_start_cx = self.cx
-                        moving_background_start_cy = self.cy
+                        if "LEFTMOUSEDOWN" in eventlist:
+                            moving_background = True
+                            moving_background_start = mouse
+                            moving_background_start_cx = self.cx
+                            moving_background_start_cy = self.cy
+                        if "RIGHTMOUSEDOWN" in eventlist:
+                            self.cmdlines[-1] = dellastword(self.cmdlines[-1])
+                            self.load_chosen_and_mode_from_cmdline(-1)
                     if 100 <= mouse_in < 1000:
                         if self.geom_list[mouse_in - 100].movable:
                             moving_point = True
                             moving_point_start = mouse
                             moving_num = mouse_in - 100
                         else:
-                            self.cmdlines[-1] += self.geom_list[mouse_in - 100].name + ' '
+                            if "LEFTMOUSEDOWN" in eventlist:
+                                self.cmdlines[-1] += self.geom_list[mouse_in - 100].name + ' '
+                            elif "RIGHTMOUSEDOWN" in eventlist:
+                                self.cmdlines[-1] = self.cmdlines[-1][::-1].replace((self.geom_list[mouse_in - 100].name + ' ')[::-1], "", 1)[::-1]
                             self.load_chosen_and_mode_from_cmdline(-1)  
                 
                 if self.draw_choose > 0:
+                    if mouse_in == -1:
+                        if "RIGHTMOUSEDOWN" in eventlist:
+                            self.cmdlines[-1] = dellastword(self.cmdlines[-1])
+                            self.load_chosen_and_mode_from_cmdline(-1)
                     if 100 <= mouse_in < 1000:
-                        self.cmdlines[-1] += self.geom_list[mouse_in - 100].name + ' '
-                        self.load_chosen_and_mode_from_cmdline(-1)                    
-                    if mouse_in > 1000:
+                        if "LEFTMOUSEDOWN" in eventlist:
+                            self.cmdlines[-1] += self.geom_list[mouse_in - 100].name + ' '
+                        elif "RIGHTMOUSEDOWN" in eventlist:
+                            self.cmdlines[-1] = self.cmdlines[-1][::-1].replace((self.geom_list[mouse_in - 100].name + ' ')[::-1], "", 1)[::-1]                
+                    if mouse_in > 1000 and "LEFTMOUSEDOWN" in eventlist:
                         fig1 = (mouse_in % 1000)
                         fig2 = round((mouse_in - fig1) / 1000)
                         self.cmdlines[-1] += self.geom_list[fig1 - 100].name + ' '
                         self.cmdlines[-1] += self.geom_list[fig2 - 100].name + ' '
-                    if "Pt" in expwait and cvalue != None:
+                    if "Pt" in expwait and cvalue != None and "LEFTMOUSEDOWN" in eventlist:
                         self.cmdlines[-1] += numberform(cvalue[0]) + ' ' + numberform(cvalue[1]) + ' '
                     self.load_chosen_and_mode_from_cmdline(-1)
                     cvalue = None
@@ -1052,7 +1080,10 @@ class GeomUI:
                 if moving_point:
                     moving_point = False
                     if (mouse[0] - moving_point_start[0])**2 + (mouse[1] - moving_point_start[1])**2 < QUICK_CHOOSE_DIST**2:
-                        self.cmdlines[-1] += self.geom_list[mouse_in - 100].name + ' '
+                        if "LEFTMOUSEUP" in eventlist:
+                            self.cmdlines[-1] += self.geom_list[mouse_in - 100].name + ' '
+                        elif "RIGHTMOUSEUP" in eventlist:
+                            self.cmdlines[-1] = self.cmdlines[-1][::-1].replace((self.geom_list[mouse_in - 100].name + ' ')[::-1], "", 1)[::-1]
                         self.load_chosen_and_mode_from_cmdline(-1)
             
             if ("K_CTRL" in eventlist) and ("K_CTRL" not in last_eventlist):
