@@ -74,17 +74,17 @@ class Geom_object:
 ERROR = 1e-13
 
 create_empty = Method ("empty", "Others", ()) 
-create_empty_fun = lambda in_name: lambda in_item : None
+create_empty_fun = lambda in_name, in_item : None
 create_empty.generate_check_triv(create_empty_fun)
 
 free_pt = Method("free_pt", "Point", ())
-free_pt_fun = lambda in_name: lambda in_item: (random.gauss(0, 1), random.gauss(0, 1))
+free_pt_fun = lambda in_name, in_item : (random.gauss(0, 1), random.gauss(0, 1))
 free_pt.generate_check_triv(free_pt_fun)
 
 line = Method("line", "Line", ("Point", "Point"))
-line_check = lambda in_name: lambda in_item: (abs(in_item[0].c[0] - in_item[1].c[0]) > ERROR) and (abs(in_item[0].c[1] - in_item[1].c[1]) > ERROR)
-line_errorinfo = lambda in_name: lambda in_item: "Point " + in_item[0].name + " and Point " + in_item[1].name + " coincide" if not(line_check(in_item)) else ""
-line_fun = lambda in_name: lambda in_item: (in_item[0].c[1] - in_item[1].c[1], in_item[1].c[0] - in_item[0].c[0], in_item[0].c[0] * in_item[1].c[1] - in_item[1].c[0] * in_item[0].c[1])
+line_check = lambda in_name, in_item : (abs(in_item[0].c[0] - in_item[1].c[0]) > ERROR) and (abs(in_item[0].c[1] - in_item[1].c[1]) > ERROR)
+line_errorinfo = lambda in_name, in_item: "Point " + in_item[0].name + " and Point " + in_item[1].name + " coincide" if not(line_check(in_item)) else ""
+line_fun = lambda in_name, in_item: (in_item[0].c[1] - in_item[1].c[1], in_item[1].c[0] - in_item[0].c[0], in_item[0].c[0] * in_item[1].c[1] - in_item[1].c[0] * in_item[0].c[1])
 line.generate(line_fun, line_check, line_errorinfo)
 
 on_line = Method("on_line", "Point", ("Line"))
@@ -98,7 +98,7 @@ def on_line_fun (in_name, in_item):
 on_line.generate_check_triv(on_line_fun)
 
 circ = Method("circ", "Circle", ("Point", "Point"))
-circ_fun = lambda in_name: lambda in_item: (in_item[0].c[0], in_item[0].c[1], ((in_item[0].c[0] - in_item[1].c[0]) * (in_item[0].c[0] - in_item[1].c[0]) + (in_item[0].c[1] - in_item[1].c[1]) * (in_item[0].c[1] - in_item[1].c[1]))**(1/2))
+circ_fun = lambda in_name, in_item : (in_item[0].c[0], in_item[0].c[1], ((in_item[0].c[0] - in_item[1].c[0]) * (in_item[0].c[0] - in_item[1].c[0]) + (in_item[0].c[1] - in_item[1].c[1]) * (in_item[0].c[1] - in_item[1].c[1]))**(1/2))
 circ.generate_check_triv(circ_fun)
 
 on_circ = Method("on_circ", "Point", ("Circle"))
@@ -108,16 +108,16 @@ def on_circ_fun (in_name, in_item):
 on_circ.generate_check_triv(on_circ_fun)
 
 mid_pt = Method("mid_pt", "Point", ("Point", "Point"))
-mid_pt_fun = lambda in_name: lambda in_item: ((in_item[0].c[0] + in_item[1].c[0]) / 2, (in_item[0].c[1] + in_item[1].c[1]) / 2)
+mid_pt_fun = lambda in_name, in_item: ((in_item[0].c[0] + in_item[1].c[0]) / 2, (in_item[0].c[1] + in_item[1].c[1]) / 2)
 mid_pt.generate_check_triv(mid_pt_fun)
 
 para_line = Method("para_line", "Line", ("Point", "Line"))
-para_line_fun = lambda in_name: lambda in_item: (in_item[1].c[0], in_item[1].c[1], -in_item[1].c[0] * in_item[0].c[0] - in_item[1].c[1] * in_item[0].c[1])
+para_line_fun = lambda in_name, in_item: (in_item[1].c[0], in_item[1].c[1], -in_item[1].c[0] * in_item[0].c[0] - in_item[1].c[1] * in_item[0].c[1])
 para_line.generate_check_triv(para_line_fun)
 
 para_line2 = Method("para_line2", "Line", ("Point", "Point", "Point"))
-para_line2_check = lambda in_name: lambda in_item: line_check(in_name, ["", in_item[1], in_item[2]])
-para_line2_errorinfo = lambda in_name: lambda in_item: line_errorinfo(in_name, ["", in_item[1], in_item[2]])
+para_line2_check = lambda in_name, in_item: line_check(in_name, ["", in_item[1], in_item[2]])
+para_line2_errorinfo = lambda in_name, in_item: line_errorinfo(in_name, ["", in_item[1], in_item[2]])
 def para_line2_fun(in_name, in_item):
     line1 = line.apply(in_name, ["", in_item[1], in_item[2]])
     line2 = para_line.apply(in_name, ["", in_item[0], line1])
@@ -126,15 +126,15 @@ def para_line2_fun(in_name, in_item):
 para_line2.generate(para_line2_fun, para_line2_check, para_line2_errorinfo)
 
 perp_line = Method("perp_line", "Line", ("Point", "Line"))
-perp_line_fun = lambda in_item: (in_item[1].c[1], -in_item[1].c[0], -in_item[1].c[1] * in_item[0].c[0] + in_item[1].c[0] * in_item[0].c[1])
+perp_line_fun = lambda in_name, in_item: (in_item[1].c[1], -in_item[1].c[0], -in_item[1].c[1] * in_item[0].c[0] + in_item[1].c[0] * in_item[0].c[1])
 perp_line.generate_check_triv(perp_line_fun)
 
 perp_line2 = Method("perp_line2", "Line", ("Point", "Point", "Point"))
-perp_line2_check = lambda in_item: line_check(["", in_item[1], in_item[2]])
-perp_line2_errorinfo = lambda in_item: line_errorinfo(["", in_item[1], in_item[2]])
-def perp_line2_fun(in_item):
-    line1 = line.apply(["", in_item[1], in_item[2]])
-    line2 = perp_line.apply(["", in_item[0], line1])
+perp_line2_check = lambda in_name, in_item: line_check(in_name, ["", in_item[1], in_item[2]])
+perp_line2_errorinfo = lambda in_name, in_item: line_errorinfo(in_name, ["", in_item[1], in_item[2]])
+def perp_line2_fun(in_name, in_item):
+    line1 = line.apply(in_name, ["", in_item[1], in_item[2]])
+    line2 = perp_line.apply(in_name, ["", in_item[0], line1])
     line2.calcc()
     return line2.c
 perp_line2.generate(perp_line2_fun, perp_line2_check, perp_line2_errorinfo)
@@ -142,58 +142,58 @@ perp_line2.generate(perp_line2_fun, perp_line2_check, perp_line2_errorinfo)
 perp_bis = Method("perp_bis", "Line", ("Point", "Point"))
 perp_bis_check = line_check
 perp_bis_errorinfo = line_errorinfo
-def perp_bis_fun(in_item):
-    point1 = mid_pt.apply(["", in_item[0], in_item[1]])
-    line1 = line.apply(["", in_item[0], in_item[1]])
-    line2 = perp_line.apply(["", point1, line1])
+def perp_bis_fun(in_name, in_item):
+    point1 = mid_pt.apply(in_name, ["", in_item[0], in_item[1]])
+    line1 = line.apply(in_name, ["", in_item[0], in_item[1]])
+    line2 = perp_line.apply(in_name, ["", point1, line1])
     line2.calcc()
     return line2.c
 perp_bis.generate(perp_bis_fun, perp_bis_check, perp_bis_errorinfo)
 
 inx_line_line = Method("inx_line_line", "Point", ("Line", "Line"))
-inx_line_line_check = lambda in_item: abs(in_item[0].c[0] * in_item[1].c[1] - in_item[0].c[1] * in_item[1].c[0]) > ERROR
-inx_line_line_errorinfo = lambda in_item: "Line " + in_item[0].name + " and Line " + in_item[1].name + " are parallel" if not(inx_line_line_check(in_item)) else ""
-inx_line_line_fun = lambda in_item: ((in_item[0].c[1] * in_item[1].c[2] - in_item[0].c[2] * in_item[1].c[1]) / (in_item[0].c[0] * in_item[1].c[1] - in_item[0].c[1] * in_item[1].c[0]), (in_item[0].c[2] * in_item[1].c[0] - in_item[0].c[0] * in_item[1].c[2]) / (in_item[0].c[0] * in_item[1].c[1] - in_item[0].c[1] * in_item[1].c[0]))
+inx_line_line_check = lambda in_name, in_item: abs(in_item[0].c[0] * in_item[1].c[1] - in_item[0].c[1] * in_item[1].c[0]) > ERROR
+inx_line_line_errorinfo = lambda in_name, in_item: "Line " + in_item[0].name + " and Line " + in_item[1].name + " are parallel" if not(inx_line_line_check(in_item)) else ""
+inx_line_line_fun = lambda in_name, in_item: ((in_item[0].c[1] * in_item[1].c[2] - in_item[0].c[2] * in_item[1].c[1]) / (in_item[0].c[0] * in_item[1].c[1] - in_item[0].c[1] * in_item[1].c[0]), (in_item[0].c[2] * in_item[1].c[0] - in_item[0].c[0] * in_item[1].c[2]) / (in_item[0].c[0] * in_item[1].c[1] - in_item[0].c[1] * in_item[1].c[0]))
 inx_line_line.generate(inx_line_line_fun, inx_line_line_check, inx_line_line_errorinfo)
 
 inx_line_line2 = Method("inx_line_line2", "Point", ("Point", "Point", "Point", "Point"))
-def inx_line_line2_check(in_item):
-    if not (line_check(["", in_item[0], in_item[1]]) and line_check(["", in_item[2], in_item[3]])):
+def inx_line_line2_check(in_name, in_item):
+    if not (line_check(in_name, ["", in_item[0], in_item[1]]) and line_check(["", in_item[2], in_item[3]])):
         return False
-    line1 = line.apply(["", in_item[0], in_item[1]])
-    line2 = line.apply(["", in_item[2], in_item[3]])
+    line1 = line.apply(in_name, ["", in_item[0], in_item[1]])
+    line2 = line.apply(in_name, ["", in_item[2], in_item[3]])
     return inx_line_line_check(["", line1, line2])
-def inx_line_line2_errorinfo(in_item):
-    if not line_check(["", in_item[0], in_item[1]]):
+def inx_line_line2_errorinfo(in_name, in_item):
+    if not line_check(in_name, ["", in_item[0], in_item[1]]):
         return line_errorinfo(["", in_item[0], in_item[1]])
-    if not line_check(["", in_item[2], in_item[3]]):
+    if not line_check(in_name, ["", in_item[2], in_item[3]]):
         return line_errorinfo(["", in_item[2], in_item[3]])
-    line1 = line.apply(["", in_item[0], in_item[1]])
-    line2 = line.apply(["", in_item[2], in_item[3]])
+    line1 = line.apply(in_name, ["", in_item[0], in_item[1]])
+    line2 = line.apply(in_name, ["", in_item[2], in_item[3]])
     return inx_line_line_check(["", line1, line2])
-def inx_line_line2_fun(in_item):
-    line1 = line.apply(["", in_item[0], in_item[1]])
-    line2 = line.apply(["", in_item[2], in_item[3]])
-    point1 = inx_line_line.apply(["", line1, line2])
+def inx_line_line2_fun(in_name, in_item):
+    line1 = line.apply(in_name, ["", in_item[0], in_item[1]])
+    line2 = line.apply(in_name, ["", in_item[2], in_item[3]])
+    point1 = inx_line_line.apply(in_name, ["", line1, line2])
     point1.calcc()
     return point1.c
 inx_line_line2.generate(inx_line_line2_fun, inx_line_line2_check, inx_line_line2_errorinfo)
 
 perp_foot = Method("perp_foot", "Point", ("Point", "Line"))
-def perp_foot_fun(in_item):
-    line1 = perp_line.apply(["", in_item[0], in_item[1]])
+def perp_foot_fun(in_name, in_item):
+    line1 = perp_line.apply(in_name, ["", in_item[0], in_item[1]])
     line1.calcc()
-    point1 = inx_line_line.apply(["", in_item[1], line1])
+    point1 = inx_line_line.apply(in_name, ["", in_item[1], line1])
     point1.calcc()
     return point1.c
 perp_foot.generate_check_triv(perp_foot_fun)
 
 perp_foot2 = Method("perp_foot2", "Point", ("Point", "Point", "Point"))
-perp_foot2_check = lambda in_item: line_check(["", in_item[1], in_item[2]])
-perp_foot2_errorinfo = lambda in_item: line_errorinfo(["", in_item[1], in_item[2]])
-def perp_foot2_fun(in_item):
-    line1 = line.apply(["", in_item[1], in_item[2]])
-    point1 = perp_foot.apply(["", in_item[0], line1])
+perp_foot2_check = lambda in_name, in_item: line_check(["", in_item[1], in_item[2]])
+perp_foot2_errorinfo = lambda in_name, in_item: line_errorinfo(["", in_item[1], in_item[2]])
+def perp_foot2_fun(in_name, in_item):
+    line1 = line.apply(in_name, ["", in_item[1], in_item[2]])
+    point1 = perp_foot.apply(in_name, ["", in_item[0], line1])
     point1.calcc()
     return point1.c
 perp_foot2.generate(perp_foot2_fun, perp_foot2_check, perp_foot2_errorinfo)
