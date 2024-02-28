@@ -1302,8 +1302,7 @@ if __name__ == "__main__":
     o.calcc()
     print("o calculated", o.hasc, o.c)
     print( [i.name for i in p1.affect_item] )
-    geom_list = [p1,p2,p3,p4,l1,l,o]
-    geom_list = [p1,p2,p3,l1,l2,l,p4] + exlst
+    geom_list = [p1,p2,p3,l1,l,p4,o]
     test = GeomUI(geom_list)
     test.run()
 
