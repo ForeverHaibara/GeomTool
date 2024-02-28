@@ -41,7 +41,6 @@ class Geom_object:
         self.affect_item = []  #The items using this object to generate object
         for parent_item in in_item:
             parent_item.affect_item += [ self ]
-        print("init_run", self.name)
         
         
         """--------------------------------------
