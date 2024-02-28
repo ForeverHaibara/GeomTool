@@ -45,11 +45,11 @@ class Geom_object:
         
         
         """--------------------------------------
-        The Followings are only used in test!!
+        The Following functions are in test!!
         --------------------------------------"""
-        self.invisible = True
+        self.visible = True
         self.movable = (self.type == "Point")
-    def self.move(self, in_c):
+    def move(self, in_c):
         self.hasc = True
         self.c = in_c
         """--------------------------------------

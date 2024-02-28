@@ -136,7 +136,6 @@ class GeomUI:
         self.r = (self.DRAW_WIDTH + self.DRAW_HEIGHT) / 9 + 0.114514 + 0.1919810 + ERROR
         
         self.geom_list = in_geom_list # All geom objects
-        self.geom_show = [_ for _ in range(len(in_geom_list))] # A True False sequence that show a geom object or not
         self.geom_chosen = [] # Chosen geom objects 0, >0
         self.geom_picked_list = []
         
@@ -149,7 +148,7 @@ class GeomUI:
         # Choose a fig in geom_list that has geom_show
         out_fig_list = []
         for fig_num in range(len(self.geom_list)):
-            if (fig_num in self.geom_show) and self.geom_list[fig_num].hasc and (self.geom_list[fig_num].type in allows):
+            if (self.geom_list[fig_num].visible) and self.geom_list[fig_num].hasc and (self.geom_list[fig_num].type in allows):
                 dist = self.geomdist(mouse, self.geom_list[fig_num].type, self.geom_list[fig_num].c)
                 if dist < GEOM_PICK_DIST:
                     out_fig_list.append((fig_num, -choose_order_of_object(self.geom_list[fig_num].type) + dist/(2 * GEOM_PICK_DIST)))
@@ -194,7 +193,7 @@ class GeomUI:
         
         draw_temp_list = []
         for fig_num in range(len(self.geom_list)):
-            if (fig_num in self.geom_show) and self.geom_list[fig_num].hasc:
+            if (self.geom_list[fig_num].visible) and self.geom_list[fig_num].hasc:
                 if self.geom_list[fig_num].type == 'Line':
                     ordernum = 1
                     width = 2
@@ -839,7 +838,7 @@ class GeomUI:
         last_mouse_in = -1
         last_eventlist = []
         moving_background = False
-        last_moving_background = False
+        moving_point = False
         self.shifted = False
         cvalue = None
         
@@ -947,16 +946,7 @@ class GeomUI:
                     if mouse_in == 3:
                         self.cmd_modenamechangeline(-1, "circ")
                     
-                    
-                    
-                    '''
-                    --- Test Choose Code ---
-                    '''
                     self.load_chosen_and_mode_from_cmdline(-1)
-                    
-                    
-                    
-                    self.draw_init()
                     
                 if mouse_in >= 10 and mouse_in < 20:
                     cvalue = None
@@ -993,56 +983,40 @@ class GeomUI:
                         pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
                     
                     self.draw_init()
-                    
-                    
-                '''
-                --- Move Code ---
-                '''
                 
-                if mouse_in == -1 and self.draw_choose == 0:
+                if self.draw_choose == 0:
                     cvalue = None
-                    moving_background = True
-                    moving_background_start = mouse
-                    moving_background_start_cx = self.cx
-                    moving_background_start_cy = self.cy
-                    
+                    if mouse_in == -1:
+                        moving_background = True
+                        moving_background_start = mouse
+                        moving_background_start_cx = self.cx
+                        moving_background_start_cy = self.cy
+                    if 100 <= mouse_in < 1000:
+                        if self.geom_list[mouse_in - 100].movable:
+                            moving_point = True
+                            moving_point_start = mouse
+                            moving_num = mouse_in - 100
+                        else:
+                            self.cmdlines[-1] += self.geom_list[mouse_in - 100].name + ' '
+                            self.load_chosen_and_mode_from_cmdline(-1)  
                 
-                
-                '''
-                --- Test Choose Code ---
-                '''
-                if 100 <= mouse_in < 1000:
-                    self.cmdlines[-1] += self.geom_list[mouse_in - 100].name + ' '
+                if self.draw_choose > 0:
+                    if 100 <= mouse_in < 1000:
+                        self.cmdlines[-1] += self.geom_list[mouse_in - 100].name + ' '
+                        self.load_chosen_and_mode_from_cmdline(-1)                    
+                    if mouse_in > 1000:
+                        fig1 = (mouse_in % 1000)
+                        fig2 = round((mouse_in - fig1) / 1000)
+                        self.cmdlines[-1] += self.geom_list[fig1 - 100].name + ' '
+                        self.cmdlines[-1] += self.geom_list[fig2 - 100].name + ' '
+                    if "Pt" in expwait and cvalue != None:
+                        self.cmdlines[-1] += numberform(cvalue[0]) + ' ' + numberform(cvalue[1]) + ' '
                     self.load_chosen_and_mode_from_cmdline(-1)
-                if mouse_in > 1000:
-                    fig1 = (mouse_in % 1000)
-                    fig2 = round((mouse_in - fig1) / 1000)
-                    self.cmdlines[-1] += self.geom_list[fig1 - 100].name + ' '
-                    self.cmdlines[-1] += self.geom_list[fig2 - 100].name + ' '
-                if "Pt" in expwait and cvalue != None:
-                    self.cmdlines[-1] += numberform(cvalue[0]) + ' ' + numberform(cvalue[1]) + ' '
-                self.load_chosen_and_mode_from_cmdline(-1)
-                cvalue = None
+                    cvalue = None
                 
                 exp = Explainer.ExplainLine(self.cmdlines[-1], self.geom_list)
                 if len(exp.waitfor()) == 0:
                     self.run_kernel()
-                
-            
-            
-            if moving_background:
-                self.cx = mouse[0] - moving_background_start[0] + moving_background_start_cx
-                self.cy = mouse[1] - moving_background_start[1] + moving_background_start_cy
-                self.draw_init()
-            
-            
-            
-            '''
-            --- Test Choose Code ---
-            '''
-            if last_moving_background and (not moving_background) and (mouse[0] - moving_background_start[0])**2 + (mouse[1] - moving_background_start[1])**2 < QUICK_CHOOSE_DIST**2:
-                self.cmd_clearline(-1)
-            last_moving_background = moving_background
             
             
             
@@ -1061,11 +1035,25 @@ class GeomUI:
                     self.screen.blit(pygame.font.SysFont('Consolas', 15, bold=False).render(mouse_coordxprt , True , TEXT_COLOR), (5, 5))
                     self.screen.blit(pygame.font.SysFont('Consolas', 15, bold=False).render(mouse_coordyprt , True , TEXT_COLOR), (5, 25))
                     self.screen.blit(pygame.font.SysFont('Consolas', 15, bold=False).render(", ".join([self.geom_list[_].name for _ in self.geom_picked_list]) , True , TEXT_COLOR), (5, 45))
+                if moving_background:
+                    self.cx = mouse[0] - moving_background_start[0] + moving_background_start_cx
+                    self.cy = mouse[1] - moving_background_start[1] + moving_background_start_cy
+                    self.draw_init()
+                if moving_point:
+                    self.geom_list[moving_num].move(self.cc2(mouse))
+                    self.draw_init()
             
             if ("MOUSEBUTTONUP" in eventlist) and ("MOUSEBUTTONUP" not in last_eventlist):
                 # The moment when the mouse is unclicked
                 if moving_background:
                     moving_background = False
+                    if (mouse[0] - moving_background_start[0])**2 + (mouse[1] - moving_background_start[1])**2 < QUICK_CHOOSE_DIST**2:
+                        self.cmd_clearline(-1)
+                if moving_point:
+                    moving_point = False
+                    if (mouse[0] - moving_point_start[0])**2 + (mouse[1] - moving_point_start[1])**2 < QUICK_CHOOSE_DIST**2:
+                        self.cmdlines[-1] += self.geom_list[mouse_in - 100].name + ' '
+                        self.load_chosen_and_mode_from_cmdline(-1)
             
             if ("K_CTRL" in eventlist) and ("K_CTRL" not in last_eventlist):
                 self.yn_button_pressed[0] = -self.yn_button_pressed[0]
@@ -1208,7 +1196,6 @@ if __name__ == "__main__":
     l1.calcc()
     p4.calcc()
     l.calcc()
-    print(GeomTool.line_errorinfo("", [p3, p4]))
     geom_list = [p1,p2,p3,l1,l2,l,p4]
     test = GeomUI(geom_list)
     test.run()
