@@ -41,9 +41,7 @@ class FullAction:
     def __init__(self, actions : list) -> None:
         self.actions = actions
     def perform (self) :
-        for act in self.actions :
-            act
-        return
+        NotImplemented
 
 # the coordinate of the points will not be calculated until one calls function calcc of every object
 
@@ -53,7 +51,7 @@ class DDNode:
     def __init__(self, obj:ObjBase):
         self.obj = obj
         self.parent
-'''
+
 
 ## The acyclic graph, nodes as geom objs, edge from a to b if the construction of a depends on b
         ## self.item [0] = name : str, self.item[i>0] : geomobj
@@ -117,3 +115,4 @@ class FullAction(ConstructionAction):
 
 ## we need function input string output Construction + Dependency
 
+'''
