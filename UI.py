@@ -498,6 +498,23 @@ class GeomUI:
         else:
             self.draw_choose = 0
             self.sub_draw_choose = -1
+            
+        # update buttons
+        if self.draw_choose == 0:
+            self.sub_button_range = []
+            self.sub_button_draw_fun = []
+        
+        if self.draw_choose == 1:
+            self.sub_button_range = [(80, 100)]
+            self.sub_button_draw_fun = [self.draw_mdpt_button]
+            
+        if self.draw_choose == 2:
+            self.sub_button_range = [(80, 100), (80, 150), (80, 200), (80, 250)]
+            self.sub_button_draw_fun = [self.draw_para_button, self.draw_perp_button, self.draw_pbis_button, self.draw_abis_button]
+            
+        if self.draw_choose == 3:
+            self.sub_button_range = []
+            self.sub_button_draw_fun = []
 
     def get_eventlist(self):
         eventlist = []
@@ -894,23 +911,15 @@ class GeomUI:
                     self.sub_draw_choose = -1
                     
                     if mouse_in == 0:
-                        self.sub_button_range = []
-                        self.sub_button_draw_fun = []
                         self.cmd_modenamechangeline(-1, "")
                     
                     if mouse_in == 1:
-                        self.sub_button_range = [(80, 100)]
-                        self.sub_button_draw_fun = [self.draw_mdpt_button]
                         self.cmd_modenamechangeline(-1, "pt")
                         
                     if mouse_in == 2:
-                        self.sub_button_range = [(80, 100), (80, 150), (80, 200), (80, 250)]
-                        self.sub_button_draw_fun = [self.draw_para_button, self.draw_perp_button, self.draw_pbis_button, self.draw_abis_button]
                         self.cmd_modenamechangeline(-1, "line")
                         
                     if mouse_in == 3:
-                        self.sub_button_range = []
-                        self.sub_button_draw_fun = []
                         self.cmd_modenamechangeline(-1, "circ")
                     
                     
