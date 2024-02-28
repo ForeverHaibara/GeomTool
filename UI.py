@@ -40,8 +40,8 @@ TAG_COLOR = (237, 56, 115)
 GEOM_PICK_DIST = 9.4
 QUICK_CHOOSE_DIST = 4
 
-CMD_SHOW_LINE = 15
 CMD_LINE_HEIGHT = 25
+CMD_SHOW_LINE = int((DRAW_HEIGHT - 60)/CMD_LINE_HEIGHT)
 CMD_LINE_CHAR = 50
 
 # Geometry setting
@@ -125,7 +125,6 @@ class GeomUI:
         
         self.cmdlines = ["GeomToolKernel Version 1.0", "All rights reserved to Euclid", ""]
         self.cmdline_from = [0, 0, 1]
-        self.cmdline_num = 0
     
     def choose_fig_list(self, mouse, allows = ("Point", "Line", "Circle")):
         # Choose a fig in geom_list that has geom_show
@@ -224,15 +223,15 @@ class GeomUI:
             pygame.draw.rect(self.screen, BACKGROUND_COLOR, pygame.Rect(2 + DRAW_WIDTH, 2, SCREEN_WIDTH - DRAW_WIDTH - 5, DRAW_HEIGHT - 5))
             pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [2 + DRAW_WIDTH, 2, SCREEN_WIDTH - DRAW_WIDTH - 5, DRAW_HEIGHT - 5], 1)
             textlist = []
-            for line_num in range(self.cmdline_num, len(self.cmdlines)):
+            for line_num in range(len(self.cmdlines)):
                 linetext = ('>>> ' if self.cmdline_from[line_num] == 1 else 'GT: ') + self.cmdlines[line_num] + ('|' if line_num == len(self.cmdlines) - 1 else '')
                 newline = True
-                while len(textlist) < CMD_SHOW_LINE and len(linetext) > 0:
+                while len(linetext) > 0:
                     textlist.append(('    ' if (not newline) else '') + (linetext[:CMD_LINE_CHAR - 4]) if (not newline) else linetext[:CMD_LINE_CHAR])
                     linetext = (linetext[CMD_LINE_CHAR - 4:]) if (not newline) else linetext[CMD_LINE_CHAR:]
                     newline = False
             line_num = 0
-            for linetext in textlist:
+            for linetext in textlist[-CMD_SHOW_LINE:]:
                 self.screen.blit(pygame.font.SysFont('Consolas', 20, bold=False).render(linetext , True , TEXT_COLOR), (12 + DRAW_WIDTH, line_num * CMD_LINE_HEIGHT + 12))
                 line_num += 1
 
@@ -515,6 +514,8 @@ class GeomUI:
                 eventlist.append("KEYDOWN")
             if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_ESCAPE):
                 eventlist.append("K_ESCAPE")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP_ENTER):
+                eventlist.append("K_ENTER")
             if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_BACKSPACE):
                 eventlist.append("K_BACKSPACE")
             if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_SPACE):
@@ -821,11 +822,16 @@ class GeomUI:
                         mouse_in = self.geom_picked_list[0] + 100
                         
                         
-                '''
-                Choose Test! Only Testing Circle and Line chooses should be rewrited
-                In later versions, these chooses depend on cmdlines
+                '''-----------------------------------------------------------------
                 
-                '''
+                                  Item Picking announcement:                        
+                
+                
+                This is only a choose Test! Only Testing Circle and Line picks      
+                In later versions, these chooses depend on cmdlines   !!!!!!!!!!!!!!
+                
+                -----------------------------------------------------------------'''
+                
                 if self.draw_choose == 2:
                     self.choose_fig1(mouse, "Line")
                     if len(self.geom_picked_list) == 0:
@@ -1008,7 +1014,9 @@ class GeomUI:
             if ("K_ALT" in eventlist) and ("K_ALT" not in last_eventlist):
                 self.yn_button_pressed[1] = -self.yn_button_pressed[1]
                 self.draw_init()
-                
+            
+            
+            
             if ("KEYDOWN" in eventlist) and ("KEYDOWN" not in last_eventlist) and (self.yn_button_pressed[0] == 1):
                 for event in eventlist:
                     if len(event) == 3:
@@ -1019,6 +1027,17 @@ class GeomUI:
                         self.load_chosen_and_mode_from_cmdline(-1)
                     if event == "CLEARCMDLINE":
                         self.cmd_clearline(-1)
+                    if event == "K_ENTER":
+                        self.cmdlines.append("")
+                        
+                        '''
+                        Need to wait for Kernel Corespond !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        '''
+                        
+                        self.cmdline_from.append(1)
+                        self.cmd_clearline(-1)
+                        
+            
                 
             if ("KEYDOWN" in eventlist) and ("KEYDOWN" not in last_eventlist) and (self.yn_button_pressed[0] == -1):
                 
