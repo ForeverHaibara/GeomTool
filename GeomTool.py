@@ -76,20 +76,23 @@ class GeomObj:
     
     
 class Method:
-    def __init__(self, in_name, in_gen_type : list, in_item_type : list):
+    def __init__(self, in_name, in_gen_type : list, in_item_type : list, in_cmd_name : str):
         self.name = in_name # Name of the method
         self.gen_type = in_gen_type # Type of the generated object(s), still a list even when generate a single object
         self.item_type = in_item_type # Type of the used items
         self.implemented = False # turn True once apply and calculation method is provided
         self.apply = None
+        self.cmd_name = in_cmd_name
+        global MethodDict
+        MethodDict[in_name] = [self.cmd_name, self, self.item_type, self.gen_type]
 
 
 class BasicMethod(Method):
     '''
     Basic Geometic construction methods class. Creates only one object. Stores dependency information.
     '''
-    def __init__(self, in_name, in_gen_type: list, in_item_type: list):
-        super().__init__(in_name, in_gen_type, in_item_type)
+    def __init__(self, in_name, in_gen_type: list, in_item_type: list, in_cmd_name : str):
+        super().__init__(in_name, in_gen_type, in_item_type, in_cmd_name)
         if len(in_gen_type) != 1:
             print("Error during init " + in_name + " method, Basic method must create exactly one object!")
         self.fun = None
@@ -132,8 +135,8 @@ class ComplexMethod(Method):
     Class of complex methods, recursively create all needed geometric constructions.
     use apply to create all objects recursively, use calc to calc all coordinates of dependending objects recursively
     '''
-    def __init__(self, in_name, in_gen_type: list, in_item_type: list):
-        super().__init__(in_name, in_gen_type, in_item_type)
+    def __init__(self, in_name, in_gen_type: list, in_item_type: list, in_cmd_name : str):
+        super().__init__(in_name, in_gen_type, in_item_type, in_cmd_name)
         
     def implement(self, in_method_list, in_indicator_list):
         for i in in_method_list:
@@ -205,47 +208,47 @@ class GraphTree:
 ####################
 ERROR = 1e-13
 
+MethodDict = {}
 
-free_pt = BasicMethod("free_pt", ["Point"], ())
+free_pt = BasicMethod("free_pt", ["Point"], [], "pt")
 free_pt_fun = lambda self : (random.gauss(0, 1), random.gauss(0, 1))
 free_pt.implement_check_triv(free_pt_fun)
 
-line = BasicMethod("line", ["Line"], ("Point", "Point"))
+line = BasicMethod("line", ["Line"], ["Point", "Point"], "line")
 line_check = lambda self : (abs(self.item[0].c[0] - self.item[1].c[0]) > ERROR) and (abs(self.item[0].c[1] - self.item[1].c[1]) > ERROR)
 line_errorinfo = lambda self: "Point " + self.item[0].name + " and Point " + self.item[1].name + " coincide" if not(line_check(self.in_name, self.item)) else ""
 line_fun = lambda self: (self.item[0].c[1] - self.item[1].c[1], self.item[1].c[0] - self.item[0].c[0], self.item[0].c[0] * self.item[1].c[1] - self.item[1].c[0] * self.item[0].c[1])
 line.implement(line_fun, line_check, line_errorinfo)
 
-inx_line_line = BasicMethod("inx_line_line", ["Point"], ("Line", "Line"))
+inx_line_line = BasicMethod("inx_line_line", ["Point"], ["Line", "Line"], "pt")
 inx_line_line_check = lambda self: abs(self.item[0].c[0] * self.item[1].c[1] - self.item[0].c[1] * self.item[1].c[0]) > ERROR
 inx_line_line_errorinfo = lambda self: "Line " + self.item[0].name + " and Line " + self.item[1].name + " are parallel" if not(inx_line_line_check(self)) else ""
 inx_line_line_fun = lambda self: ((self.item[0].c[1] * self.item[1].c[2] - self.item[0].c[2] * self.item[1].c[1]) / (self.item[0].c[0] * self.item[1].c[1] - self.item[0].c[1] * self.item[1].c[0]), (self.item[0].c[2] * self.item[1].c[0] - self.item[0].c[0] * self.item[1].c[2]) / (self.item[0].c[0] * self.item[1].c[1] - self.item[0].c[1] * self.item[1].c[0]))
 inx_line_line.implement(inx_line_line_fun, inx_line_line_check, inx_line_line_errorinfo)
 
-mid_pt = BasicMethod("mid_pt", ["Point"], ("Point", "Point"))
+mid_pt = BasicMethod("mid_pt", ["Point"], ["Point", "Point"], "mdpt")
 mid_pt_fun = lambda self: ((self.item[0].c[0] + self.item[1].c[0]) / 2, (self.item[0].c[1] + self.item[1].c[1]) / 2)
 mid_pt.implement_check_triv(mid_pt_fun)
 
-perp_line = BasicMethod("perp_line", ["Line"], ("Point", "Line"))
+perp_line = BasicMethod("perp_line", ["Line"], ["Point", "Line"], "perp")
 perp_line_fun = lambda self: (self.item[1].c[1], -self.item[1].c[0], -self.item[1].c[1] * self.item[0].c[0] + self.item[1].c[0] * self.item[0].c[1])
 perp_line.implement_check_triv(perp_line_fun)
 
-perp_bis = ComplexMethod("perp_bis", ["Point", "Line", "Line"], ("Point", "Point"))
+perp_bis = ComplexMethod("perp_bis", ["Point", "Line", "Line"], ["Point", "Point"], "pbis")
 perp_method_list = [mid_pt, line, perp_line]
 perp_indicator_list = [[("i",0), ("i",1)], [("i", 0), ("i",1)], [("m",0), ("m",1)]]
 perp_bis.implement(perp_method_list, perp_indicator_list)
 
-circum_center = ComplexMethod("circum_center", ["Line", "Line", "Point"], ("Point", "Point", "Point"))
+circum_center = ComplexMethod("circum_center", ["Line", "Line", "Point"], ["Point", "Point", "Point"], "circumcenter")
 circum_center_method_list = [perp_bis, perp_bis, inx_line_line]
 circum_center_indicator_list = [[("i",0), ("i",1)], [("i", 0), ("i",2)], [("m",0), ("m",1)]]
 circum_center.implement(circum_center_method_list, circum_center_indicator_list)
 
-
-AllMethod = []
-
-TotallyFreeBasicMethod = []
-
-HasFreeMethod = []
+'''
+The Dictionary of all methods. All methods should be included here. Format:
+key : unique name
+query : List( cmd name : str , Method itself, input_type_list, output_type_list)
+'''
 
 current_tree = GraphTree()
     

@@ -1303,6 +1303,7 @@ if __name__ == "__main__":
     o.calcc()
     print("o calculated", o.hasc, o.c)
     print( [i.name for i in p1.affect_item] )
+    print(GeomTool.MethodDict)
     ##geom_list = GeomTool.current_tree.obj_list
     test = GeomUI(GeomTool.current_tree)
     test.run()
