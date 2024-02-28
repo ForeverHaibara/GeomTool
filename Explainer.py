@@ -136,7 +136,7 @@ class ExplainLine:
                 return []
             
             
-        return "Point Line Circle"
+        return ["Point", "Line", "Circle"]
 
             
 if __name__ == '__main__':

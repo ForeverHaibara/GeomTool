@@ -1,6 +1,7 @@
 import pygame, tkinter
 import GeomTool
 import Explainer
+import Kernel
 
 """
 KEY_ESCAPE: Exit
@@ -108,7 +109,7 @@ def fig_intersection(fig1, fig2):
     return []
 
 class GeomUI:
-    def __init__(self, in_geom_list):
+    def __init__(self, in_graph_tree):
         
         ''' TEST '''
         # self.drawcount = 0
@@ -143,7 +144,8 @@ class GeomUI:
         self.cy = self.DRAW_HEIGHT / 2 + 0.01145141919810
         self.r = (self.DRAW_WIDTH + self.DRAW_HEIGHT) / 9 + 0.114514 + 0.1919810 + ERROR
         
-        self.geom_list = in_geom_list # All geom objects
+        self.graph_tree = in_graph_tree # The Graph Tree
+        self.geom_list = in_graph_tree.obj_list # All geom objects
         self.geom_chosen = [] # Chosen geom objects 0, >0
         self.geom_picked_list = []
         
@@ -876,12 +878,11 @@ class GeomUI:
         # print(eventlist)
         
     def run_kernel(self):
-        
-        '''
-        Kernel Run Here
-        '''
-        
         self.cmdlines[-1] += ' '
+        
+        self.cmdlines.append(Kernel.runline(self.cmdlines[-1], self.graph_tree))
+        self.cmdline_from.append(0)
+        
         self.cmdlines.append("")
         self.cmdline_from.append(1)
         self.cmd_clearline(-1)
