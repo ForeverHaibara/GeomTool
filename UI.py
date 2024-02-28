@@ -38,6 +38,7 @@ BUTTON_COLOR_DARK = (100, 164, 230)
 TAG_COLOR = (237, 56, 115)
 
 GEOM_PICK_DIST = 9.4
+QUICK_CHOOSE_DIST = 4
 
 CMD_SHOW_LINE = 15
 CMD_LINE_HEIGHT = 25
@@ -137,9 +138,9 @@ class GeomUI:
         out_fig_list.sort(key = lambda x: x[1])
         return list(_[0] for _ in out_fig_list)
     
-    def choose_fig1(self, mouse):
+    def choose_fig1(self, mouse, allows = ("Point", "Line", "Circle")):
         # Choose a fig in geom_list that has geom_show
-        lst = self.choose_fig_list(mouse)
+        lst = self.choose_fig_list(mouse, allows=allows)
         if len(lst) < 2:
             self.geom_picked_list = lst
         else:
@@ -158,12 +159,17 @@ class GeomUI:
                     inxlst += list((fig_num1, fig_num2, _) for _ in fig_intersection(self.geom_list[lst[fig_num1]], self.geom_list[lst[fig_num2]]))
             for _ in inxlst:
                 if self.geomdist(mouse, "Point", _[2]) < GEOM_PICK_DIST:
-                    outlst.append((_, self.geomdist(mouse, "Point", _[2])))
+                    outlst.append((_, self.geomdist(mouse, "Point", _[2]), _[2]))
             outlst.sort(key = lambda x: x[1])
             if len(outlst) > 0:
                 self.geom_picked_list = [lst[outlst[0][0][0]], lst[outlst[0][0][1]]]
+                if self.geom_list[lst[outlst[0][0][0]]].type != "Line" or self.geom_list[lst[outlst[0][0][1]]].type != "Line":
+                    return outlst[0][2]
+                else:
+                    return None
             else:
                 self.geom_picked_list = [lst[0]]
+                return None
     
     def draw_fig(self):
         
@@ -439,23 +445,334 @@ class GeomUI:
 
     def cmd_addname(self, fig_num, line_num):
         self.cmdlines[line_num] += self.geom_list[fig_num].name + ' '
-        self.load_chosen_from_cmdline(line_num)
+        self.load_chosen_and_mode_from_cmdline(line_num)
         
     def cmd_clearline(self, line_num):
         self.cmdlines[line_num] = ''
-        self.load_chosen_from_cmdline(line_num)
+        self.load_chosen_and_mode_from_cmdline(line_num)
         
-    def load_chosen_from_cmdline(self, line_num):
+    def load_chosen_and_mode_from_cmdline(self, line_num):
         exp = Explainer.ExplainLine(self.cmdlines[line_num], self.geom_list)
         self.geom_chosen = exp.geom_appear
+        self.cmd_modechange(exp.mode_appear)
         self.draw_init()
+        
+    def cmd_modenamechangeline(self, line_num, mode_name, mode_list = ["mdpt", "pt", "line", "para", "perp", "pbis", "abis", "circ"]):
+        success = False
+        for change_name in mode_list:
+            if change_name + " " in self.cmdlines[line_num]:
+                self.cmdlines[line_num] = self.cmdlines[line_num].replace(change_name + " ", mode_name + " " if mode_name != "" else "")
+                success = True
+                break
+        if not success:
+            self.cmdlines[line_num] += mode_name + " " if mode_name != "" else ""
+    
+    def cmd_modechange(self, mode_name):
+        if mode_name == "pt":
+            self.draw_choose = 1
+            self.sub_draw_choose = -1
+        elif mode_name == "mdpt":
+            self.draw_choose = 1
+            self.sub_draw_choose = 0
+        elif mode_name == "line":
+            self.draw_choose = 2
+            self.sub_draw_choose = -1
+        elif mode_name == "para":
+            self.draw_choose = 2
+            self.sub_draw_choose = 0
+        elif mode_name == "perp":
+            self.draw_choose = 2
+            self.sub_draw_choose = 1
+        elif mode_name == "pbis":
+            self.draw_choose = 2
+            self.sub_draw_choose = 2
+        elif mode_name == "abis":
+            self.draw_choose = 2
+            self.sub_draw_choose = 3
+        elif mode_name == "circ":
+            self.draw_choose = 3
+            self.sub_draw_choose = -1
+        else:
+            self.draw_choose = 0
+            self.sub_draw_choose = -1
+
+    def get_eventlist(self):
+        eventlist = []
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                eventlist.append("QUIT")
+            if (event.type == pygame.MOUSEBUTTONDOWN):
+                eventlist.append("MOUSEBUTTONDOWN")
+            if (event.type == pygame.MOUSEMOTION):
+                eventlist.append("MOUSEMOTION")
+            if (event.type == pygame.MOUSEBUTTONUP):
+                eventlist.append("MOUSEBUTTONUP")
+            if (event.type == pygame.KEYDOWN):
+                eventlist.append("KEYDOWN")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_ESCAPE):
+                eventlist.append("K_ESCAPE")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_BACKSPACE):
+                eventlist.append("K_BACKSPACE")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_SPACE):
+                eventlist.append("K_ ")
+            if (event.type == pygame.KEYDOWN) and ((event.key == pygame.K_MINUS) or (event.key == pygame.K_KP_MINUS)):
+                eventlist.append("K_-")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_EQUALS):
+                eventlist.append("K_=")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP_PLUS):
+                eventlist.append("K_+")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_a):
+                eventlist.append("K_a")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_b):
+                eventlist.append("K_b")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_c):
+                eventlist.append("K_c")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_d):
+                eventlist.append("K_d")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_e):
+                eventlist.append("K_e")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_f):
+                eventlist.append("K_f")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_g):
+                eventlist.append("K_g")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_h):
+                eventlist.append("K_h")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_i):
+                eventlist.append("K_i")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_j):
+                eventlist.append("K_j")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_k):
+                eventlist.append("K_k")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_l):
+                eventlist.append("K_l")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_m):
+                eventlist.append("K_m")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_n):
+                eventlist.append("K_n")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_o):
+                eventlist.append("K_o")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_p):
+                eventlist.append("K_p")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_q):
+                eventlist.append("K_q")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_r):
+                eventlist.append("K_r")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_s):
+                eventlist.append("K_s")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_t):
+                eventlist.append("K_t")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_u):
+                eventlist.append("K_u")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_v):
+                eventlist.append("K_v")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_w):
+                eventlist.append("K_w")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_x):
+                eventlist.append("K_x")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_y):
+                eventlist.append("K_y")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_z):
+                eventlist.append("K_z")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_1):
+                eventlist.append("K_1")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_2):
+                eventlist.append("K_2")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_3):
+                eventlist.append("K_3")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_4):
+                eventlist.append("K_4")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_5):
+                eventlist.append("K_5")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_6):
+                eventlist.append("K_6")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_7):
+                eventlist.append("K_7")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_8):
+                eventlist.append("K_8")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_9):
+                eventlist.append("K_9")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_0):
+                eventlist.append("K_0")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP1):
+                eventlist.append("K_1")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP2):
+                eventlist.append("K_2")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP3):
+                eventlist.append("K_3")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP4):
+                eventlist.append("K_4")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP5):
+                eventlist.append("K_5")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP6):
+                eventlist.append("K_6")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP7):
+                eventlist.append("K_7")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP8):
+                eventlist.append("K_8")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP9):
+                eventlist.append("K_9")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP0):
+                eventlist.append("K_0")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_PERIOD):
+                eventlist.append("K_.")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP_PERIOD):
+                eventlist.append("K_.")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_COMMA):
+                eventlist.append("K_,")
+            if (event.type == pygame.KEYDOWN) and ((event.key == pygame.K_LCTRL) or (event.key == pygame.K_RCTRL)):
+                eventlist.append("K_CTRL")
+            if (event.type == pygame.KEYDOWN) and ((event.key == pygame.K_LALT) or (event.key == pygame.K_RALT)):
+                eventlist.append("K_ALT")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_UP):
+                eventlist.append("K_UP")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_DOWN):
+                eventlist.append("K_DOWN")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_LEFT):
+                eventlist.append("K_LEFT")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_RIGHT):
+                eventlist.append("K_RIGHT")
+            if (event.type == pygame.KEYDOWN) and ((event.key == pygame.K_LSHIFT) or (event.key == pygame.K_RSHIFT)):
+                self.shifted = True
+            if (event.type == pygame.KEYUP) and ((event.key == pygame.K_LSHIFT) or (event.key == pygame.K_RSHIFT)):
+                self.shifted = False
+        
+        if self.shifted and ("K_BACKSPACE" in eventlist):
+            eventlist.remove("K_BACKSPACE")
+            eventlist.append("CLEARCMDLINE")
+        if self.shifted and ("K_1" in eventlist):
+            eventlist.remove("K_1")
+            eventlist.append("K_!")
+        if self.shifted and ("K_2" in eventlist):
+            eventlist.remove("K_2")
+            eventlist.append("K_@")
+        if self.shifted and ("K_3" in eventlist):
+            eventlist.remove("K_3")
+            eventlist.append("K_#")
+        if self.shifted and ("K_4" in eventlist):
+            eventlist.remove("K_4")
+            eventlist.append("K_$")
+        if self.shifted and ("K_5" in eventlist):
+            eventlist.remove("K_5")
+            eventlist.append("K_%")
+        if self.shifted and ("K_6" in eventlist):
+            eventlist.remove("K_6")
+            eventlist.append("K_^")
+        if self.shifted and ("K_7" in eventlist):
+            eventlist.remove("K_7")
+            eventlist.append("K_&")
+        if self.shifted and ("K_8" in eventlist):
+            eventlist.remove("K_8")
+            eventlist.append("K_*")
+        if self.shifted and ("K_9" in eventlist):
+            eventlist.remove("K_9")
+            eventlist.append("K_(")
+        if self.shifted and ("K_0" in eventlist):
+            eventlist.remove("K_0")
+            eventlist.append("K_)")
+        if self.shifted and ("K_-" in eventlist):
+            eventlist.remove("K_-")
+            eventlist.append("K__")
+        if self.shifted and ("K_=" in eventlist):
+            eventlist.remove("K_=")
+            eventlist.append("K_+")
+        if self.shifted and ("K_," in eventlist):
+            eventlist.remove("K_,")
+            eventlist.append("K_<")
+        if self.shifted and ("K_." in eventlist):
+            eventlist.remove("K_.")
+            eventlist.append("K_>")
+        if self.shifted and ("K_a" in eventlist):
+            eventlist.remove("K_a")
+            eventlist.append("K_A")
+        if self.shifted and ("K_b" in eventlist):
+            eventlist.remove("K_b")
+            eventlist.append("K_B")
+        if self.shifted and ("K_c" in eventlist):
+            eventlist.remove("K_c")
+            eventlist.append("K_C")
+        if self.shifted and ("K_d" in eventlist):
+            eventlist.remove("K_d")
+            eventlist.append("K_D")
+        if self.shifted and ("K_e" in eventlist):
+            eventlist.remove("K_e")
+            eventlist.append("K_E")
+        if self.shifted and ("K_f" in eventlist):
+            eventlist.remove("K_f")
+            eventlist.append("K_F")
+        if self.shifted and ("K_g" in eventlist):
+            eventlist.remove("K_g")
+            eventlist.append("K_G")
+        if self.shifted and ("K_h" in eventlist):
+            eventlist.remove("K_h")
+            eventlist.append("K_H")
+        if self.shifted and ("K_i" in eventlist):
+            eventlist.remove("K_i")
+            eventlist.append("K_I")
+        if self.shifted and ("K_j" in eventlist):
+            eventlist.remove("K_j")
+            eventlist.append("K_J")
+        if self.shifted and ("K_k" in eventlist):
+            eventlist.remove("K_k")
+            eventlist.append("K_K")
+        if self.shifted and ("K_l" in eventlist):
+            eventlist.remove("K_l")
+            eventlist.append("K_L")
+        if self.shifted and ("K_m" in eventlist):
+            eventlist.remove("K_m")
+            eventlist.append("K_M")
+        if self.shifted and ("K_n" in eventlist):
+            eventlist.remove("K_n")
+            eventlist.append("K_N")
+        if self.shifted and ("K_o" in eventlist):
+            eventlist.remove("K_o")
+            eventlist.append("K_O")
+        if self.shifted and ("K_p" in eventlist):
+            eventlist.remove("K_p")
+            eventlist.append("K_P")
+        if self.shifted and ("K_q" in eventlist):
+            eventlist.remove("K_q")
+            eventlist.append("K_Q")
+        if self.shifted and ("K_r" in eventlist):
+            eventlist.remove("K_r")
+            eventlist.append("K_R")
+        if self.shifted and ("K_s" in eventlist):
+            eventlist.remove("K_s")
+            eventlist.append("K_S")
+        if self.shifted and ("K_t" in eventlist):
+            eventlist.remove("K_t")
+            eventlist.append("K_T")
+        if self.shifted and ("K_u" in eventlist):
+            eventlist.remove("K_u")
+            eventlist.append("K_U")
+        if self.shifted and ("K_v" in eventlist):
+            eventlist.remove("K_v")
+            eventlist.append("K_V")
+        if self.shifted and ("K_w" in eventlist):
+            eventlist.remove("K_w")
+            eventlist.append("K_W")
+        if self.shifted and ("K_x" in eventlist):
+            eventlist.remove("K_x")
+            eventlist.append("K_X")
+        if self.shifted and ("K_y" in eventlist):
+            eventlist.remove("K_y")
+            eventlist.append("K_Y")
+        if self.shifted and ("K_z" in eventlist):
+            eventlist.remove("K_z")
+            eventlist.append("K_Z")
+            
+        return eventlist
+        
+        # print(eventlist)
+
 
     def run(self):
         self.draw_init()
         last_mouse_in = -1
         last_eventlist = []
         moving_background = False
-        shifted = False
+        last_moving_background = False
+        self.shifted = False
+        cvalue = None
         
         while True:
             
@@ -484,8 +801,8 @@ class GeomUI:
             if mouse_in == -1:
                 
                 # Picking Geometric Figures but depend on the draw_choose mode
-                if self.draw_choose in (1, 2, 3):
-                    self.choose_fig2(mouse)
+                if self.draw_choose == 1:
+                    cvalue = self.choose_fig2(mouse)
                     if len(self.geom_picked_list) == 0:
                         mouse_in = -1
                     elif len(self.geom_picked_list) == 1:
@@ -494,6 +811,23 @@ class GeomUI:
                         mouse_in = (self.geom_picked_list[0] + 100) * 1000 + (self.geom_picked_list[1] + 100)
                 if self.draw_choose == 0:
                     self.choose_fig1(mouse)
+                    if len(self.geom_picked_list) == 0:
+                        mouse_in = -1
+                    else:
+                        mouse_in = self.geom_picked_list[0] + 100
+                        
+                        
+                '''
+                Choose Test! Only Testing Circle and Line chooses should be rewrited
+                '''
+                if self.draw_choose == 2:
+                    self.choose_fig1(mouse, "Line")
+                    if len(self.geom_picked_list) == 0:
+                        mouse_in = -1
+                    else:
+                        mouse_in = self.geom_picked_list[0] + 100
+                if self.draw_choose == 3:
+                    self.choose_fig1(mouse, "Circle")
                     if len(self.geom_picked_list) == 0:
                         mouse_in = -1
                     else:
@@ -534,258 +868,7 @@ class GeomUI:
             
             # MOUSE and KEY events
             
-            eventlist = []
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    eventlist.append("QUIT")
-                if (event.type == pygame.MOUSEBUTTONDOWN):
-                    eventlist.append("MOUSEBUTTONDOWN")
-                if (event.type == pygame.MOUSEMOTION):
-                    eventlist.append("MOUSEMOTION")
-                if (event.type == pygame.MOUSEBUTTONUP):
-                    eventlist.append("MOUSEBUTTONUP")
-                if (event.type == pygame.KEYDOWN):
-                    eventlist.append("KEYDOWN")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_ESCAPE):
-                    eventlist.append("K_ESCAPE")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_BACKSPACE):
-                    eventlist.append("K_BACKSPACE")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_SPACE):
-                    eventlist.append("K_ ")
-                if (event.type == pygame.KEYDOWN) and ((event.key == pygame.K_MINUS) or (event.key == pygame.K_KP_MINUS)):
-                    eventlist.append("K_-")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_EQUALS):
-                    eventlist.append("K_=")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP_PLUS):
-                    eventlist.append("K_+")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_a):
-                    eventlist.append("K_a")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_b):
-                    eventlist.append("K_b")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_c):
-                    eventlist.append("K_c")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_d):
-                    eventlist.append("K_d")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_e):
-                    eventlist.append("K_e")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_f):
-                    eventlist.append("K_f")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_g):
-                    eventlist.append("K_g")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_h):
-                    eventlist.append("K_h")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_i):
-                    eventlist.append("K_i")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_j):
-                    eventlist.append("K_j")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_k):
-                    eventlist.append("K_k")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_l):
-                    eventlist.append("K_l")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_m):
-                    eventlist.append("K_m")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_n):
-                    eventlist.append("K_n")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_o):
-                    eventlist.append("K_o")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_p):
-                    eventlist.append("K_p")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_q):
-                    eventlist.append("K_q")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_r):
-                    eventlist.append("K_r")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_s):
-                    eventlist.append("K_s")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_t):
-                    eventlist.append("K_t")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_u):
-                    eventlist.append("K_u")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_v):
-                    eventlist.append("K_v")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_w):
-                    eventlist.append("K_w")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_x):
-                    eventlist.append("K_x")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_y):
-                    eventlist.append("K_y")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_z):
-                    eventlist.append("K_z")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_1):
-                    eventlist.append("K_1")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_2):
-                    eventlist.append("K_2")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_3):
-                    eventlist.append("K_3")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_4):
-                    eventlist.append("K_4")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_5):
-                    eventlist.append("K_5")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_6):
-                    eventlist.append("K_6")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_7):
-                    eventlist.append("K_7")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_8):
-                    eventlist.append("K_8")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_9):
-                    eventlist.append("K_9")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_0):
-                    eventlist.append("K_0")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP1):
-                    eventlist.append("K_1")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP2):
-                    eventlist.append("K_2")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP3):
-                    eventlist.append("K_3")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP4):
-                    eventlist.append("K_4")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP5):
-                    eventlist.append("K_5")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP6):
-                    eventlist.append("K_6")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP7):
-                    eventlist.append("K_7")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP8):
-                    eventlist.append("K_8")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP9):
-                    eventlist.append("K_9")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP0):
-                    eventlist.append("K_0")
-                if (event.type == pygame.KEYDOWN) and ((event.key == pygame.K_LCTRL) or (event.key == pygame.K_RCTRL)):
-                    eventlist.append("K_CTRL")
-                if (event.type == pygame.KEYDOWN) and ((event.key == pygame.K_LALT) or (event.key == pygame.K_RALT)):
-                    eventlist.append("K_ALT")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_UP):
-                    eventlist.append("K_UP")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_DOWN):
-                    eventlist.append("K_DOWN")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_LEFT):
-                    eventlist.append("K_LEFT")
-                if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_RIGHT):
-                    eventlist.append("K_RIGHT")
-                if (event.type == pygame.KEYDOWN) and ((event.key == pygame.K_LSHIFT) or (event.key == pygame.K_RSHIFT)):
-                    shifted = True
-                if (event.type == pygame.KEYUP) and ((event.key == pygame.K_LSHIFT) or (event.key == pygame.K_RSHIFT)):
-                    shifted = False
-            
-            if shifted and ("K_BACKSPACE" in eventlist):
-                eventlist.remove("K_BACKSPACE")
-                eventlist.append("CLEARCMDLINE")
-            if shifted and ("K_1" in eventlist):
-                eventlist.remove("K_1")
-                eventlist.append("K_!")
-            if shifted and ("K_2" in eventlist):
-                eventlist.remove("K_2")
-                eventlist.append("K_@")
-            if shifted and ("K_3" in eventlist):
-                eventlist.remove("K_3")
-                eventlist.append("K_#")
-            if shifted and ("K_4" in eventlist):
-                eventlist.remove("K_4")
-                eventlist.append("K_$")
-            if shifted and ("K_5" in eventlist):
-                eventlist.remove("K_5")
-                eventlist.append("K_%")
-            if shifted and ("K_6" in eventlist):
-                eventlist.remove("K_6")
-                eventlist.append("K_^")
-            if shifted and ("K_7" in eventlist):
-                eventlist.remove("K_7")
-                eventlist.append("K_&")
-            if shifted and ("K_8" in eventlist):
-                eventlist.remove("K_8")
-                eventlist.append("K_*")
-            if shifted and ("K_9" in eventlist):
-                eventlist.remove("K_9")
-                eventlist.append("K_(")
-            if shifted and ("K_0" in eventlist):
-                eventlist.remove("K_0")
-                eventlist.append("K_)")
-            if shifted and ("K_-" in eventlist):
-                eventlist.remove("K_-")
-                eventlist.append("K__")
-            if shifted and ("K_=" in eventlist):
-                eventlist.remove("K_=")
-                eventlist.append("K_+")
-            if shifted and ("K_a" in eventlist):
-                eventlist.remove("K_a")
-                eventlist.append("K_A")
-            if shifted and ("K_b" in eventlist):
-                eventlist.remove("K_b")
-                eventlist.append("K_B")
-            if shifted and ("K_c" in eventlist):
-                eventlist.remove("K_c")
-                eventlist.append("K_C")
-            if shifted and ("K_d" in eventlist):
-                eventlist.remove("K_d")
-                eventlist.append("K_D")
-            if shifted and ("K_e" in eventlist):
-                eventlist.remove("K_e")
-                eventlist.append("K_E")
-            if shifted and ("K_f" in eventlist):
-                eventlist.remove("K_f")
-                eventlist.append("K_F")
-            if shifted and ("K_g" in eventlist):
-                eventlist.remove("K_g")
-                eventlist.append("K_G")
-            if shifted and ("K_h" in eventlist):
-                eventlist.remove("K_h")
-                eventlist.append("K_H")
-            if shifted and ("K_i" in eventlist):
-                eventlist.remove("K_i")
-                eventlist.append("K_I")
-            if shifted and ("K_j" in eventlist):
-                eventlist.remove("K_j")
-                eventlist.append("K_J")
-            if shifted and ("K_k" in eventlist):
-                eventlist.remove("K_k")
-                eventlist.append("K_K")
-            if shifted and ("K_l" in eventlist):
-                eventlist.remove("K_l")
-                eventlist.append("K_L")
-            if shifted and ("K_m" in eventlist):
-                eventlist.remove("K_m")
-                eventlist.append("K_M")
-            if shifted and ("K_n" in eventlist):
-                eventlist.remove("K_n")
-                eventlist.append("K_N")
-            if shifted and ("K_o" in eventlist):
-                eventlist.remove("K_o")
-                eventlist.append("K_O")
-            if shifted and ("K_p" in eventlist):
-                eventlist.remove("K_p")
-                eventlist.append("K_P")
-            if shifted and ("K_q" in eventlist):
-                eventlist.remove("K_q")
-                eventlist.append("K_Q")
-            if shifted and ("K_r" in eventlist):
-                eventlist.remove("K_r")
-                eventlist.append("K_R")
-            if shifted and ("K_s" in eventlist):
-                eventlist.remove("K_s")
-                eventlist.append("K_S")
-            if shifted and ("K_t" in eventlist):
-                eventlist.remove("K_t")
-                eventlist.append("K_T")
-            if shifted and ("K_u" in eventlist):
-                eventlist.remove("K_u")
-                eventlist.append("K_U")
-            if shifted and ("K_v" in eventlist):
-                eventlist.remove("K_v")
-                eventlist.append("K_V")
-            if shifted and ("K_w" in eventlist):
-                eventlist.remove("K_w")
-                eventlist.append("K_W")
-            if shifted and ("K_x" in eventlist):
-                eventlist.remove("K_x")
-                eventlist.append("K_X")
-            if shifted and ("K_y" in eventlist):
-                eventlist.remove("K_y")
-                eventlist.append("K_Y")
-            if shifted and ("K_z" in eventlist):
-                eventlist.remove("K_z")
-                eventlist.append("K_Z")
-            
-            # print(eventlist)
+            eventlist = self.get_eventlist()
                     
             
             if ("K_ESCAPE" in eventlist) or ("QUIT" in eventlist):
@@ -801,25 +884,29 @@ class GeomUI:
                     if mouse_in == 0:
                         self.sub_button_range = []
                         self.sub_button_draw_fun = []
+                        self.cmd_modenamechangeline(-1, "")
                     
                     if mouse_in == 1:
                         self.sub_button_range = [(80, 100)]
                         self.sub_button_draw_fun = [self.draw_mdpt_button]
+                        self.cmd_modenamechangeline(-1, "pt")
                         
                     if mouse_in == 2:
                         self.sub_button_range = [(80, 100), (80, 150), (80, 200), (80, 250)]
                         self.sub_button_draw_fun = [self.draw_para_button, self.draw_perp_button, self.draw_pbis_button, self.draw_abis_button]
+                        self.cmd_modenamechangeline(-1, "line")
                         
                     if mouse_in == 3:
                         self.sub_button_range = []
                         self.sub_button_draw_fun = []
+                        self.cmd_modenamechangeline(-1, "circ")
                     
                     
                     
                     '''
                     --- Test Choose Code ---
                     '''
-                    self.cmd_clearline(-1)
+                    self.load_chosen_and_mode_from_cmdline(-1)
                     
                     
                     
@@ -827,6 +914,18 @@ class GeomUI:
                     
                 if mouse_in >= 10 and mouse_in < 20:
                     self.sub_draw_choose = mouse_in - 10
+                    
+                    if self.draw_choose == 1 and mouse_in == 10:
+                        self.cmd_modenamechangeline(-1, "mdpt")
+                    if self.draw_choose == 2 and mouse_in == 10:
+                        self.cmd_modenamechangeline(-1, "para")
+                    if self.draw_choose == 2 and mouse_in == 11:
+                        self.cmd_modenamechangeline(-1, "perp")
+                    if self.draw_choose == 2 and mouse_in == 12:
+                        self.cmd_modenamechangeline(-1, "pbis")
+                    if self.draw_choose == 2 and mouse_in == 13:
+                        self.cmd_modenamechangeline(-1, "abis")
+                    
                     self.draw_init()
                     
                 if mouse_in >= 20 and mouse_in < 30:
@@ -840,24 +939,22 @@ class GeomUI:
                     moving_background_start_cy = self.cy
                     
                     
-                    
-                    '''
-                    --- Test Choose Code ---
-                    '''
-                    self.cmd_clearline(-1)
-                    
-                    
-                    
-                if mouse_in == -1 and self.draw_choose == 1:
-                    pass
                 
                 
                 
                 '''
                 --- Test Choose Code ---
                 '''
-                if 100 <= mouse_in < 1000 and self.draw_choose == 0:
+                if 100 <= mouse_in < 1000:
                     self.cmd_addname(mouse_in - 100, -1)
+                if mouse_in > 1000:
+                    fig1 = (mouse_in % 1000)
+                    fig2 = round((mouse_in - fig1) / 1000)
+                    self.cmdlines[-1] += self.geom_list[fig1 - 100].name + ' '
+                    self.cmdlines[-1] += self.geom_list[fig2 - 100].name + ' '
+                    if cvalue != None:
+                        self.cmdlines[-1] += str(cvalue[0]) + ' ' + str(cvalue[1]) + ' '
+                    self.load_chosen_and_mode_from_cmdline(-1)
                 
             
             
@@ -865,6 +962,17 @@ class GeomUI:
                 self.cx = mouse[0] - moving_background_start[0] + moving_background_start_cx
                 self.cy = mouse[1] - moving_background_start[1] + moving_background_start_cy
                 self.draw_init()
+            
+            
+            
+            '''
+            --- Test Choose Code ---
+            '''
+            if last_moving_background and (not moving_background) and (mouse[0] - moving_background_start[0])**2 + (mouse[1] - moving_background_start[1])**2 < QUICK_CHOOSE_DIST**2:
+                self.cmd_clearline(-1)
+            last_moving_background = moving_background
+            
+            
             
             if ("MOUSEMOTION" in eventlist):
                 # Moving Mouse
@@ -898,10 +1006,10 @@ class GeomUI:
                 for event in eventlist:
                     if len(event) == 3:
                         self.cmdlines[-1] += event[-1]
-                        self.load_chosen_from_cmdline(-1)
+                        self.load_chosen_and_mode_from_cmdline(-1)
                     if event == "K_BACKSPACE":
                         self.cmdlines[-1] = self.cmdlines[-1][:-1]
-                        self.load_chosen_from_cmdline(-1)
+                        self.load_chosen_and_mode_from_cmdline(-1)
                     if event == "CLEARCMDLINE":
                         self.cmd_clearline(-1)
                 
