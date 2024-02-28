@@ -20,7 +20,7 @@ def default_name (Type : str) :
     
 
 class GeomObj:
-    def __init__(self, in_name, in_type, in_method, in_item, in_tree = None):
+    def __init__(self, in_name, in_type, in_method, in_item, in_visible = True, in_movable = False, in_tree = None):
         if in_name == None:
             self.name = default_name(in_type)
         else:
@@ -32,17 +32,14 @@ class GeomObj:
         self.affect_item = []  #The items using this object to generate object
         for parent_item in in_item:
             parent_item.affect_item += [ self ]
-        # if in_tree == None:
-        #     if in_item == []:
-        #         print("Error, init of free object must provide a tree!")
-        #     self.tree = in_item[0].tree
-        # else:
-        #     self.tree = in_tree
-        ###
-        ### update list of objects in tree!
-        ###
-        self.visible = True
-        self.movable = False
+        global current_tree
+        if in_tree == None:
+            self.tree = current_tree
+        else:
+            self.tree = in_tree
+        self.tree.obj_list += [self]
+        self.visible = in_visible
+        self.movable = in_movable
         print("init_run", self.name)
 
     def getc(self, in_tuple):
@@ -100,18 +97,15 @@ class BasicMethod(Method):
         self.errorinfo = None
 
     def implement(self, in_fun, in_check, in_errorinfo): # fill more information needed
-        self.apply = lambda in_name, in_item: GeomObj(in_name, self.gen_type[0], self, in_item) # The function apply to generate a geom_object
+        self.apply = lambda in_name, in_item, in_visible = True, in_movable = False, aux_visible = False : GeomObj(in_name, self.gen_type[0], self, in_item, in_visible = in_visible, in_movable = in_movable) # The function apply to generate a geom_object
+        #aux_visible is not needed in BasicMethod, keeps for aligning with ComplexMethod
         self.fun = in_fun # The numerical function to give out coordinate or equation coefficients, input self
         self.check = in_check # The numerical boolean check function, input self
         self.errorinfo = in_errorinfo # The error info output function, input self
         self.implemented = True
 
     def implement_check_triv(self, in_fun):
-        self.apply = lambda in_name, in_item: GeomObj(in_name, self.gen_type[0], self, in_item) # The function apply to generate a geom_object with trivial nondegenerate condition
-        self.fun = in_fun
-        self.check = lambda self: True # Trivial check
-        self.errorinfo = lambda self: "" # Trivial errorinfo
-        self.implemented = True
+        self.implement(in_fun, lambda self: True, lambda self: "")
         
     
 class ComplexMethod(Method):
@@ -125,14 +119,14 @@ class ComplexMethod(Method):
                 item_list += [m_item[j[1]]]
         return item_list
 
-    def recursively_apply (final_name : str, in_item, method_list : list, indicator_list : list):
+    def recursively_apply (final_name : str, in_item, method_list : list, indicator_list : list, in_visible = True, aux_visible = False):
         m_item = []
         for i in range(len(method_list)):
             item_list = ComplexMethod.construct_in_item(in_item, m_item, indicator_list, i) 
             if i == len(method_list) - 1:
-                return method_list[i].apply(final_name, item_list) ## return the last object
+                return method_list[i].apply(final_name, item_list, in_visible = in_visible, aux_visible = aux_visible) ## return the last object
             else:
-                m_item += [method_list[i].apply(None, item_list)]
+                m_item += [method_list[i].apply(None, item_list, in_visible = aux_visible, aux_visible = aux_visible)]
 
     '''
     Class of complex methods, recursively create all needed geometric constructions.
@@ -153,7 +147,7 @@ class ComplexMethod(Method):
 
         self.method_list = in_method_list
         self.indicator_list = in_indicator_list
-        self.apply = lambda in_name, in_item: ComplexMethod.recursively_apply(in_name, in_item, self.method_list, self.indicator_list)
+        self.apply = lambda in_name, in_item, in_visible = True, aux_visible = False: ComplexMethod.recursively_apply(in_name, in_item, self.method_list, self.indicator_list, in_visible = in_visible, aux_visible = aux_visible)
         self.implemented = True
 
         
@@ -167,19 +161,50 @@ class ComplexMethod(Method):
 ## d = g a b
 ## indicator_list : [("i",0), ("i",1)], [("m",0), ("i",0)]
 ## method_list : ["f", "g"]
-        
 
-'''
+
 class GraphTree:
     def __init__(self):
-        self.root = create_empty(self) 
-        self.obj_list = [self.root]
-'''
+        self.obj_list = []
+    
+    def get_totally_free(self):
+        r = []
+        for obj in self.obj_list:
+            if obj.item == []:
+                r += [obj]
+        return r
+    
+    def get_has_free(self):
+        NotImplemented
+    
+    def get_visible(self):
+        r = []
+        for obj in self.obj_list:
+            if obj.visible:
+                r += [obj]
+        return r
 
 
+    def get_invisible(self):
+        r = []
+        for obj in self.obj_list:
+            if not obj.visible:
+                r += [obj]
+        return r
+
+    def get_movable(self):
+        r = []
+        for obj in self.obj_list:
+            if obj.movable:
+                r += [obj]
+        return r
 
 
+####################
+##    Methods     ##
+####################
 ERROR = 1e-13
+
 
 free_pt = BasicMethod("free_pt", ["Point"], ())
 free_pt_fun = lambda self : (random.gauss(0, 1), random.gauss(0, 1))
@@ -215,7 +240,14 @@ circum_center_method_list = [perp_bis, perp_bis, inx_line_line]
 circum_center_indicator_list = [[("i",0), ("i",1)], [("i", 0), ("i",2)], [("m",0), ("m",1)]]
 circum_center.implement(circum_center_method_list, circum_center_indicator_list)
 
-##circum_center = 
+
+AllMethod = []
+
+TotallyFreeBasicMethod = []
+
+HasFreeMethod = []
+
+current_tree = GraphTree()
     
 if __name__ == '__main__':
     p1 = free_pt.apply("p1",[])
@@ -237,5 +269,4 @@ if __name__ == '__main__':
     o.calcc()
     print("o calculated", o.hasc, o.c)
     print( [i.name for i in p1.affect_item] )
-    ls = [p1,p2,p3,l1,l,o]
     
