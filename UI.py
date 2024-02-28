@@ -1263,6 +1263,7 @@ if __name__ == "__main__":
     geom_list = [c1, c2, c3, c4, l1, l2, l3, l4, l5, l6, l7, l8, p1, p2, p3, p4]
 
     """
+    """
     p1 = GeomTool.free_pt.apply("p1",[])
     exlst = []
     for _ in range(80):
@@ -1279,7 +1280,30 @@ if __name__ == "__main__":
     l1.calcc()
     p4.calcc()
     l.calcc()
-    geom_list = [p1,p2,p3,l1,l2,l,p4] + exlst
+    geom_list = [p1,p2,p3,l1,l2,l,p4]
+    """
+
+    p1 = GeomTool.free_pt.apply("p1",[])
+    print("p1 created")
+    p2 = GeomTool.free_pt.apply("p2",[])
+    print("p2 created")
+    p3 = GeomTool.mid_pt.apply("p3", [p1, p2])
+    print("p3 created")
+    p4 = GeomTool.free_pt.apply("p4", [])
+    l1 = GeomTool.perp_bis.apply("l1", [p1, p2])
+    print("l1 created", l1)
+    l = GeomTool.line.apply("l", [p1, p3])
+    print("l created")
+    print(type (GeomTool.circum_center.apply))
+    o = GeomTool.circum_center.apply("o", [p1, p2, p4])
+    print("o created")
+    l1.calcc()
+    p3.calcc()
+    print("l1 calculated", l1.hasc, l1.c)
+    o.calcc()
+    print("o calculated", o.hasc, o.c)
+    print( [i.name for i in p1.affect_item] )
+    geom_list = [p1,p2,p3,l1,l,p4,o]
     test = GeomUI(geom_list)
     test.run()
 
