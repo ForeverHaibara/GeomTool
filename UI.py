@@ -10,6 +10,7 @@ KEY_EQUALS / KEY_PLUS: Zoom In
 KEY_CONTROL: Start CMD
 KEY_ALT: Print TAG
 KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT: Move Screen
+KEY_TAB: Full Screen
 
 !!!
 Test Choose Code involved
@@ -24,6 +25,7 @@ ORIGINAL_SCREEN_WIDTH = 800
 ORIGINAL_SCREEN_HEIGHT = 400
 ORIGINAL_DRAW_WIDTH = 650
 ORIGINAL_DRAW_HEIGHT = 400
+
 
 BACKGROUND_COLOR = (244, 244, 244)
 
@@ -99,12 +101,13 @@ def fig_intersection(fig1, fig2):
 
 class GeomUI:
     def __init__(self, in_geom_list):
-        pygame.init()
         
         root = tkinter.Tk()
         self.FULLWIDTH = root.winfo_screenwidth()
         self.FULLHEIGHT = root.winfo_screenheight()
         root.destroy()
+        
+        pygame.init()
         
         self.SCREEN_WIDTH = ORIGINAL_SCREEN_WIDTH
         self.SCREEN_HEIGHT = ORIGINAL_SCREEN_HEIGHT
@@ -560,6 +563,8 @@ class GeomUI:
                 eventlist.append("K_ENTER")
             if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_BACKSPACE):
                 eventlist.append("K_BACKSPACE")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_TAB):
+                eventlist.append("K_TAB")
             if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_SPACE):
                 eventlist.append("K_ ")
             if (event.type == pygame.KEYDOWN) and ((event.key == pygame.K_MINUS) or (event.key == pygame.K_KP_MINUS)):
@@ -1061,6 +1066,21 @@ class GeomUI:
                 self.draw_init()
             if ("K_ALT" in eventlist) and ("K_ALT" not in last_eventlist):
                 self.yn_button_pressed[1] = -self.yn_button_pressed[1]
+                self.draw_init()
+            if ("K_TAB" in eventlist) and ("K_TAB" not in last_eventlist):
+                self.yn_button_pressed[2] = -self.yn_button_pressed[2]
+                if self.yn_button_pressed[2] == 1:
+                    self.SCREEN_WIDTH = self.FULLWIDTH
+                    self.SCREEN_HEIGHT = self.FULLHEIGHT
+                    self.CMD_SHOW_LINE = int((self.DRAW_HEIGHT - 60)/CMD_LINE_HEIGHT)
+                    self.CMD_LINE_CHAR = int((self.SCREEN_WIDTH - self.DRAW_WIDTH - 30) / 12)
+                    pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), pygame.FULLSCREEN)
+                if self.yn_button_pressed[2] == -1:
+                    self.SCREEN_WIDTH = ORIGINAL_SCREEN_WIDTH
+                    self.SCREEN_HEIGHT = ORIGINAL_SCREEN_HEIGHT
+                    self.CMD_SHOW_LINE = int((self.DRAW_HEIGHT - 60)/CMD_LINE_HEIGHT)
+                    self.CMD_LINE_CHAR = int((self.SCREEN_WIDTH - self.DRAW_WIDTH - 30) / 12)
+                    pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
                 self.draw_init()
             
             
