@@ -1,4 +1,4 @@
-import pygame
+import pygame, tkinter
 import GeomTool
 import Explainer
 
@@ -20,11 +20,12 @@ in CMD mode KEY_SHIFT + KEY_BACKSPACE: Clearline
 
 """
 
-SCREEN_WIDTH = 1500
-SCREEN_HEIGHT = 900
+ORIGINAL_SCREEN_WIDTH = 1600
+ORIGINAL_SCREEN_HEIGHT = 800
+ORIGINAL_DRAW_WIDTH = 1100
+ORIGINAL_DRAW_HEIGHT = 800
+
 BACKGROUND_COLOR = (244, 244, 244)
-DRAW_WIDTH = 800
-DRAW_HEIGHT = 700
 
 FIGURE_COLOR = (0, 0, 0)
 TEXT_COLOR = (0, 0, 0)
@@ -40,12 +41,10 @@ TAG_COLOR = (237, 56, 115)
 GEOM_PICK_DIST = 9.4
 QUICK_CHOOSE_DIST = 4
 
-CMD_LINE_HEIGHT = 25
-CMD_SHOW_LINE = int((DRAW_HEIGHT - 60)/CMD_LINE_HEIGHT)
-CMD_LINE_CHAR = 50
-
 # Geometry setting
 ERROR = 1e-13
+
+CMD_LINE_HEIGHT = 25
 
 def choose_order_of_object(in_type):
     if in_type == "Line":
@@ -101,22 +100,34 @@ def fig_intersection(fig1, fig2):
 class GeomUI:
     def __init__(self, in_geom_list):
         pygame.init()
-        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-        pygame.display.set_caption('Geometry Plot')
+        
+        root = tkinter.Tk()
+        self.FULLWIDTH = root.winfo_screenwidth()
+        self.FULLHEIGHT = root.winfo_screenheight()
+        root.destroy()
+        
+        self.SCREEN_WIDTH = ORIGINAL_SCREEN_WIDTH
+        self.SCREEN_HEIGHT = ORIGINAL_SCREEN_HEIGHT
+        self.DRAW_WIDTH = ORIGINAL_DRAW_WIDTH
+        self.DRAW_HEIGHT = ORIGINAL_DRAW_HEIGHT
+        
+        # self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), pygame.FULLSCREEN)
+        self.screen = pygame.display.set_mode((ORIGINAL_SCREEN_WIDTH, ORIGINAL_SCREEN_HEIGHT))
+        pygame.display.set_caption('GeomUI')
         
         self.button_range = [(30, 100), (30, 150), (30, 200), (30, 250)]
         self.button_draw_fun = [self.draw_mouse_button, self.draw_point_button, self.draw_line_button, self.draw_circle_button]
         self.sub_button_range = []
         self.sub_button_draw_fun = []
-        self.yn_button_range = [(30, 400), (30, 450)]
-        self.yn_button_draw_fun = [self.draw_cmd_button, self.draw_tag_button]
-        self.yn_button_pressed = [-1, 1]
+        self.yn_button_range = [(30, 400), (30, 450), (30, 500)]
+        self.yn_button_draw_fun = [self.draw_cmd_button, self.draw_tag_button, self.draw_fullscreen_button]
+        self.yn_button_pressed = [-1, 1, -1]
         self.draw_choose = 0
         self.sub_draw_choose = -1
         
-        self.cx = DRAW_WIDTH / 2 + 0.01919810114514
-        self.cy = DRAW_HEIGHT / 2 + 0.01145141919810
-        self.r = (DRAW_WIDTH + DRAW_HEIGHT) / 9 + 0.114514 + 0.1919810 + ERROR
+        self.cx = self.DRAW_WIDTH / 2 + 0.01919810114514
+        self.cy = self.DRAW_HEIGHT / 2 + 0.01145141919810
+        self.r = (self.DRAW_WIDTH + self.DRAW_HEIGHT) / 9 + 0.114514 + 0.1919810 + ERROR
         
         self.geom_list = in_geom_list # All geom objects
         self.geom_show = [_ for _ in range(len(in_geom_list))] # A True False sequence that show a geom object or not
@@ -125,6 +136,8 @@ class GeomUI:
         
         self.cmdlines = ["GeomToolKernel Version 1.0", "All rights reserved to Euclid", ""]
         self.cmdline_from = [0, 0, 1]
+        self.CMD_SHOW_LINE = int((self.DRAW_HEIGHT - 80)/CMD_LINE_HEIGHT)
+        self.CMD_LINE_CHAR = int((self.SCREEN_WIDTH - self.DRAW_WIDTH - 30) / 12)
     
     def choose_fig_list(self, mouse, allows = ("Point", "Line", "Circle")):
         # Choose a fig in geom_list that has geom_show
@@ -220,19 +233,19 @@ class GeomUI:
     
         # Draw command area
         if self.yn_button_pressed[0] == 1:
-            pygame.draw.rect(self.screen, BACKGROUND_COLOR, pygame.Rect(2 + DRAW_WIDTH, 2, SCREEN_WIDTH - DRAW_WIDTH - 5, DRAW_HEIGHT - 5))
-            pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [2 + DRAW_WIDTH, 2, SCREEN_WIDTH - DRAW_WIDTH - 5, DRAW_HEIGHT - 5], 1)
+            pygame.draw.rect(self.screen, BACKGROUND_COLOR, pygame.Rect(2 + self.DRAW_WIDTH, 2, self.SCREEN_WIDTH - self.DRAW_WIDTH - 5, self.DRAW_HEIGHT - 5))
+            pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [2 + self.DRAW_WIDTH, 2, self.SCREEN_WIDTH - self.DRAW_WIDTH - 5, self.DRAW_HEIGHT - 5], 1)
             textlist = []
             for line_num in range(len(self.cmdlines)):
                 linetext = ('>>> ' if self.cmdline_from[line_num] == 1 else 'GT: ') + self.cmdlines[line_num] + ('|' if line_num == len(self.cmdlines) - 1 else '')
                 newline = True
                 while len(linetext) > 0:
-                    textlist.append(('    ' if (not newline) else '') + (linetext[:CMD_LINE_CHAR - 4]) if (not newline) else linetext[:CMD_LINE_CHAR])
-                    linetext = (linetext[CMD_LINE_CHAR - 4:]) if (not newline) else linetext[CMD_LINE_CHAR:]
+                    textlist.append(('    ' if (not newline) else '') + (linetext[:self.CMD_LINE_CHAR - 4]) if (not newline) else linetext[:self.CMD_LINE_CHAR])
+                    linetext = (linetext[self.CMD_LINE_CHAR - 4:]) if (not newline) else linetext[self.CMD_LINE_CHAR:]
                     newline = False
             line_num = 0
-            for linetext in textlist[-CMD_SHOW_LINE:]:
-                self.screen.blit(pygame.font.SysFont('Consolas', 20, bold=False).render(linetext , True , TEXT_COLOR), (12 + DRAW_WIDTH, line_num * CMD_LINE_HEIGHT + 12))
+            for linetext in textlist[-self.CMD_SHOW_LINE:]:
+                self.screen.blit(pygame.font.SysFont('Consolas', 20, bold=False).render(linetext , True , TEXT_COLOR), (12 + self.DRAW_WIDTH, line_num * CMD_LINE_HEIGHT + 12))
                 line_num += 1
 
 
@@ -400,6 +413,18 @@ class GeomUI:
         pts = [(width-14, height-14), (width-14, height-2), (width+6, height-2), (width+12, height-8), (width+6, height-14)]
         pygame.draw.lines(self.screen, BUTTON_COLOR_DARK, closed=True, points=pts, width=2)
         self.screen.blit(pygame.font.SysFont('Corbel', 18, bold=True).render("tag" , True , BUTTON_COLOR_DARK), (width-13, height))
+        
+    def draw_fullscreen_button(self, width, height, pressed):
+        # pressed = -1, 0, 1
+        if pressed == 1:
+            pygame.draw.rect(self.screen, BUTTON_COLOR_MID, pygame.Rect(width - 20, height - 20, 40, 40))
+        if pressed == -1:
+            pygame.draw.rect(self.screen, BACKGROUND_COLOR, pygame.Rect(width - 20, height - 20, 40, 40))
+        if pressed == 0:
+            pygame.draw.rect(self.screen, BUTTON_COLOR_LIGHT, pygame.Rect(width - 20, height - 20, 40, 40))
+        pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [width - 20, height - 20, 40, 40], 1)
+        self.screen.blit(pygame.font.SysFont('Corbel', 18, bold=True).render("full" , True , BUTTON_COLOR_DARK), (width-13, height-15))
+        self.screen.blit(pygame.font.SysFont('Corbel', 18, bold=True).render("scrn" , True , BUTTON_COLOR_DARK), (width-15, height))
     
     # Functions to draw Geometric Figures
     
@@ -411,15 +436,15 @@ class GeomUI:
         if abs(c[0]) < ERROR:
             ht = self.cc((0, -c[2]/c[1]))[1]
             point1 = (0, ht)
-            point2 = (SCREEN_WIDTH, ht)
+            point2 = (self.SCREEN_WIDTH, ht)
         else:
             if abs(c[1]) < ERROR:
                 wd = self.cc((-c[2]/c[0], 0))[0]
                 point1 = (wd, 0)
-                point2 = (wd, SCREEN_HEIGHT)
+                point2 = (wd, self.SCREEN_HEIGHT)
             else:
                 lf = self.cc2((0, 0))[0]
-                rt = self.cc2((SCREEN_WIDTH, 0))[0]
+                rt = self.cc2((self.SCREEN_WIDTH, 0))[0]
                 point1 = self.cc((lf, (-c[2]-c[0]*lf)/c[1]))
                 point2 = self.cc((rt, (-c[2]-c[0]*rt)/c[1]))
         pygame.draw.line(self.screen, color, point1, point2, width=width)
@@ -531,7 +556,7 @@ class GeomUI:
                 eventlist.append("KEYDOWN")
             if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_ESCAPE):
                 eventlist.append("K_ESCAPE")
-            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP_ENTER):
+            if (event.type == pygame.KEYDOWN) and ((event.key == pygame.K_RETURN) or (event.key == pygame.K_KP_ENTER)):
                 eventlist.append("K_ENTER")
             if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_BACKSPACE):
                 eventlist.append("K_BACKSPACE")
@@ -951,6 +976,20 @@ class GeomUI:
                     
                 if mouse_in >= 20 and mouse_in < 30:
                     self.yn_button_pressed[mouse_in - 20] = -self.yn_button_pressed[mouse_in - 20]
+                    
+                    if mouse_in - 20 == 2 and self.yn_button_pressed[2] == 1:
+                        self.SCREEN_WIDTH = self.FULLWIDTH
+                        self.SCREEN_HEIGHT = self.FULLHEIGHT
+                        self.CMD_SHOW_LINE = int((self.DRAW_HEIGHT - 60)/CMD_LINE_HEIGHT)
+                        self.CMD_LINE_CHAR = int((self.SCREEN_WIDTH - self.DRAW_WIDTH - 30) / 12)
+                        pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), pygame.FULLSCREEN)
+                    if mouse_in - 20 == 2 and self.yn_button_pressed[2] == -1:
+                        self.SCREEN_WIDTH = ORIGINAL_SCREEN_WIDTH
+                        self.SCREEN_HEIGHT = ORIGINAL_SCREEN_HEIGHT
+                        self.CMD_SHOW_LINE = int((self.DRAW_HEIGHT - 60)/CMD_LINE_HEIGHT)
+                        self.CMD_LINE_CHAR = int((self.SCREEN_WIDTH - self.DRAW_WIDTH - 30) / 12)
+                        pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
+                    
                     self.draw_init()
                     
                 if mouse_in == -1 and self.draw_choose == 0:
@@ -1054,48 +1093,48 @@ class GeomUI:
                     # The moment when K_MINUS is pressed
                     RATIO = 5 / 6
                     self.r *= RATIO
-                    self.cx = DRAW_WIDTH/2 + (self.cx - DRAW_WIDTH/2) * RATIO
-                    self.cy = DRAW_HEIGHT/2 + (self.cy - DRAW_HEIGHT/2) * RATIO
+                    self.cx = self.DRAW_WIDTH/2 + (self.cx - self.DRAW_WIDTH/2) * RATIO
+                    self.cy = self.DRAW_HEIGHT/2 + (self.cy - self.DRAW_HEIGHT/2) * RATIO
                     self.draw_init()
                     
                 if ("K_=" in eventlist) and ("K_=" not in last_eventlist):
                     # The moment when K_EQUALS is pressed
                     RATIO = 6 / 5
                     self.r *= RATIO
-                    self.cx = DRAW_WIDTH/2 + (self.cx - DRAW_WIDTH/2) * RATIO
-                    self.cy = DRAW_HEIGHT/2 + (self.cy - DRAW_HEIGHT/2) * RATIO
+                    self.cx = self.DRAW_WIDTH/2 + (self.cx - self.DRAW_WIDTH/2) * RATIO
+                    self.cy = self.DRAW_HEIGHT/2 + (self.cy - self.DRAW_HEIGHT/2) * RATIO
                     self.draw_init()
                 
                 if ("K_+" in eventlist) and ("K_+" not in last_eventlist):
                     # The moment when K_EQUALS is pressed
                     RATIO = 6 / 5
                     self.r *= RATIO
-                    self.cx = DRAW_WIDTH/2 + (self.cx - DRAW_WIDTH/2) * RATIO
-                    self.cy = DRAW_HEIGHT/2 + (self.cy - DRAW_HEIGHT/2) * RATIO
+                    self.cx = self.DRAW_WIDTH/2 + (self.cx - self.DRAW_WIDTH/2) * RATIO
+                    self.cy = self.DRAW_HEIGHT/2 + (self.cy - self.DRAW_HEIGHT/2) * RATIO
                     self.draw_init()
                 
                 if ("K_r" in eventlist) and ("K_r" not in last_eventlist):
                     # The moment when K_r is pressed
-                    self.cx = DRAW_WIDTH / 2 + 0.01919810114514
-                    self.cy = DRAW_HEIGHT / 2 + 0.01145141919810
-                    self.r = (DRAW_WIDTH + DRAW_HEIGHT) / 9 + 0.114514 + 0.1919810 + ERROR
+                    self.cx = self.DRAW_WIDTH / 2 + 0.01919810114514
+                    self.cy = self.DRAW_HEIGHT / 2 + 0.01145141919810
+                    self.r = (self.DRAW_WIDTH + self.DRAW_HEIGHT) / 9 + 0.114514 + 0.1919810 + ERROR
                     self.draw_init()
                     
                 if ("K_RIGHT" in eventlist) and ("K_RIGHT" not in last_eventlist):
                     RATIO = 1/7
-                    self.cx -= DRAW_WIDTH * RATIO
+                    self.cx -= self.DRAW_WIDTH * RATIO
                     self.draw_init()
                 if ("K_LEFT" in eventlist) and ("K_LEFT" not in last_eventlist):
                     RATIO = 1/7
-                    self.cx += DRAW_WIDTH * RATIO
+                    self.cx += self.DRAW_WIDTH * RATIO
                     self.draw_init()
                 if ("K_UP" in eventlist) and ("K_UP" not in last_eventlist):
                     RATIO = 1/7
-                    self.cy += DRAW_HEIGHT * RATIO
+                    self.cy += self.DRAW_HEIGHT * RATIO
                     self.draw_init()
                 if ("K_DOWN" in eventlist) and ("K_DOWN" not in last_eventlist):
                     RATIO = 1/7
-                    self.cy -= DRAW_HEIGHT * RATIO
+                    self.cy -= self.DRAW_HEIGHT * RATIO
                     self.draw_init()
             
             last_eventlist = eventlist
