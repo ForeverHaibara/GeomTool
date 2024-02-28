@@ -442,10 +442,6 @@ class GeomUI:
             c0 = self.cc2(mouse)
             return self.r * abs(c[2] - ((c0[0] - c[0]) * (c0[0] - c[0]) + (c0[1] - c[1]) * (c0[1] - c[1])) ** (1/2))
         return 1e10
-
-    def cmd_addname(self, fig_num, line_num):
-        self.cmdlines[line_num] += self.geom_list[fig_num].name + ' '
-        self.load_chosen_and_mode_from_cmdline(line_num)
         
     def cmd_clearline(self, line_num):
         self.cmdlines[line_num] = ''
@@ -458,6 +454,13 @@ class GeomUI:
         self.draw_init()
         
     def cmd_modenamechangeline(self, line_num, mode_name, mode_list = ["mdpt", "pt", "line", "para", "perp", "pbis", "abis", "circ"]):
+        if mode_name in mode_list:
+            self.cmdlines[line_num] = mode_name + ' '
+        else:
+            self.cmdlines[line_num] = ''
+        self.load_chosen_and_mode_from_cmdline(line_num)
+        
+        '''
         success = False
         for change_name in mode_list:
             if change_name + " " in self.cmdlines[line_num]:
@@ -466,6 +469,7 @@ class GeomUI:
                 break
         if not success:
             self.cmdlines[line_num] += mode_name + " " if mode_name != "" else ""
+        '''
     
     def cmd_modechange(self, mode_name):
         if mode_name == "pt":
@@ -819,6 +823,8 @@ class GeomUI:
                         
                 '''
                 Choose Test! Only Testing Circle and Line chooses should be rewrited
+                In later versions, these chooses depend on cmdlines
+                
                 '''
                 if self.draw_choose == 2:
                     self.choose_fig1(mouse, "Line")
@@ -946,7 +952,8 @@ class GeomUI:
                 --- Test Choose Code ---
                 '''
                 if 100 <= mouse_in < 1000:
-                    self.cmd_addname(mouse_in - 100, -1)
+                    self.cmdlines[-1] += self.geom_list[mouse_in - 100].name + ' '
+                    self.load_chosen_and_mode_from_cmdline(-1)
                 if mouse_in > 1000:
                     fig1 = (mouse_in % 1000)
                     fig2 = round((mouse_in - fig1) / 1000)
