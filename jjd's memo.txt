@@ -54,3 +54,10 @@ check 构造方式相同的点 不能允许存在??
 proof same Point
 check same Point
 
+
+记录has free, all free
+
+未来要检查是否生成过了完全相同的构造
+
+不重名系统
+
