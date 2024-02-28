@@ -88,7 +88,7 @@ line_fun = lambda in_name: lambda in_item: (in_item[0].c[1] - in_item[1].c[1], i
 line.generate(line_fun, line_check, line_errorinfo)
 
 on_line = Method("on_line", "Point", ("Line"))
-def on_line_fun (in_item):
+def on_line_fun (in_name, in_item):
     if abs(in_item[0].c[0]) < ERROR:
         return (random.gauss(0, 1), -in_item[0].c[2] / in_item[0].c[1])
     if abs(in_item[0].c[1]) < ERROR:
@@ -98,29 +98,29 @@ def on_line_fun (in_item):
 on_line.generate_check_triv(on_line_fun)
 
 circ = Method("circ", "Circle", ("Point", "Point"))
-circ_fun = lambda in_item: (in_item[0].c[0], in_item[0].c[1], ((in_item[0].c[0] - in_item[1].c[0]) * (in_item[0].c[0] - in_item[1].c[0]) + (in_item[0].c[1] - in_item[1].c[1]) * (in_item[0].c[1] - in_item[1].c[1]))**(1/2))
+circ_fun = lambda in_name: lambda in_item: (in_item[0].c[0], in_item[0].c[1], ((in_item[0].c[0] - in_item[1].c[0]) * (in_item[0].c[0] - in_item[1].c[0]) + (in_item[0].c[1] - in_item[1].c[1]) * (in_item[0].c[1] - in_item[1].c[1]))**(1/2))
 circ.generate_check_triv(circ_fun)
 
 on_circ = Method("on_circ", "Point", ("Circle"))
-def on_circ_fun (in_item):
+def on_circ_fun (in_name, in_item):
     ang = random.uniform(-math.pi, math.pi)
     return (math.cos(ang) * in_item[0].c[2] + in_item[0].c[0], math.sin(ang) * in_item[0].c[2] + in_item[0].c[0])
 on_circ.generate_check_triv(on_circ_fun)
 
 mid_pt = Method("mid_pt", "Point", ("Point", "Point"))
-mid_pt_fun = lambda in_item: ((in_item[0].c[0] + in_item[1].c[0]) / 2, (in_item[0].c[1] + in_item[1].c[1]) / 2)
+mid_pt_fun = lambda in_name: lambda in_item: ((in_item[0].c[0] + in_item[1].c[0]) / 2, (in_item[0].c[1] + in_item[1].c[1]) / 2)
 mid_pt.generate_check_triv(mid_pt_fun)
 
 para_line = Method("para_line", "Line", ("Point", "Line"))
-para_line_fun = lambda in_item: (in_item[1].c[0], in_item[1].c[1], -in_item[1].c[0] * in_item[0].c[0] - in_item[1].c[1] * in_item[0].c[1])
+para_line_fun = lambda in_name: lambda in_item: (in_item[1].c[0], in_item[1].c[1], -in_item[1].c[0] * in_item[0].c[0] - in_item[1].c[1] * in_item[0].c[1])
 para_line.generate_check_triv(para_line_fun)
 
 para_line2 = Method("para_line2", "Line", ("Point", "Point", "Point"))
-para_line2_check = lambda in_item: line_check(["", in_item[1], in_item[2]])
-para_line2_errorinfo = lambda in_item: line_errorinfo(["", in_item[1], in_item[2]])
-def para_line2_fun(in_item):
-    line1 = line.apply(["", in_item[1], in_item[2]])
-    line2 = para_line.apply(["", in_item[0], line1])
+para_line2_check = lambda in_name: lambda in_item: line_check(in_name, ["", in_item[1], in_item[2]])
+para_line2_errorinfo = lambda in_name: lambda in_item: line_errorinfo(in_name, ["", in_item[1], in_item[2]])
+def para_line2_fun(in_name, in_item):
+    line1 = line.apply(in_name, ["", in_item[1], in_item[2]])
+    line2 = para_line.apply(in_name, ["", in_item[0], line1])
     line2.calcc()
     return line2.c
 para_line2.generate(para_line2_fun, para_line2_check, para_line2_errorinfo)
