@@ -59,6 +59,8 @@ def choose_order_of_object(in_type):
 
 def numberform(realnum):
     # String a number in a relatively short form
+    if abs(realnum) < ERROR:
+        return "0.000"
     if abs(realnum) < 1e-2 or abs(realnum) > 1e3:
         return "{:.3e}".format(realnum)
     else:
