@@ -170,6 +170,7 @@ class GeomUI:
         outlst = []
         if len(lst) < 2:
             self.geom_picked_list = lst
+            return self.cc2(mouse)
         else:
             for fig_num1 in range(len(lst)):
                 for fig_num2 in range(fig_num1 + 1, len(lst)):
@@ -186,7 +187,7 @@ class GeomUI:
                     return None
             else:
                 self.geom_picked_list = [lst[0]]
-                return None
+                return self.cc2(mouse)
     
     def draw_fig(self):
         
@@ -817,7 +818,16 @@ class GeomUI:
         return eventlist
         
         # print(eventlist)
-
+        
+    def run_kernel(self):
+        
+        '''
+        Kernel Run Here
+        '''
+        
+        self.cmdlines.append("")
+        self.cmdline_from.append(1)
+        self.cmd_clearline(-1)
 
     def run(self):
         self.draw_init()
@@ -852,10 +862,19 @@ class GeomUI:
                 if bt[0]-20 <= mouse[0] <= bt[0]+20 and bt[1]-20 <= mouse[1] <= bt[1]+20:
                     mouse_in = button_num + 20
             
+            exp = Explainer.ExplainLine(self.cmdlines[-1], self.geom_list)
+            
             if mouse_in == -1:
                 
-                # Picking Geometric Figures but depend on the draw_choose mode
-                if self.draw_choose == 1:
+                expwait = Explainer.ExplainLine(self.cmdlines[-1], self.geom_list).waitfor()
+                
+                if "Pt" not in expwait:
+                    self.choose_fig1(mouse, expwait)
+                    if len(self.geom_picked_list) == 0:
+                        mouse_in = -1
+                    else:
+                        mouse_in = self.geom_picked_list[0] + 100
+                else:
                     cvalue = self.choose_fig2(mouse)
                     if len(self.geom_picked_list) == 0:
                         mouse_in = -1
@@ -863,38 +882,7 @@ class GeomUI:
                         mouse_in = self.geom_picked_list[0] + 100
                     else:
                         mouse_in = (self.geom_picked_list[0] + 100) * 1000 + (self.geom_picked_list[1] + 100)
-                if self.draw_choose == 0:
-                    self.choose_fig1(mouse)
-                    if len(self.geom_picked_list) == 0:
-                        mouse_in = -1
-                    else:
-                        mouse_in = self.geom_picked_list[0] + 100
-                        
-                        
-                '''-----------------------------------------------------------------
-                
-                                  Item Picking announcement:                        
-                
-                
-                This is only a choose Test! Only Testing Circle and Line picks      
-                In later versions, these chooses depend on cmdlines   !!!!!!!!!!!!!!
-                
-                -----------------------------------------------------------------'''
-                
-                if self.draw_choose == 2:
-                    self.choose_fig1(mouse, "Line")
-                    if len(self.geom_picked_list) == 0:
-                        mouse_in = -1
-                    else:
-                        mouse_in = self.geom_picked_list[0] + 100
-                if self.draw_choose == 3:
-                    self.choose_fig1(mouse, "Circle")
-                    if len(self.geom_picked_list) == 0:
-                        mouse_in = -1
-                    else:
-                        mouse_in = self.geom_picked_list[0] + 100
                     
-            
             if mouse_in != last_mouse_in:
                 
                 # Update Geometric Figures
@@ -930,7 +918,6 @@ class GeomUI:
             # MOUSE and KEY events
             
             eventlist = self.get_eventlist()
-                    
             
             if ("K_ESCAPE" in eventlist) or ("QUIT" in eventlist):
                 # Quit UI
@@ -939,6 +926,7 @@ class GeomUI:
             if ("MOUSEBUTTONDOWN" in eventlist) and ("MOUSEBUTTONDOWN" not in last_eventlist):
                 # The moment when the mouse is clicked on the button
                 if mouse_in >= 0 and mouse_in < 10:
+                    cvalue = None
                     self.draw_choose = mouse_in
                     self.sub_draw_choose = -1
                     
@@ -966,6 +954,7 @@ class GeomUI:
                     self.draw_init()
                     
                 if mouse_in >= 10 and mouse_in < 20:
+                    cvalue = None
                     self.sub_draw_choose = mouse_in - 10
                     
                     if self.draw_choose == 1 and mouse_in == 10:
@@ -982,6 +971,7 @@ class GeomUI:
                     self.draw_init()
                     
                 if mouse_in >= 20 and mouse_in < 30:
+                    cvalue = None
                     self.yn_button_pressed[mouse_in - 20] = -self.yn_button_pressed[mouse_in - 20]
                     
                     if mouse_in - 20 == 2 and self.yn_button_pressed[2] == 1:
@@ -999,14 +989,18 @@ class GeomUI:
                     
                     self.draw_init()
                     
+                    
+                '''
+                --- Move Code ---
+                '''
+                
                 if mouse_in == -1 and self.draw_choose == 0:
+                    cvalue = None
                     moving_background = True
                     moving_background_start = mouse
                     moving_background_start_cx = self.cx
                     moving_background_start_cy = self.cy
                     
-                    
-                
                 
                 
                 '''
@@ -1020,9 +1014,14 @@ class GeomUI:
                     fig2 = round((mouse_in - fig1) / 1000)
                     self.cmdlines[-1] += self.geom_list[fig1 - 100].name + ' '
                     self.cmdlines[-1] += self.geom_list[fig2 - 100].name + ' '
-                    if cvalue != None:
-                        self.cmdlines[-1] += numberform(cvalue[0]) + ' ' + numberform(cvalue[1]) + ' '
-                    self.load_chosen_and_mode_from_cmdline(-1)
+                if "Pt" in expwait and cvalue != None:
+                    self.cmdlines[-1] += numberform(cvalue[0]) + ' ' + numberform(cvalue[1]) + ' '
+                self.load_chosen_and_mode_from_cmdline(-1)
+                cvalue = None
+                
+                exp = Explainer.ExplainLine(self.cmdlines[-1], self.geom_list)
+                if len(exp.waitfor()) == 0:
+                    self.run_kernel()
                 
             
             
@@ -1098,15 +1097,7 @@ class GeomUI:
                     if event == "CLEARCMDLINE":
                         self.cmd_clearline(-1)
                     if event == "K_ENTER":
-                        self.cmdlines.append("")
-                        
-                        '''
-                        Need to wait for Kernel Corespond !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                        '''
-                        
-                        self.cmdline_from.append(1)
-                        self.cmd_clearline(-1)
-                        
+                        self.run_kernel()
             
                 
             if ("KEYDOWN" in eventlist) and ("KEYDOWN" not in last_eventlist) and (self.yn_button_pressed[0] == -1):
