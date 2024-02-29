@@ -69,7 +69,7 @@ class GeomObj:
         # only BasicMethod provides calc method
         self.hasc = True
 
-    def check(self):
+    def basic_check(self): # only after all depending objects hasc, this method would be safe. Do NOT use this function alone! 
         if len(self.item) != len(self.method.item_type):
             return False
         for item_num in range(len(self.item)):
@@ -78,6 +78,19 @@ class GeomObj:
             if str(type(self.method.item_type[item_num])) == "<class '__main__.GeomObj'>" and not self.method.item_type[item_num].hasc:
                 return False
         return self.method.check(self)
+        
+    def check_and_calcc(self): # recursively check and calc, return False when any depending obj check fails, return true and calc c for all depending obj. This may cause some depending objs being calculated while self is not.
+        for parent_item in self.item:
+            parent_item_check = parent_item.check_and_calcc()
+            if not parent_item_check:
+                return False
+        if self.basic_check():
+            if self.hasc == False: #only calc when current obj is not already calculated
+                self.c = self.method.fun(self)
+                self.hasc = True
+            return True
+        else:
+            return False
     
     def errorinfo(self):
         if len(self.item) != len(self.method.item_type):
@@ -104,9 +117,10 @@ class GeomObj:
         for parent_item in self.item:
             if parent_item.type != "Others" and (not parent_item.hasc):
                 allhasc = False
-        if allhasc and self.check():
-            self.c = self.method.fun(self) # Calculate the coordinate without error check and errorinfo print
-            self.hasc = True
+        if allhasc and self.method.check(self):
+            if not self.hasc :
+                self.c = self.method.fun(self) # Calculate the coordinate without error check and errorinfo print
+                self.hasc = True
     
     def update(self):
         for obj in self.affect_item:

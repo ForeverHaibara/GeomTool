@@ -85,8 +85,7 @@ def runline(in_line, in_graph_tree):
     if kerneluse not in (None, []):
         defaultname = GeomTool.default_name(kerneluse[0].gen_type[0])
         newobj = kerneluse[0].apply(defaultname, kerneluse[1])
-        if newobj.check():
-            newobj.calcc()
+        new_obj_check = newobj.check_and_calcc() # Bool
         
         if len(kerneluse) == 2:       
             pass
