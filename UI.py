@@ -20,6 +20,8 @@ Test Choose Code involved
 in CMD mode KEY_BACKSPACE: Backspace
 in CMD mode KEY_SHIFT + KEY_BACKSPACE: Clearline
 
+in CMD mode create object and show object info
+
 """
 
 ORIGINAL_SCREEN_WIDTH = 1400
