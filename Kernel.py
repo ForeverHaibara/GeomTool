@@ -5,9 +5,12 @@ def runline(in_line, in_graph_tree):
         ev = eval(in_line)
         return str(ev)
     except:
-        return "Cannot Run"
+        pass
     
     exp = Explainer.ExplainLine(in_line, in_graph_tree.obj_list)
+    if len(exp.wordlist) == 0:
+        return ""
+    
     if len(exp.wordlist) == 1 and exp.isnameobj(exp.wordlist[0]) != None:
         return str(exp.isnameobj(exp.wordlist[0]))
     
@@ -26,4 +29,4 @@ def runline(in_line, in_graph_tree):
         return defaultname + ' is created'
         
     
-    return "" # Should return information want to print
+    return "Failed to run '" + in_line + "'" # Should return information want to print
