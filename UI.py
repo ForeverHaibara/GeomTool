@@ -1229,63 +1229,7 @@ class GeomUI:
             pygame.display.update()
         
 if __name__ == "__main__":
-    """
-    c1 = GeomTool.Geom_object("c1", "Circle", None, None)
-    c1.getc((0,0,1))
-    c2 = GeomTool.Geom_object("c2", "Circle", None, None)
-    c2.getc((3,3,3.24))
-    c3 = GeomTool.Geom_object("c3", "Circle", None, None)
-    c3.getc((0.7,0.7,0.3))
-    c4 = GeomTool.Geom_object("c4", "Circle", None, None)
-    c4.getc((-0.8,-0.4,2.3))
-    l1 = GeomTool.Geom_object("l1", "Line", None, None)
-    l1.getc((-1,0,0))
-    l2 = GeomTool.Geom_object("l2", "Line", None, None)
-    l2.getc((0,-1,0))
-    l3 = GeomTool.Geom_object("l3", "Line", None, None)
-    l3.getc((2,3,2.5))
-    l4 = GeomTool.Geom_object("l4", "Line", None, None)
-    l4.getc((-1,1,0.3))
-    l5 = GeomTool.Geom_object("l5", "Line", None, None)
-    l5.getc((-1,0.1,0.5))
-    l6 = GeomTool.Geom_object("l6", "Line", None, None)
-    l6.getc((0.6,0.8,1))
-    l7 = GeomTool.Geom_object("l7", "Line", None, None)
-    l7.getc((-1,0,1))
-    l8 = GeomTool.Geom_object("l8", "Line", None, None)
-    l8.getc((0,-1,1))
-    p1 = GeomTool.Geom_object("p1", "Point", None, None)
-    p1.getc((0,0))
-    p2 = GeomTool.Geom_object("p2", "Point", None, None)
-    p2.getc((1,1))
-    p3 = GeomTool.Geom_object("p3", "Point", None, None)
-    p3.getc((0.7,0.5))
-    p4 = GeomTool.Geom_object("p4", "Point", None, None)
-    p4.getc((0.6,0.8))
-
-    geom_list = [c1, c2, c3, c4, l1, l2, l3, l4, l5, l6, l7, l8, p1, p2, p3, p4]
-
-    """
-    """
-    p1 = GeomTool.free_pt.apply("p1",[])
-    exlst = []
-    for _ in range(80):
-        exlst.append(GeomTool.free_pt.apply("p" + str(_ + 10),[]))
-    for _ in exlst:
-        _.calcc()
-    p2 = GeomTool.free_pt.apply("p2",[])
-    p3 = GeomTool.mid_pt.apply("p3", [p1, p2])
-    l1 = GeomTool.perp_bis.apply("l1", [p1, p2])
-    l2 = GeomTool.para_line2.apply("l2", [p1, p2, p3])
-    l = GeomTool.line.apply("l", [p1, p3])
-    p4 = GeomTool.perp_foot.apply("p4", [p1, l1])
-    l2.calcc()
-    l1.calcc()
-    p4.calcc()
-    l.calcc()
-    geom_list = [p1,p2,p3,l1,l2,l,p4]
-    """
-
+    '''
     p1 = GeomTool.free_pt.apply("p1",[])
     print("p1 created")
     p2 = GeomTool.free_pt.apply("p2",[])
@@ -1307,7 +1251,7 @@ if __name__ == "__main__":
     print("o calculated", o.hasc, o.c)
     print( [i.name for i in p1.affect_item] )
     print(GeomTool.MethodDict)
-    ##geom_list = GeomTool.current_tree.obj_list
+    '''
     test = GeomUI(GeomTool.current_tree)
     test.run()
 
