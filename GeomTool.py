@@ -301,14 +301,23 @@ angle_bis_pt = BasicMethod("angle_bis_pt", ["Point"], ["Point", "Point", "Point"
 angle_bis_pt_check = lambda self: ((abs(self.item[0].c[0] - self.item[1].c[0]) > ERROR) or (abs(self.item[0].c[1] - self.item[1].c[1]) > ERROR)) and ((abs(self.item[2].c[0] - self.item[1].c[0]) > ERROR) or (abs(self.item[2].c[1] - self.item[1].c[1]) > ERROR))
 angle_bis_pt_errorinfo = lambda self: "Point " + self.item[0].name + " and Point " + self.item[1].name + " and Point " + self.item[2].name + " do not form an angle" if not(angle_bis_check(self)) else ""
 def angle_bis_pt_fun(self):
-    print("hi")
     deltax1 = self.item[0].c[0] - self.item[1].c[0]
     deltay1 = self.item[0].c[1] - self.item[1].c[1]
+    len1 = (deltax1 * deltax1 + deltay1 * deltay1) ** (1/2)
+    deltax1 /= len1
+    deltay1 /= len1
     deltax2 = self.item[2].c[0] - self.item[1].c[0]
     deltay2 = self.item[2].c[1] - self.item[1].c[1]
-    returnx = self.item[1].c[0] + ((deltax1 ** 2 * deltax2 ** 2 + deltax2 ** 2 * deltay1 ** 2 + deltax1 ** 2 * deltay2 ** 2 + deltay1 ** 2 * deltay2 ** 2 + deltax1 * deltax2 * ((deltax1 ** 2 + deltay1 ** 2) * (deltax2 ** 2 + deltay2 ** 2)) ** (1/2) - deltay1 * deltay2 * ((deltax1 ** 2 + deltay1 ** 2) * (deltax2 ** 2 + deltay2 ** 2)) ** (1/2)) ** (1/2)) / ((2 * (deltax1 ** 2 + deltay1 ** 2) * (deltax2 ** 2 + deltay2 ** 2)) ** (1/2))
-    returny = self.item[1].c[1] + ((deltay1 ** 2 * deltay2 ** 2 + deltay2 ** 2 * deltax1 ** 2 + deltay1 ** 2 * deltax2 ** 2 + deltax1 ** 2 * deltax2 ** 2 + deltay1 * deltay2 * ((deltay1 ** 2 + deltax1 ** 2) * (deltay2 ** 2 + deltax2 ** 2)) ** (1/2) - deltax1 * deltax2 * ((deltay1 ** 2 + deltax1 ** 2) * (deltay2 ** 2 + deltax2 ** 2)) ** (1/2)) ** (1/2)) / ((2 * (deltay1 ** 2 + deltax1 ** 2) * (deltay2 ** 2 + deltax2 ** 2)) ** (1/2))
-    return (returnx, returny)
+    len2 = (deltax2 * deltax2 + deltay2 * deltay2) ** (1/2)
+    deltax2 /= len2
+    deltay2 /= len2
+    midx = (deltax1 + deltax2) / 2
+    midy = (deltay1 + deltay2) / 2
+    if (abs(midx) > ERROR) or (abs(midy) > ERROR):
+        len3 = (midx * midx + midy * midy) ** (1/2)
+        return (self.item[1].c[0] + midx/len3, self.item[1].c[1] + midy/len3)
+    else:
+        return (self.item[1].c[0] - deltay1, self.item[1].c[1] + deltax1)
 angle_bis_pt.implement(angle_bis_pt_fun, angle_bis_pt_check, angle_bis_pt_errorinfo) 
 
 perp_bis = ComplexMethod("perp_bis", ["Point", "Line", "Line"], ["Point", "Point"], "pbis")
