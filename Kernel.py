@@ -8,25 +8,29 @@ def runline(in_line, in_graph_tree):
         return ""
     
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "help":
-        return "Commands list: help, hide, hidenlist, show, showall. Use commands like 'help hide' to see details. Use 'help1' to see built-in commands. "
+        return "Commands list: help, hide, hidenlist, show, showall, objlist. Use commands like 'help hide' to see details. Use 'help1' to see built-in commands. "
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "help1":
         return "Built-in commands list: pt, line, circ, mdpt, para, perp, pbis, abis. Use commands like 'help pt' to see details. You can also input the name of an object to see details of the object. Use 'help2' to see more. "
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "help2":
+        return "For points, c = (x, y) is the coordinate. For lines, c = (p, q, r) defines a line px+qy+r=0. For circles, c = (x0, y0, r) determines the center (x0, y0) and radius r. Use 'help3' to see more. "
+    if len(exp.wordlist) == 1 and exp.wordlist[0] == "help3":
         return "I cannot help you anymore! There is no royal way in geometry! "
     if len(exp.wordlist) == 2 and exp.wordlist[0] == "help":
         if exp.wordlist[1] == "help":
             return "help [Command]: Provides detailed informations for a command. "
         if exp.wordlist[1] == "hide":
             return "hide [Objects]: Hide geometric objects. Hiden objects would not be displayed on the screen. "
-        if exp.wordlist[1] == "hide":
+        if exp.wordlist[1] == "show":
             return "show [Objects]: Show geometric objects. Making these objects visible on the screen. "
         if exp.wordlist[1] == "hidenlist":
-            return "show [Objects]: Print a list of names of all hiden geometric objects. "
+            return "hidenlist: Print a list of names of all hiden geometric objects. "
         if exp.wordlist[1] == "showall":
-            return "show [Objects]: Show all geometric objects, including intermediate objects used in geometric constructions. "
+            return "showall: Show all geometric objects, including intermediate objects used in geometric constructions. "
+        if exp.wordlist[1] == "objlist":
+            return "objlist: Print a list of names of all hiden geometric objects, including intermediate objects used in geometric constructions. "
         
         if exp.wordlist[1] == "pt":
-            return "pt [Number] [Number]: Create a free point. pt [Line/Circle] [Number] [Number]: Create a free point on a line/circle. pt [Line/Circle] [Line/Circle] [Number] [Number]: Create the intersection point of a line/circle and another line/circle. The two numbers give the (x, y) coordinate of the closest intersection point. NOTE: In the case of two lines, since the intersection point is unique, coordinate must be omitted, please use pt [Line] [Line]. "
+            return "pt [Number] [Number]: Create a free point. pt [Line/Circle] [Number] [Number]: Create a free point on a line/circle. pt [Line/Circle] [Line/Circle] [Number] [Number]: Create the intersection point of a line/circle and another line/circle. The two numbers give the (x, y) coordinate of the closest intersection point. <NOTE> In the case of two lines, since the intersection point is unique, coordinate could be omitted. Use pt [Line] [Line] in this case. "
         if exp.wordlist[1] == "line":
             return "line [Point] [Point]: Create a line passing through the two points. "
         if exp.wordlist[1] == "circ":
@@ -40,11 +44,20 @@ def runline(in_line, in_graph_tree):
         if exp.wordlist[1] == "pbis":
             return "pbis [Point] [Point]: Create the perpendicular bisector of the two points. "
         if exp.wordlist[1] == "abis":
-            return "abis [Line] [Line]: Create the angle bisector of the angle formed by the three points. "
+            return "abis [Point] [Point] [Point]: Create the angle bisector line of the angle formed by the three points. "
         
         
     if len(exp.wordlist) == 1 and exp.isnameobj(exp.wordlist[0]) != None:
         return str(exp.isnameobj(exp.wordlist[0]))
+    
+    if len(exp.wordlist) == 1 and exp.wordlist[0] == "objlist":
+        outstr = ''
+        for obj in in_graph_tree.obj_list:
+            outstr += obj.name + ' '
+        if outstr != '':
+            return outstr[:-1]
+        else:
+            return "No objects"
     
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "hidenlist":
         outstr = ''
@@ -83,7 +96,7 @@ def runline(in_line, in_graph_tree):
     
     kerneluse = exp.kerneluse()
     if kerneluse not in (None, []):
-        defaultname = GeomTool.default_name(kerneluse[0].gen_type[0])
+        defaultname = GeomTool.default_name(kerneluse[0].gen_type[-1])
         newobj = kerneluse[0].apply(defaultname, kerneluse[1])
         new_obj_check = newobj.check_and_calcc() # Bool
         

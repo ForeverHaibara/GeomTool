@@ -55,7 +55,7 @@ class GeomObj:
         addstr = ''
         if self.hasc:
             addstr = ', c = ' + str(self.c)
-        return self.type + ' ' + self.name + ', method = ' + self.method.name + addstr
+        return self.type + ' ' + self.name + ', method = ' + self.method.name + ', visible = ' + str(self.visible) + addstr
 
     def getc(self, in_tuple):
         self.c = in_tuple # The coordinate or the equation coefficients of the object
