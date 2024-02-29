@@ -73,39 +73,38 @@ def dellastword(instr):
     return instr[1:]
 
 # A Tool used to calculate fig_intersection
-def fig_intersection(fig1, fig2):
-    if fig1.type == "Line":
-        if fig2.type == "Line":
-            if abs(fig1.c[1] * fig2.c[0] - fig1.c[0] * fig2.c[1]) > ERROR:
-                return [((fig1.c[2] * fig2.c[1] - fig1.c[1] * fig2.c[2])/(fig1.c[1] * fig2.c[0] - fig1.c[0] * fig2.c[1]), (-fig1.c[2] * fig2.c[0] + fig1.c[0] * fig2.c[2])/(fig1.c[1] * fig2.c[0] - fig1.c[0] * fig2.c[1]))]
+def fig_intersection(fig1c, fig1type, fig2c, fig2type):
+    if fig1type == "Line":
+        if fig2type == "Line":
+            if abs(fig1c[1] * fig2c[0] - fig1c[0] * fig2c[1]) > ERROR:
+                return [((fig1c[2] * fig2c[1] - fig1c[1] * fig2c[2])/(fig1c[1] * fig2c[0] - fig1c[0] * fig2c[1]), (-fig1c[2] * fig2c[0] + fig1c[0] * fig2c[2])/(fig1c[1] * fig2c[0] - fig1c[0] * fig2c[1]))]
             else:
                 return []
-        if fig2.type == "Circle":
-            Disc = (-(fig1.c[2] + fig1.c[0] * fig2.c[0] + fig1.c[1] * fig2.c[1])**2 + (fig1.c[0]**2 + fig1.c[1]**2) * fig2.c[2]**2)
+        if fig2type == "Circle":
+            Disc = (-(fig1c[2] + fig1c[0] * fig2c[0] + fig1c[1] * fig2c[1])**2 + (fig1c[0]**2 + fig1c[1]**2) * fig2c[2]**2)
             if  Disc >= -ERROR:
-                Delta = fig1.c[1]**2 * (-(fig1.c[2] + fig1.c[0] * fig2.c[0] + fig1.c[1] * fig2.c[1])**2 + (fig1.c[0]**2 + fig1.c[1]**2) * fig2.c[2]**2)
+                Delta = fig1c[1]**2 * (-(fig1c[2] + fig1c[0] * fig2c[0] + fig1c[1] * fig2c[1])**2 + (fig1c[0]**2 + fig1c[1]**2) * fig2c[2]**2)
                 Delta = max(0, Delta)
-                x1 = -((-fig1.c[1]**2 * fig2.c[0] + fig1.c[0] * (fig1.c[2] + fig1.c[1] * fig2.c[1]) + Delta ** (1/2))/(fig1.c[0]**2 + fig1.c[1]**2))
-                x2 = -((-fig1.c[1]**2 * fig2.c[0] + fig1.c[0] * (fig1.c[2] + fig1.c[1] * fig2.c[1]) - Delta ** (1/2))/(fig1.c[0]**2 + fig1.c[1]**2))
-                Delta = fig1.c[0]**2 * (-(fig1.c[2] + fig1.c[1] * fig2.c[1] + fig1.c[0] * fig2.c[0])**2 + (fig1.c[1]**2 + fig1.c[0]**2) * fig2.c[2]**2)
+                x1 = -((-fig1c[1]**2 * fig2c[0] + fig1c[0] * (fig1c[2] + fig1c[1] * fig2c[1]) + Delta ** (1/2))/(fig1c[0]**2 + fig1c[1]**2))
+                x2 = -((-fig1c[1]**2 * fig2c[0] + fig1c[0] * (fig1c[2] + fig1c[1] * fig2c[1]) - Delta ** (1/2))/(fig1c[0]**2 + fig1c[1]**2))
+                Delta = fig1c[0]**2 * (-(fig1c[2] + fig1c[1] * fig2c[1] + fig1c[0] * fig2c[0])**2 + (fig1c[1]**2 + fig1c[0]**2) * fig2c[2]**2)
                 Delta = max(0, Delta)
-                y1 = -((-fig1.c[0]**2 * fig2.c[1] + fig1.c[1] * (fig1.c[2] + fig1.c[0] * fig2.c[0]) + Delta ** (1/2))/(fig1.c[1]**2 + fig1.c[0]**2))
-                y2 = -((-fig1.c[0]**2 * fig2.c[1] + fig1.c[1] * (fig1.c[2] + fig1.c[0] * fig2.c[0]) - Delta ** (1/2))/(fig1.c[1]**2 + fig1.c[0]**2))
+                y1 = -((-fig1c[0]**2 * fig2c[1] + fig1c[1] * (fig1c[2] + fig1c[0] * fig2c[0]) + Delta ** (1/2))/(fig1c[1]**2 + fig1c[0]**2))
+                y2 = -((-fig1c[0]**2 * fig2c[1] + fig1c[1] * (fig1c[2] + fig1c[0] * fig2c[0]) - Delta ** (1/2))/(fig1c[1]**2 + fig1c[0]**2))
                 if Disc >= ERROR:
-                    if abs(fig1.c[0] * x1 + fig1.c[1] * y1 + fig1.c[2]) < ERROR:
+                    if abs(fig1c[0] * x1 + fig1c[1] * y1 + fig1c[2]) < ERROR:
                         return [(x1, y1), (x2, y2)]
                     else:
                         return [(x1, y2), (x2, y1)]
                 else:
                     return [(x1, y1)]
-    if fig1.type == "Circle":
-        if fig2.type == "Line":
-            return fig_intersection(fig2, fig1)
-        if fig2.type == "Circle":
-            if abs(fig1.c[0] - fig2.c[0]) > ERROR or abs(fig1.c[1] - fig2.c[1]) > ERROR:
-                fig3 = GeomTool.Geom_object("fig3", "Line", None, None)
-                fig3.c = (2 * (fig2.c[0] - fig1.c[0]), 2 * (fig2.c[1] - fig1.c[1]), (fig1.c[0]**2 + fig1.c[1]**2 - fig1.c[2]**2) - (fig2.c[0]**2 + fig2.c[1]**2 - fig2.c[2]**2))
-                return fig_intersection(fig3, fig1)
+    if fig1type == "Circle":
+        if fig2type == "Line":
+            return fig_intersection(fig2c, "Line", fig1c, "Circle")
+        if fig2type == "Circle":
+            if abs(fig1c[0] - fig2c[0]) > ERROR or abs(fig1c[1] - fig2c[1]) > ERROR:
+                fig3c = (2 * (fig2c[0] - fig1c[0]), 2 * (fig2c[1] - fig1c[1]), (fig1c[0]**2 + fig1c[1]**2 - fig1c[2]**2) - (fig2c[0]**2 + fig2c[1]**2 - fig2c[2]**2))
+                return fig_intersection(fig3c, "Line", fig1c, "Circle")
     return []
 
 class GeomUI:
@@ -187,7 +186,7 @@ class GeomUI:
         else:
             for fig_num1 in range(len(lst)):
                 for fig_num2 in range(fig_num1 + 1, len(lst)):
-                    inxlst += list((fig_num1, fig_num2, _) for _ in fig_intersection(self.geom_list[lst[fig_num1]], self.geom_list[lst[fig_num2]]))
+                    inxlst += list((fig_num1, fig_num2, _) for _ in fig_intersection(self.geom_list[lst[fig_num1]].c, self.geom_list[lst[fig_num1]].type, self.geom_list[lst[fig_num2]].c, self.geom_list[lst[fig_num2]].type))
             for _ in inxlst:
                 if self.geomdist(mouse, "Point", _[2]) < GEOM_PICK_DIST:
                     outlst.append((_, self.geomdist(mouse, "Point", _[2]), _[2]))
