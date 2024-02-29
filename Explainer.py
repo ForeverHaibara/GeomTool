@@ -5,7 +5,7 @@ def is_float(s):
         float(s)
         return True
     except ValueError:
-        return False
+        pass
 
 class ExplainLine:
     def __init__(self, in_text, geom_list):
@@ -89,7 +89,7 @@ class ExplainLine:
         
         if mode_name == "pt":
             if word_num == len(self.wordlist) - 3 and self.wordtype(self.wordlist[word_num + 1]) == "Number" and self.wordtype(self.wordlist[word_num + 2]) == "Number":
-                return []
+                return [GeomTool.MethodDict['free_pt'][1], [], float(self.wordlist[word_num + 1]), float(self.wordlist[word_num + 2])]
             if word_num == len(self.wordlist) - 4 and self.wordtype(self.wordlist[word_num + 1]) == "Line" and self.wordtype(self.wordlist[word_num + 2]) == "Number" and self.wordtype(self.wordlist[word_num + 3]) == "Number":
                 return []
             if word_num == len(self.wordlist) - 4 and self.wordtype(self.wordlist[word_num + 1]) == "Circle" and self.wordtype(self.wordlist[word_num + 2]) == "Number" and self.wordtype(self.wordlist[word_num + 3]) == "Number":

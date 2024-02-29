@@ -1,6 +1,11 @@
 import Explainer, GeomTool
 
 def runline(in_line, in_graph_tree):
+    try:
+        ev = eval(in_line)
+        return str(ev)
+    except:
+        return "Cannot Run"
     
     exp = Explainer.ExplainLine(in_line, in_graph_tree.obj_list)
     if len(exp.wordlist) == 1 and exp.isnameobj(exp.wordlist[0]) != None:
@@ -12,8 +17,13 @@ def runline(in_line, in_graph_tree):
         newobj = kerneluse[0].apply(defaultname, kerneluse[1])
         if newobj.check():
             newobj.calcc()
-        return defaultname + ' is created'
         
+        if len(kerneluse) == 2:       
+            pass
+        if len(kerneluse) > 2 and kerneluse[0].name == "free_pt":
+            newobj.c = (kerneluse[2], kerneluse[3])
+        
+        return defaultname + ' is created'
         
     
     return "" # Should return information want to print
