@@ -90,6 +90,41 @@ class GeomObj:
         return self.method.errorinfo(self)
     
     
+    """
+    The followings are StupidUpdate
+    """
+    
+    def update_not_hasc(self):
+        for obj in self.affect_item:
+            obj.hasc = False
+            obj.update_not_hasc()
+    
+    def calcc0(self):
+        allhasc = True
+        for parent_item in self.item:
+            if parent_item.type != "Others" and (not parent_item.hasc):
+                allhasc = False
+        if allhasc and self.check():
+            self.c = self.method.fun(self) # Calculate the coordinate without error check and errorinfo print
+            self.hasc = True
+    
+    def update(self):
+        for obj in self.affect_item:
+            obj.calcc0()
+        for obj in self.affect_item:
+            obj.update()
+    
+    def stupid_update(self):
+        self.update_not_hasc()
+        self.update()
+    
+    def move(self, in_c):
+        if self.movable and self.method.name == "free_pt":
+            self.c = in_c
+            self.stupid_update()
+            
+            
+    
 class Method:
     def __init__(self, in_name, in_gen_type : list, in_item_type : list, in_cmd_name : str):
         self.name = in_name # Name of the method
@@ -106,16 +141,17 @@ class BasicMethod(Method):
     '''
     Basic Geometic construction methods class. Creates only one object. Stores dependency information.
     '''
-    def __init__(self, in_name, in_gen_type: list, in_item_type: list, in_cmd_name : str):
+    def __init__(self, in_name, in_gen_type: list, in_item_type: list, in_cmd_name : str, in_movable = False):
         super().__init__(in_name, in_gen_type, in_item_type, in_cmd_name)
         if len(in_gen_type) != 1:
             print("Error during init " + in_name + " method, Basic method must create exactly one object!")
         self.fun = None
         self.check = None
         self.errorinfo = None
+        self.movable = in_movable
 
     def implement(self, in_fun, in_check, in_errorinfo): # fill more information needed
-        self.apply = lambda in_name, in_item, in_visible = True, in_movable = False, aux_visible = False : GeomObj(in_name, self.gen_type[0], self, in_item, in_visible = in_visible, in_movable = in_movable) # The function apply to generate a geom_object
+        self.apply = lambda in_name, in_item, in_visible = True, aux_visible = False : GeomObj(in_name, self.gen_type[0], self, in_item, in_visible = in_visible, in_movable = self.movable) # The function apply to generate a geom_object
         #aux_visible is not needed in BasicMethod, keeps for aligning with ComplexMethod
         self.fun = in_fun # The numerical function to give out coordinate or equation coefficients, input self
         self.check = in_check # The numerical boolean check function, input self
@@ -225,7 +261,7 @@ class GraphTree:
 # The Global Dict used in other programs
 MethodDict = {}
 
-free_pt = BasicMethod("free_pt", ["Point"], [], "pt")
+free_pt = BasicMethod("free_pt", ["Point"], [], "pt", in_movable=True)
 free_pt_fun = lambda self : (random.gauss(0, 1), random.gauss(0, 1))
 free_pt.implement_check_triv(free_pt_fun)
 

@@ -20,6 +20,8 @@ Test Choose Code involved
 in CMD mode KEY_BACKSPACE: Backspace
 in CMD mode KEY_SHIFT + KEY_BACKSPACE: Clearline
 
+in CMD mode create object and show object info
+
 """
 
 ORIGINAL_SCREEN_WIDTH = 1400
@@ -124,6 +126,8 @@ class GeomUI:
         self.SCREEN_HEIGHT = ORIGINAL_SCREEN_HEIGHT
         self.DRAW_WIDTH = int(self.SCREEN_WIDTH * 9 / 14)
         self.DRAW_HEIGHT = ORIGINAL_DRAW_HEIGHT
+        
+        self.consolasfont = pygame.font.SysFont('Consolas', 15, bold=False)
         
         # self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), pygame.FULLSCREEN)
         self.screen = pygame.display.set_mode((ORIGINAL_SCREEN_WIDTH, ORIGINAL_SCREEN_HEIGHT))
@@ -1095,14 +1099,14 @@ class GeomUI:
                 if len(self.geom_picked_list) == 0:
                     pygame.draw.rect(self.screen, BACKGROUND_COLOR, pygame.Rect(2, 2, 138, 42))
                     pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [2, 2, 138, 42], 1)
-                    self.screen.blit(pygame.font.SysFont('Consolas', 15, bold=False).render(mouse_coordxprt , True , TEXT_COLOR), (5, 5))
-                    self.screen.blit(pygame.font.SysFont('Consolas', 15, bold=False).render(mouse_coordyprt , True , TEXT_COLOR), (5, 25))
+                    self.screen.blit(self.consolasfont.render(mouse_coordxprt , True , TEXT_COLOR), (5, 5))
+                    self.screen.blit(self.consolasfont.render(mouse_coordyprt , True , TEXT_COLOR), (5, 25))
                 if len(self.geom_picked_list) > 0:
                     pygame.draw.rect(self.screen, BACKGROUND_COLOR, pygame.Rect(2, 2, 138, 62))
                     pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [2, 2, 138, 62], 1)
-                    self.screen.blit(pygame.font.SysFont('Consolas', 15, bold=False).render(mouse_coordxprt , True , TEXT_COLOR), (5, 5))
-                    self.screen.blit(pygame.font.SysFont('Consolas', 15, bold=False).render(mouse_coordyprt , True , TEXT_COLOR), (5, 25))
-                    self.screen.blit(pygame.font.SysFont('Consolas', 15, bold=False).render(", ".join([self.geom_list[_].name for _ in self.geom_picked_list]) , True , TEXT_COLOR), (5, 45))
+                    self.screen.blit(self.consolasfont.render(mouse_coordxprt , True , TEXT_COLOR), (5, 5))
+                    self.screen.blit(self.consolasfont.render(mouse_coordyprt , True , TEXT_COLOR), (5, 25))
+                    self.screen.blit(self.consolasfont.render(", ".join([self.geom_list[_].name for _ in self.geom_picked_list]) , True , TEXT_COLOR), (5, 45))
                 if self.moving_background:
                     self.cx = mouse[0] - self.moving_background_start[0] + self.moving_background_start_cx
                     self.cy = mouse[1] - self.moving_background_start[1] + self.moving_background_start_cy
