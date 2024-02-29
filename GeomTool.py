@@ -17,7 +17,16 @@ def default_name (Type : str) :
     else:
         return "NoName"
     
-    
+ERROR = 1e-13
+def numberform(realnum):
+    # String a number in a relatively short form
+    if abs(realnum) < ERROR:
+        return "0.000"
+    if abs(realnum) < 1e-2 or abs(realnum) > 1e3:
+        return "{:.3e}".format(realnum)
+    else:
+        return "{:.3f}".format(realnum)
+
 
 class GeomObj:
     def __init__(self, in_name, in_type, in_method, in_item, in_visible = True, in_movable = False, in_tree = None):
@@ -41,6 +50,12 @@ class GeomObj:
         self.visible = in_visible
         self.movable = in_movable
         print("init_run", self.name)
+        
+    def __str__(self):
+        addstr = ''
+        if self.hasc:
+            addstr = ', c = ' + str(self.c)
+        return self.type + ' ' + self.name + ', method = ' + self.method.name + addstr
 
     def getc(self, in_tuple):
         self.c = in_tuple # The coordinate or the equation coefficients of the object
@@ -60,7 +75,7 @@ class GeomObj:
         for item_num in range(len(self.item)):
             if self.method.item_type[item_num] != "Others" and self.item[item_num].type != self.method.item_type[item_num]:
                 return False
-            if not self.method.item_type[item_num].hasc:
+            if str(type(self.method.item_type[item_num])) == "<class '__main__.GeomObj'>" and not self.method.item_type[item_num].hasc:
                 return False
         return self.method.check(self)
     
@@ -206,7 +221,6 @@ class GraphTree:
 ####################
 ##    Methods     ##
 ####################
-ERROR = 1e-13
 
 # The Global Dict used in other programs
 MethodDict = {}
