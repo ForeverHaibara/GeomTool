@@ -266,7 +266,7 @@ free_pt_fun = lambda self : (random.gauss(0, 1), random.gauss(0, 1))
 free_pt.implement_check_triv(free_pt_fun)
 
 line = BasicMethod("line", ["Line"], ["Point", "Point"], "line")
-line_check = lambda self : (abs(self.item[0].c[0] - self.item[1].c[0]) > ERROR) and (abs(self.item[0].c[1] - self.item[1].c[1]) > ERROR)
+line_check = lambda self : (abs(self.item[0].c[0] - self.item[1].c[0]) > ERROR) or (abs(self.item[0].c[1] - self.item[1].c[1]) > ERROR)
 line_errorinfo = lambda self: "Point " + self.item[0].name + " and Point " + self.item[1].name + " coincide" if not(line_check(self.in_name, self.item)) else ""
 line_fun = lambda self: (self.item[0].c[1] - self.item[1].c[1], self.item[1].c[0] - self.item[0].c[0], self.item[0].c[0] * self.item[1].c[1] - self.item[1].c[0] * self.item[0].c[1])
 line.implement(line_fun, line_check, line_errorinfo)
@@ -297,15 +297,35 @@ perp_line = BasicMethod("perp_line", ["Line"], ["Point", "Line"], "perp")
 perp_line_fun = lambda self: (self.item[1].c[1], -self.item[1].c[0], -self.item[1].c[1] * self.item[0].c[0] + self.item[1].c[0] * self.item[0].c[1])
 perp_line.implement_check_triv(perp_line_fun)
 
+angle_bis_pt = BasicMethod("angle_bis_pt", ["Point"], ["Point", "Point", "Point"], "abispoint")
+angle_bis_pt_check = lambda self: ((abs(self.item[0].c[0] - self.item[1].c[0]) > ERROR) or (abs(self.item[0].c[1] - self.item[1].c[1]) > ERROR)) and ((abs(self.item[2].c[0] - self.item[1].c[0]) > ERROR) or (abs(self.item[2].c[1] - self.item[1].c[1]) > ERROR))
+angle_bis_pt_errorinfo = lambda self: "Point " + self.item[0].name + " and Point " + self.item[1].name + " and Point " + self.item[2].name + " do not form an angle" if not(angle_bis_check(self)) else ""
+def angle_bis_pt_fun(self):
+    print("hi")
+    deltax1 = self.item[0].c[0] - self.item[1].c[0]
+    deltay1 = self.item[0].c[1] - self.item[1].c[1]
+    deltax2 = self.item[2].c[0] - self.item[1].c[0]
+    deltay2 = self.item[2].c[1] - self.item[1].c[1]
+    returnx = self.item[1].c[0] + ((deltax1 ** 2 * deltax2 ** 2 + deltax2 ** 2 * deltay1 ** 2 + deltax1 ** 2 * deltay2 ** 2 + deltay1 ** 2 * deltay2 ** 2 + deltax1 * deltax2 * ((deltax1 ** 2 + deltay1 ** 2) * (deltax2 ** 2 + deltay2 ** 2)) ** (1/2) - deltay1 * deltay2 * ((deltax1 ** 2 + deltay1 ** 2) * (deltax2 ** 2 + deltay2 ** 2)) ** (1/2)) ** (1/2)) / ((2 * (deltax1 ** 2 + deltay1 ** 2) * (deltax2 ** 2 + deltay2 ** 2)) ** (1/2))
+    returny = self.item[1].c[1] + ((deltay1 ** 2 * deltay2 ** 2 + deltay2 ** 2 * deltax1 ** 2 + deltay1 ** 2 * deltax2 ** 2 + deltax1 ** 2 * deltax2 ** 2 + deltay1 * deltay2 * ((deltay1 ** 2 + deltax1 ** 2) * (deltay2 ** 2 + deltax2 ** 2)) ** (1/2) - deltax1 * deltax2 * ((deltay1 ** 2 + deltax1 ** 2) * (deltay2 ** 2 + deltax2 ** 2)) ** (1/2)) ** (1/2)) / ((2 * (deltay1 ** 2 + deltax1 ** 2) * (deltay2 ** 2 + deltax2 ** 2)) ** (1/2))
+    return (returnx, returny)
+angle_bis_pt.implement(angle_bis_pt_fun, angle_bis_pt_check, angle_bis_pt_errorinfo) 
+
 perp_bis = ComplexMethod("perp_bis", ["Point", "Line", "Line"], ["Point", "Point"], "pbis")
 perp_method_list = [mid_pt, line, perp_line]
-perp_indicator_list = [[("i",0), ("i",1)], [("i", 0), ("i",1)], [("m",0), ("m",1)]]
+perp_indicator_list = [[("i",0), ("i",1)], [("i",0), ("i",1)], [("m",0), ("m",1)]]
 perp_bis.implement(perp_method_list, perp_indicator_list)
 
 circum_center = ComplexMethod("circum_center", ["Line", "Line", "Point"], ["Point", "Point", "Point"], "circ_cent")
 circum_center_method_list = [perp_bis, perp_bis, inx_line_line]
-circum_center_indicator_list = [[("i",0), ("i",1)], [("i", 0), ("i",2)], [("m",0), ("m",1)]]
+circum_center_indicator_list = [[("i",0), ("i",1)], [("i",0), ("i",2)], [("m",0), ("m",1)]]
 circum_center.implement(circum_center_method_list, circum_center_indicator_list)
+
+angle_bis = ComplexMethod("angle_bis", ["Point", "Line"], ["Point", "Point", "Point"], "abis")
+angle_bis_method_list = [angle_bis_pt, line]
+angle_bis_indicator_list = [[("i",0), ("i",1), ("i",2)], [("i",1), ("m",0)]]
+angle_bis.implement(angle_bis_method_list, angle_bis_indicator_list)
+
 
 '''
 The Dictionary of all methods. All methods should be included here. Format:
@@ -330,9 +350,13 @@ if __name__ == '__main__':
     print(type (circum_center.apply))
     o = circum_center.apply("o", [p1, p2, p4])
     print("o created")
+    i = angle_bis.apply("i", [p1, p2, p4])
+    print("i created")
     l1.calcc()
     print("l1 calculated", l1.hasc, l1.c)
     o.calcc()
     print("o calculated", o.hasc, o.c)
+    i.calcc()
+    print("i calculated", i.hasc, i.c)
     print( [i.name for i in p1.affect_item] )
     

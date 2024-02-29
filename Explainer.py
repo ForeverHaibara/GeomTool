@@ -54,12 +54,10 @@ class ExplainLine:
         return None
     
     def kerneluse(self):
-        find_mode = -1
         mode_name = ""
         word_num = -1
         for word_num in range(len(self.wordlist)):
             if self.wordlist[word_num] in self.mode_list:
-                find_mode = word_num
                 mode_name = self.wordlist[word_num]
                 break
             
@@ -84,8 +82,8 @@ class ExplainLine:
                 return [GeomTool.MethodDict['circle_center'][1], [self.isnameobj(self.wordlist[word_num + 1])]]
 
         if mode_name == "abis":
-            if word_num == len(self.wordlist) - 3 and self.wordtype(self.wordlist[word_num + 1]) == "Line" and self.wordtype(self.wordlist[word_num + 2]) == "Line":
-                return []
+            if word_num == len(self.wordlist) - 4 and self.wordtype(self.wordlist[word_num + 1]) == "Point" and self.wordtype(self.wordlist[word_num + 2]) == "Point" and self.wordtype(self.wordlist[word_num + 3]) == "Point":
+                return [GeomTool.MethodDict['angle_bis'][1], [self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2]), self.isnameobj(self.wordlist[word_num + 3])]]
         
         if mode_name == "pt":
             if word_num == len(self.wordlist) - 3 and self.wordtype(self.wordlist[word_num + 1]) == "Number" and self.wordtype(self.wordlist[word_num + 2]) == "Number":
@@ -121,12 +119,10 @@ class ExplainLine:
         
     
     def waitfor(self):
-        find_mode = -1
         mode_name = ""
         word_num = -1
         for word_num in range(len(self.wordlist)):
             if self.wordlist[word_num] in self.mode_list:
-                find_mode = word_num
                 mode_name = self.wordlist[word_num]
                 break
             
@@ -154,10 +150,12 @@ class ExplainLine:
             
         if mode_name == "abis":
             if word_num == len(self.wordlist) - 1:
-                return ["Line"]
-            if word_num == len(self.wordlist) - 2 and self.wordtype(self.wordlist[word_num + 1]) == "Line":
-                return ["Line"]
-            if word_num == len(self.wordlist) - 3 and self.wordtype(self.wordlist[word_num + 1]) == "Line" and self.wordtype(self.wordlist[word_num + 2]) == "Line":
+                return ["Point"]
+            if word_num == len(self.wordlist) - 2 and self.wordtype(self.wordlist[word_num + 1]) == "Point":
+                return ["Point"]
+            if word_num == len(self.wordlist) - 3 and self.wordtype(self.wordlist[word_num + 1]) == "Point" and self.wordtype(self.wordlist[word_num + 2]) == "Point":
+                return ["Point"]
+            if word_num == len(self.wordlist) - 4 and self.wordtype(self.wordlist[word_num + 1]) == "Point" and self.wordtype(self.wordlist[word_num + 2]) == "Point" and self.wordtype(self.wordlist[word_num + 3]) == "Point":
                 return []
         
         if mode_name == "pt":
