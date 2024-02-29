@@ -38,6 +38,11 @@ class ExplainLine:
             if self.geom_list[geom_num].name == instr:
                 return geom_num
         return -1
+    def isnameobj(self, instr):
+        for geom_num in range(len(self.geom_list)):
+            if self.geom_list[geom_num].name == instr:
+                return self.geom_list[geom_num]
+        return None
     
     def wordtype(self, instr):
         if is_float(instr):
@@ -46,6 +51,73 @@ class ExplainLine:
         if isn >= 0:
             return self.geom_list[isn].type
         return None
+    
+    def kerneluse(self):
+        find_mode = -1
+        mode_name = ""
+        word_num = -1
+        for word_num in range(len(self.wordlist)):
+            if self.wordlist[word_num] in self.mode_list:
+                find_mode = word_num
+                mode_name = self.wordlist[word_num]
+                break
+            
+        """
+        The Built in Methods! 
+        """
+        
+        if mode_name == "line":
+            if word_num == len(self.wordlist) - 3 and self.wordtype(self.wordlist[word_num + 1]) == "Point" and self.wordtype(self.wordlist[word_num + 2]) == "Point":
+                return [GeomTool.MethodDict('line')[1], self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2])]
+        if mode_name == "circ":
+            if word_num == len(self.wordlist) - 3 and self.wordtype(self.wordlist[word_num + 1]) == "Point" and self.wordtype(self.wordlist[word_num + 2]) == "Point":
+                return [GeomTool.MethodDict('circle')[1], self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2])]
+        if mode_name == "pbis":
+            if word_num == len(self.wordlist) - 3 and self.wordtype(self.wordlist[word_num + 1]) == "Point" and self.wordtype(self.wordlist[word_num + 2]) == "Point":
+                return [GeomTool.MethodDict('perp_bis')[1], self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2])]
+        
+        if mode_name == "mdpt":
+            if word_num == len(self.wordlist) - 3 and self.wordtype(self.wordlist[word_num + 1]) == "Point" and self.wordtype(self.wordlist[word_num + 2]) == "Point":
+                return [GeomTool.MethodDict('mid_pt')[1], self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2])]
+            if word_num == len(self.wordlist) - 2 and self.wordtype(self.wordlist[word_num + 1]) == "Circle":
+                return [GeomTool.MethodDict('circle_center')[1], self.isnameobj(self.wordlist[word_num + 1])]
+
+        if mode_name == "abis":
+            if word_num == len(self.wordlist) - 3 and self.wordtype(self.wordlist[word_num + 1]) == "Line" and self.wordtype(self.wordlist[word_num + 2]) == "Line":
+                return []
+        
+        if mode_name == "pt":
+            if word_num == len(self.wordlist) - 3 and self.wordtype(self.wordlist[word_num + 1]) == "Number" and self.wordtype(self.wordlist[word_num + 2]) == "Number":
+                return []
+            if word_num == len(self.wordlist) - 4 and self.wordtype(self.wordlist[word_num + 1]) == "Line" and self.wordtype(self.wordlist[word_num + 2]) == "Number" and self.wordtype(self.wordlist[word_num + 3]) == "Number":
+                return []
+            if word_num == len(self.wordlist) - 4 and self.wordtype(self.wordlist[word_num + 1]) == "Circle" and self.wordtype(self.wordlist[word_num + 2]) == "Number" and self.wordtype(self.wordlist[word_num + 3]) == "Number":
+                return []
+            if word_num == len(self.wordlist) - 3 and self.wordtype(self.wordlist[word_num + 1]) == "Line" and self.wordtype(self.wordlist[word_num + 2]) == "Line":
+                return [GeomTool.MethodDict('inx_line_line')[1], self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2])]
+            if word_num == len(self.wordlist) - 5 and self.wordtype(self.wordlist[word_num + 1]) == "Line" and self.wordtype(self.wordlist[word_num + 2]) == "Circle" and self.wordtype(self.wordlist[word_num + 3]) == "Number" and self.wordtype(self.wordlist[word_num + 4]) == "Number":
+                return []
+            if word_num == len(self.wordlist) - 5 and self.wordtype(self.wordlist[word_num + 1]) == "Circle" and self.wordtype(self.wordlist[word_num + 2]) == "Circle" and self.wordtype(self.wordlist[word_num + 3]) == "Number" and self.wordtype(self.wordlist[word_num + 4]) == "Number":
+                return []
+            if word_num == len(self.wordlist) - 5 and self.wordtype(self.wordlist[word_num + 1]) == "Circle" and self.wordtype(self.wordlist[word_num + 2]) == "Line" and self.wordtype(self.wordlist[word_num + 3]) == "Number" and self.wordtype(self.wordlist[word_num + 4]) == "Number":
+                return []
+        
+        if mode_name == "para":
+            if word_num == len(self.wordlist) - 3 and self.wordtype(self.wordlist[word_num + 1]) == "Point" and self.wordtype(self.wordlist[word_num + 2]) == "Line":
+                return [GeomTool.MethodDict('para_line')[1], self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2])]
+            if word_num == len(self.wordlist) - 3 and self.wordtype(self.wordlist[word_num + 1]) == "Line" and self.wordtype(self.wordlist[word_num + 2]) == "Point":
+                return [GeomTool.MethodDict('para_line')[1], self.isnameobj(self.wordlist[word_num + 2]), self.isnameobj(self.wordlist[word_num + 1])]
+
+        if mode_name == "perp":
+            if word_num == len(self.wordlist) - 3 and self.wordtype(self.wordlist[word_num + 1]) == "Point" and self.wordtype(self.wordlist[word_num + 2]) == "Line":
+                return [GeomTool.MethodDict('perp_line')[1], self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2])]
+            if word_num == len(self.wordlist) - 3 and self.wordtype(self.wordlist[word_num + 1]) == "Line" and self.wordtype(self.wordlist[word_num + 2]) == "Point":
+                return [GeomTool.MethodDict('perp_line')[1], self.isnameobj(self.wordlist[word_num + 2]), self.isnameobj(self.wordlist[word_num + 1])]
+
+        
+        
+        return None
+        
     
     def waitfor(self):
         find_mode = -1
@@ -56,6 +128,10 @@ class ExplainLine:
                 find_mode = word_num
                 mode_name = self.wordlist[word_num]
                 break
+            
+        """
+        The Built in Methods! 
+        """
         
         if mode_name in ("line", "circ", "pbis"):
             if word_num == len(self.wordlist) - 1:

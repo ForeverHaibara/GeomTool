@@ -208,6 +208,7 @@ class GraphTree:
 ####################
 ERROR = 1e-13
 
+# The Global Dict used in other programs
 MethodDict = {}
 
 free_pt = BasicMethod("free_pt", ["Point"], [], "pt")
@@ -220,6 +221,14 @@ line_errorinfo = lambda self: "Point " + self.item[0].name + " and Point " + sel
 line_fun = lambda self: (self.item[0].c[1] - self.item[1].c[1], self.item[1].c[0] - self.item[0].c[0], self.item[0].c[0] * self.item[1].c[1] - self.item[1].c[0] * self.item[0].c[1])
 line.implement(line_fun, line_check, line_errorinfo)
 
+circle = BasicMethod("circle", ["Circle"], ["Point", "Point"], "circ")
+circle_fun = lambda self: (self.item[0].c[0], self.item[0].c[1], ((self.item[0].c[0] - self.item[1].c[0])**2 + (self.item[0].c[1] - self.item[1].c[1])**2)**(1/2))
+circle.implement_check_triv(circle_fun)
+
+circle_center = BasicMethod("circle_center", ["Point"], ["Circle"], "mdpt")
+circle_center_fun = lambda self: (self.item[0].c[0], self.item[0].c[1])
+circle_center.implement_check_triv(circle_center_fun)
+
 inx_line_line = BasicMethod("inx_line_line", ["Point"], ["Line", "Line"], "pt")
 inx_line_line_check = lambda self: abs(self.item[0].c[0] * self.item[1].c[1] - self.item[0].c[1] * self.item[1].c[0]) > ERROR
 inx_line_line_errorinfo = lambda self: "Line " + self.item[0].name + " and Line " + self.item[1].name + " are parallel" if not(inx_line_line_check(self)) else ""
@@ -230,6 +239,10 @@ mid_pt = BasicMethod("mid_pt", ["Point"], ["Point", "Point"], "mdpt")
 mid_pt_fun = lambda self: ((self.item[0].c[0] + self.item[1].c[0]) / 2, (self.item[0].c[1] + self.item[1].c[1]) / 2)
 mid_pt.implement_check_triv(mid_pt_fun)
 
+para_line = BasicMethod("para_line", ["Line"], ["Point", "Line"], "para")
+para_line_fun = lambda self: (self.item[1].c[0], self.item[1].c[1], -self.item[1].c[0] * self.item[0].c[0] - self.item[1].c[1] * self.item[0].c[1])
+para_line.implement_check_triv(para_line_fun)
+
 perp_line = BasicMethod("perp_line", ["Line"], ["Point", "Line"], "perp")
 perp_line_fun = lambda self: (self.item[1].c[1], -self.item[1].c[0], -self.item[1].c[1] * self.item[0].c[0] + self.item[1].c[0] * self.item[0].c[1])
 perp_line.implement_check_triv(perp_line_fun)
@@ -239,7 +252,7 @@ perp_method_list = [mid_pt, line, perp_line]
 perp_indicator_list = [[("i",0), ("i",1)], [("i", 0), ("i",1)], [("m",0), ("m",1)]]
 perp_bis.implement(perp_method_list, perp_indicator_list)
 
-circum_center = ComplexMethod("circum_center", ["Line", "Line", "Point"], ["Point", "Point", "Point"], "circumcenter")
+circum_center = ComplexMethod("circum_center", ["Line", "Line", "Point"], ["Point", "Point", "Point"], "circ_cent")
 circum_center_method_list = [perp_bis, perp_bis, inx_line_line]
 circum_center_indicator_list = [[("i",0), ("i",1)], [("i", 0), ("i",2)], [("m",0), ("m",1)]]
 circum_center.implement(circum_center_method_list, circum_center_indicator_list)
