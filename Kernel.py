@@ -133,3 +133,9 @@ def runline(in_line, in_graph_tree):
         pass
     
     return "Failed to run '" + in_line[:-1] + "', use 'help' for help" # Should return information want to print
+
+if __name__ == "__main__":
+    intree = GeomTool.current_tree
+    while True:
+        inline = input() + ' '
+        print(runline(inline, intree))
