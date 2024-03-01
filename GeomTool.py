@@ -303,6 +303,26 @@ mid_pt = BasicMethod("mid_pt", ["Point"], ["Point", "Point"], "mdpt")
 mid_pt_fun = lambda self: ((self.item[0].c[0] + self.item[1].c[0]) / 2, (self.item[0].c[1] + self.item[1].c[1]) / 2)
 mid_pt.implement_check_triv(mid_pt_fun)
 
+para_line_pt = BasicMethod("para_line_pt", ["Point"], ["Point", "Line"], "parapt")
+para_line_pt_fun = lambda self: (self.item[0].c[0] + self.item[1].item[1].c[0] - self.item[1].item[0].c[0], self.item[0].c[1] + self.item[1].item[1].c[1] - self.item[1].item[0].c[1])
+para_line_pt.implement_check_triv(para_line_pt_fun)
+
+para_line = ComplexMethod("para_line", ["Point", "Line"], ["Point", "Point"], "para")
+para_line_method_list = [para_line_pt, line]
+para_line_indicator_list = [[("i",0), ("i",1)], [("i",0), ("m",0)]]
+para_line.implement(para_line_method_list, para_line_indicator_list)
+
+perp_line_pt = BasicMethod("perp_line_pt", ["Point"], ["Point", "Line"], "parapt")
+perp_line_pt_fun = lambda self: (self.item[0].c[0] + self.item[1].item[0].c[1] - self.item[1].item[1].c[1], self.item[0].c[1] + self.item[1].item[1].c[0] - self.item[1].item[0].c[0])
+perp_line_pt.implement_check_triv(perp_line_pt_fun)
+
+perp_line = ComplexMethod("perp_line", ["Point", "Line"], ["Point", "Point"], "para")
+perp_line_method_list = [perp_line_pt, line]
+perp_line_indicator_list = [[("i",0), ("i",1)], [("i",0), ("m",0)]]
+perp_line.implement(perp_line_method_list, perp_line_indicator_list)
+
+
+'''
 para_line = BasicMethod("para_line", ["Line"], ["Point", "Line"], "para")
 para_line_fun = lambda self: (self.item[1].c[0], self.item[1].c[1], -self.item[1].c[0] * self.item[0].c[0] - self.item[1].c[1] * self.item[0].c[1])
 para_line.implement_check_triv(para_line_fun)
@@ -310,6 +330,7 @@ para_line.implement_check_triv(para_line_fun)
 perp_line = BasicMethod("perp_line", ["Line"], ["Point", "Line"], "perp")
 perp_line_fun = lambda self: (self.item[1].c[1], -self.item[1].c[0], -self.item[1].c[1] * self.item[0].c[0] + self.item[1].c[0] * self.item[0].c[1])
 perp_line.implement_check_triv(perp_line_fun)
+'''
 
 angle_bis_pt = BasicMethod("angle_bis_pt", ["Point"], ["Point", "Point", "Point"], "abispoint")
 angle_bis_pt_check = lambda self: ((abs(self.item[0].c[0] - self.item[1].c[0]) > ERROR) or (abs(self.item[0].c[1] - self.item[1].c[1]) > ERROR)) and ((abs(self.item[2].c[0] - self.item[1].c[0]) > ERROR) or (abs(self.item[2].c[1] - self.item[1].c[1]) > ERROR))
@@ -335,9 +356,9 @@ def angle_bis_pt_fun(self):
 angle_bis_pt.implement(angle_bis_pt_fun, angle_bis_pt_check, angle_bis_pt_errorinfo) 
 
 perp_bis = ComplexMethod("perp_bis", ["Point", "Line", "Line"], ["Point", "Point"], "pbis")
-perp_method_list = [mid_pt, line, perp_line]
-perp_indicator_list = [[("i",0), ("i",1)], [("i",0), ("i",1)], [("m",0), ("m",1)]]
-perp_bis.implement(perp_method_list, perp_indicator_list)
+perp_bis_method_list = [mid_pt, line, perp_line]
+perp_bis_indicator_list = [[("i",0), ("i",1)], [("i",0), ("i",1)], [("m",0), ("m",1)]]
+perp_bis.implement(perp_bis_method_list, perp_bis_indicator_list)
 
 circum_center = ComplexMethod("circum_center", ["Line", "Line", "Point"], ["Point", "Point", "Point"], "circ_cent")
 circum_center_method_list = [perp_bis, perp_bis, inx_line_line]
