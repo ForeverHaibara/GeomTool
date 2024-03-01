@@ -1,4 +1,11 @@
-p1 = pt 
-p2 = pt 
-l1 = line p1 p2 
-p3 = pt l1 
+# Test File
+a = pt
+b = pt
+c = pt
+bc = line b c
+ca = line c a
+ab = line a b
+l4 = abis a b c
+l5 = abis a c b
+i = pt l4 l5
+hide l4 l5

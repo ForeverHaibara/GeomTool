@@ -154,7 +154,8 @@ def runfile(file_name, in_graph_tree):
             
         # 输出每一行的内容
         for line in lines:
-            print(runline(line.replace('\n', '') + ' ', in_graph_tree))
+            if line[0] != "#":
+                print(runline(line.replace('\n', '') + ' ', in_graph_tree))
         return "Done"
     
     except FileNotFoundError:

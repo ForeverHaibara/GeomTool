@@ -200,7 +200,7 @@ class ExplainLine:
         
         if mode_name == "pt":
             if word_num == len(self.wordlist) - 1:
-                return ["Done", "Pt"]
+                return ["Pt"]
             if word_num == len(self.wordlist) - 2 and self.wordtype(self.wordlist[word_num + 1]) == "Number":
                 return ["Number"]
             if word_num == len(self.wordlist) - 3 and self.wordtype(self.wordlist[word_num + 1]) == "Number" and self.wordtype(self.wordlist[word_num + 2]) == "Number":
