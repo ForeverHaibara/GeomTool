@@ -610,7 +610,7 @@ class GeomUI:
                 eventlist.append("K_ ")
             if (event.type == pygame.KEYDOWN) and ((event.key == pygame.K_MINUS) or (event.key == pygame.K_KP_MINUS)):
                 eventlist.append("K_-")
-            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_EQUALS):
+            if (event.type == pygame.KEYDOWN) and ((event.key == pygame.K_EQUALS) or (event.key == pygame.K_KP_EQUALS)):
                 eventlist.append("K_=")
             if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP_PLUS):
                 eventlist.append("K_+")
@@ -706,12 +706,14 @@ class GeomUI:
                 eventlist.append("K_9")
             if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP0):
                 eventlist.append("K_0")
-            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_PERIOD):
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP_MULTIPLY):
+                eventlist.append("K_*")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP_DIVIDE):
+                eventlist.append("K_/")
+            if (event.type == pygame.KEYDOWN) and ((event.key == pygame.K_PERIOD) or (event.key == pygame.K_KP_PERIOD)):
                 eventlist.append("K_.")
-            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_KP_PERIOD):
-                eventlist.append("K_.")
-            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_COMMA):
-                eventlist.append("K_,")
+            # if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_COMMA):
+            #     eventlist.append("K_,")
             if (event.type == pygame.KEYDOWN) and ((event.key == pygame.K_LCTRL) or (event.key == pygame.K_RCTRL)):
                 eventlist.append("K_CTRL")
             if (event.type == pygame.KEYDOWN) and ((event.key == pygame.K_LALT) or (event.key == pygame.K_RALT)):

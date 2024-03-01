@@ -53,6 +53,12 @@ class ExplainLine:
             return self.geom_list[isn].type
         return None
     
+    def newname(self):
+        for word_num in range(len(self.wordlist)):
+            if self.wordlist[word_num] == "=" and word_num > 0:
+                return self.wordlist[word_num - 1]
+        return None
+    
     def kerneluse(self):
         mode_name = ""
         word_num = -1

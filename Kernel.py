@@ -3,6 +3,7 @@ import Explainer, GeomTool
 def runline(in_line, in_graph_tree):
     
     exp = Explainer.ExplainLine(in_line, in_graph_tree.obj_list)
+    protectedwordlist = ["=", ".", "+", "-", "*", "/", "?", ",", "!", "^", " ", "'", '"', "help", "hide", "hidenlist", "show", "showall", "objlist", "pt", "line", "circ", "mdpt", "para", "perp", "pbis", "abis"]
     
     if len(exp.wordlist) == 0:
         return ""
@@ -10,7 +11,7 @@ def runline(in_line, in_graph_tree):
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "help":
         return "Commands list: help, hide, hidenlist, show, showall, objlist. Use commands like 'help hide' to see details. Use 'help1' to see built-in commands. "
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "help1":
-        return "Built-in commands list: pt, line, circ, mdpt, para, perp, pbis, abis. Use commands like 'help pt' to see details. You can also input the name of an object to see details of the object. Use 'help2' to see more. "
+        return "Built-in commands list: pt, line, circ, mdpt, para, perp, pbis, abis. Use commands like 'help pt' to see details. You can also input the name of an object to see details of the object. Use 'A = B' to rename object B by A. Use 'help2' to see more. "
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "help2":
         return "For points, c = (x, y) is the coordinate. For lines, c = (p, q, r) defines a line px+qy+r=0. For circles, c = (x0, y0, r) determines the center (x0, y0) and radius r. Use 'help3' to see more. "
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "help3":
@@ -49,6 +50,24 @@ def runline(in_line, in_graph_tree):
         
     if len(exp.wordlist) == 1 and exp.isnameobj(exp.wordlist[0]) != None:
         return str(exp.isnameobj(exp.wordlist[0]))
+    
+    if len(exp.wordlist) == 3 and exp.wordlist[1] == "=":
+        if exp.isname(exp.wordlist[2]) == -1:
+            return exp.wordlist[2] + " is not an object name"
+        elif exp.isname(exp.wordlist[0]) > 0:
+            return exp.wordlist[0] + " is already an object name"
+        elif exp.wordlist[0] in protectedwordlist or Explainer.is_float(exp.wordlist[0]):
+            return exp.wordlist[0] + " can not be an object name"
+        else:
+            exp.isnameobj(exp.wordlist[2]).name = exp.wordlist[0]
+            return "Name changed"
+        
+        for obj in in_graph_tree.obj_list:
+            outstr += obj.name + ' '
+        if outstr != '':
+            return outstr[:-1]
+        else:
+            return "No objects"
     
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "objlist":
         outstr = ''
@@ -95,15 +114,17 @@ def runline(in_line, in_graph_tree):
             return outstr + 'hiden'
     
     kerneluse = exp.kerneluse()
+    newname = exp.newname()
     if kerneluse not in (None, []):
-        defaultname = GeomTool.default_name(kerneluse[0].gen_type[-1])
-        newobj = kerneluse[0].apply(defaultname, kerneluse[1])
+        if newname == None or exp.isname(exp.wordlist[0]) > 0 or exp.wordlist[0] in protectedwordlist or Explainer.is_float(exp.wordlist[0]):
+            newname = GeomTool.default_name(kerneluse[0].gen_type[-1])
+        newobj = kerneluse[0].apply(newname, kerneluse[1])
         new_obj_check = newobj.check_and_calcc() # Bool
         
         if kerneluse[0].name in ("free_pt", "pt_on_line", "pt_on_circle"):
             newobj.move((kerneluse[2], kerneluse[3]))
         
-        return defaultname + ' is created'
+        return newname + ' is created'
         
     try:
         ev = eval(in_line)
