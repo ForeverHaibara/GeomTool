@@ -100,10 +100,8 @@ def runline(in_line, in_graph_tree):
         newobj = kerneluse[0].apply(defaultname, kerneluse[1])
         new_obj_check = newobj.check_and_calcc() # Bool
         
-        if len(kerneluse) == 2:       
-            pass
-        if len(kerneluse) > 2 and kerneluse[0].name == "free_pt":
-            newobj.c = (kerneluse[2], kerneluse[3])
+        if kerneluse[0].name in ("free_pt", "pt_on_line", "pt_on_circle"):
+            newobj.move((kerneluse[2], kerneluse[3]))
         
         return defaultname + ' is created'
         
