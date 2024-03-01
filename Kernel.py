@@ -2,6 +2,7 @@ import Explainer, GeomTool
 
 def runline(in_line, in_graph_tree):
     
+    in_line = in_line + ' '
     exp = Explainer.ExplainLine(in_line, in_graph_tree.obj_list)
     protectedwordlist = ["=", ".", "+", "-", "*", "/", "?", ",", "!", "^", " ", "'", '"', "help", "hide", "hidenlist", "show", "showall", "objlist", "run", "pt", "line", "circ", "mdpt", "para", "perp", "pbis", "abis"]
     
@@ -30,7 +31,7 @@ def runline(in_line, in_graph_tree):
         if exp.wordlist[1] == "objlist":
             return "objlist: Print a list of names of all hiden geometric objects, including intermediate objects used in geometric constructions. "
         if exp.wordlist[1] == "file":
-            return "run [Name]: Run all lines in a file"
+            return "run [Name]: Run all lines in a txt file"
 
 
         if exp.wordlist[1] == "pt":
@@ -56,17 +57,6 @@ def runline(in_line, in_graph_tree):
     
     if len(exp.wordlist) == 1 and exp.isnameobj(exp.wordlist[0]) != None:
         return str(exp.isnameobj(exp.wordlist[0]))
-    
-    if len(exp.wordlist) == 3 and exp.wordlist[1] == "=":
-        if exp.isname(exp.wordlist[2]) == -1:
-            return exp.wordlist[2] + " is not an object name"
-        elif exp.isname(exp.wordlist[0]) > 0:
-            return exp.wordlist[0] + " is already an object name"
-        elif exp.wordlist[0] in protectedwordlist or Explainer.is_float(exp.wordlist[0]):
-            return exp.wordlist[0] + " can not be an object name"
-        else:
-            exp.isnameobj(exp.wordlist[2]).name = exp.wordlist[0]
-            return "Name changed"
         
         for obj in in_graph_tree.obj_list:
             outstr += obj.name + ' '
@@ -128,10 +118,24 @@ def runline(in_line, in_graph_tree):
         new_obj_check = newobj.check_and_calcc() # Bool
         
         if kerneluse[0].name in ("free_pt", "pt_on_line", "pt_on_circle"):
-            newobj.move((kerneluse[2], kerneluse[3]))
+            if len(kerneluse) > 2:
+                newobj.move((kerneluse[2], kerneluse[3]))
+            else:
+                newobj.check_and_calcc()
         
         return newname + ' is created'
-        
+    
+    if len(exp.wordlist) == 3 and exp.wordlist[1] == "=":
+        if exp.isname(exp.wordlist[2]) == -1:
+            return exp.wordlist[2] + " is not an object name"
+        elif exp.isname(exp.wordlist[0]) > 0:
+            return exp.wordlist[0] + " is already an object name"
+        elif exp.wordlist[0] in protectedwordlist or Explainer.is_float(exp.wordlist[0]):
+            return exp.wordlist[0] + " can not be an object name"
+        else:
+            exp.isnameobj(exp.wordlist[2]).name = exp.wordlist[0]
+            return "Name changed"
+    
     try:
         ev = eval(in_line)
         return str(ev)
@@ -142,17 +146,19 @@ def runline(in_line, in_graph_tree):
 
 def runfile(file_name, in_graph_tree):
     try:
+        if file_name[-4:] != '.txt':
+            file_name = file_name + '.txt'
         # 打开文件并逐行读取内容
         with open(file_name, 'r') as file:
             lines = file.readlines()
             
         # 输出每一行的内容
         for line in lines:
-            print(runline(line + ' ', in_graph_tree))
+            print(runline(line.replace('\n', '') + ' ', in_graph_tree))
         return "Done"
     
     except FileNotFoundError:
-        return "File do not Exist"
+        return "File " + file_name + " do not Exist"
     except Exception as e:
         return "Error with info: " + str(e)
 

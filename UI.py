@@ -1066,7 +1066,7 @@ class GeomUI:
                     cvalue = None
                 
                 exp = Explainer.ExplainLine(self.cmdlines[-1], self.geom_list)
-                if len(exp.waitfor()) == 0:
+                if "Done" in exp.waitfor():
                     self.run_kernel()
             
             
