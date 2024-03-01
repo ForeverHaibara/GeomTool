@@ -1,16 +1,17 @@
-import Explainer, GeomTool
+import Explainer, GeomTool, Pathfinder
 
 def runline(in_line, in_graph_tree):
     
     in_line = in_line + ' '
     exp = Explainer.ExplainLine(in_line, in_graph_tree.obj_list)
-    protectedwordlist = ["=", ".", "+", "-", "*", "/", "?", ",", "!", "^", " ", "'", '"', "help", "hide", "hidenlist", "show", "showall", "objlist", "run", "pt", "line", "circ", "mdpt", "para", "perp", "pbis", "abis"]
+    protectedwordlist = ["=", ".", "+", "-", "*", "/", "?", ",", "!", "^", " ", "'", '"', "help", "hide", "hidenlist", "show", "showall", "objlist", "run",
+                         "eqinfo", "pt", "line", "circ", "mdpt", "para", "perp", "pbis", "abis"]
     
     if len(exp.wordlist) == 0:
         return ""
     
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "help":
-        return "Commands list: help, hide, hidenlist, show, showall, objlist, run. Use commands like 'help hide' to see details. Use 'help1' to see built-in commands. "
+        return "Commands list: help, hide, hidenlist, show, showall, objlist, run, eqinfo. Use commands like 'help hide' to see details. Use 'help1' to see built-in commands. "
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "help1":
         return "Built-in commands list: pt, line, circ, mdpt, para, perp, pbis, abis. Use commands like 'help pt' to see details. You can also input the name of an object to see details of the object. Use 'A = B' to rename object B by A. Use 'help2' to see more. "
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "help2":
@@ -30,8 +31,11 @@ def runline(in_line, in_graph_tree):
             return "showall: Show all geometric objects, including intermediate objects used in geometric constructions. "
         if exp.wordlist[1] == "objlist":
             return "objlist: Print a list of names of all hiden geometric objects, including intermediate objects used in geometric constructions. "
-        if exp.wordlist[1] == "file":
+        if exp.wordlist[1] == "run":
             return "run [Name]: Run all lines in a txt file"
+        
+        if exp.wordlist[1] == "eqinfo":
+            return "eqinfo: Find all VISIBLE coincident objects and print a list of equalities"
 
 
         if exp.wordlist[1] == "pt":
@@ -88,6 +92,10 @@ def runline(in_line, in_graph_tree):
         for obj in in_graph_tree.obj_list:
             obj.visible = True
         return "All objects are shown"
+    
+    if len(exp.wordlist) == 1 and exp.wordlist[0] == "eqinfo":
+        finder = Pathfinder.GeomInformation(in_graph_tree)
+        return finder.eqinfo()
     
     if exp.wordlist[0] == "show":
         outstr = ''
