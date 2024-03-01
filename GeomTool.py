@@ -410,15 +410,6 @@ def angle_bis_pt_fun(self):
         return (self.item[1].c[0] - deltay1, self.item[1].c[1] + deltax1)
 angle_bis_pt.implement(angle_bis_pt_fun, angle_bis_pt_check, angle_bis_pt_errorinfo) 
 
-perp_bis = ComplexMethod("perp_bis", ["Point", "Line", "Line"], ["Point", "Point"], "pbis")
-perp_bis_method_list = [mid_pt, line, perp_line]
-perp_bis_indicator_list = [[("i",0), ("i",1)], [("i",0), ("i",1)], [("m",0), ("m",1)]]
-perp_bis.implement(perp_bis_method_list, perp_bis_indicator_list)
-
-circum_center = ComplexMethod("circum_center", ["Line", "Line", "Point"], ["Point", "Point", "Point"], "circ_cent")
-circum_center_method_list = [perp_bis, perp_bis, inx_line_line]
-circum_center_indicator_list = [[("i",0), ("i",1)], [("i",0), ("i",2)], [("m",0), ("m",1)]]
-circum_center.implement(circum_center_method_list, circum_center_indicator_list)
 
 angle_bis = ComplexMethod("angle_bis", ["Point", "Line"], ["Point", "Point", "Point"], "abis")
 angle_bis_method_list = [angle_bis_pt, line]
@@ -430,15 +421,24 @@ angle_bis.implement(angle_bis_method_list, angle_bis_indicator_list)
 ## Methods from txt ##
 ######################
 '''
-Create methods from txt files. Example:
+Create methods from txt files. Example input txt:
 
-circum_center "circ_cent" O : Point # MethodName, CMDName, Output Variable, Output Type 
-A B C : Point Point Point # Input variable, Input type. (please make sure no repeated varible is used)
-l1 = perp_bis A B, l2 = perp_bis A C, O = inx_line_line l1 l2 #Constructions
+circum_center "circ_cent" O : Point 
+A B C : Point Point Point 
+l1 = perp_bis A B, l2 = perp_bis A C, O = inx_line_line l1 l2 
     # this line is left for DD
+
+will be convert to method defined as follow:
+
+circum_center = ComplexMethod("circum_center", ["Line", "Line", "Point"], ["Point", "Point", "Point"], "circ_cent")
+circum_center_method_list = [perp_bis, perp_bis, inx_line_line]
+circum_center_indicator_list = [[("i",0), ("i",1)], [("i",0), ("i",2)], [("m",0), ("m",1)]]
+circum_center.implement(circum_center_method_list, circum_center_indicator_list)
 
 '''
 comment_marker = "#"
+cmd_marker = '"'
+construction_seperator = ","
 file_path = "Construction.txt"
 
 def split_to_info( lines:list ):
@@ -446,7 +446,14 @@ def split_to_info( lines:list ):
     new_method = True
     for l in lines :
         r = l.split(comment_marker)[0] #delete comments
-        words = r.split() #split each line into words
+        words0 = r.split() #split each line into words
+        words = []
+        for w in words0: # deal with construction seperator
+            if len(w) >= len(construction_seperator)+1 and w[-len(construction_seperator):] == construction_seperator:
+                words.append(w[:-1])
+                words.append(construction_seperator) 
+            else:
+                words.append(w)
         if words == [] :
             new_method = True
             continue
@@ -457,7 +464,55 @@ def split_to_info( lines:list ):
             rlist[-1] += [words]
     return rlist # a list, each term corresponds to a new method. each term is a list of lines, each line is a list of words 
 
-def info_to_method ()
+def name_to_indicator (ilist:list, mlist:list, name:str):
+    if name in ilist:
+        return ("i",ilist.index(name))
+    else:
+        return ("m",mlist.index(name))
+
+def info_to_method ( info : list) :
+    #try:
+        method_name = info[0][0]
+        cmd_name = info[0][1].strip(cmd_marker)
+        final_name = info[0][2]
+        final_type = info[0][4] 
+        input_num = info[1].index(":")
+        input_name = info[1][:input_num]
+        input_type = info[1][input_num+1:]
+        construction0 = info[2].copy()
+        construction_seq = [] #list of [var_name, method_name, mid_input_name]
+        if not (construction0[-1] == construction_seperator):
+            construction0.append(construction_seperator)
+        while len(construction0) > 0:
+            i = construction0.index(construction_seperator)
+            construction_seq.append([construction0[0],construction0[2],construction0[3:i]])
+            if not (i == len(construction0)):
+                construction0 = construction0[i+1:]
+            else:
+                construction0 = []
+
+        mid_name = [m[0] for m in construction_seq]
+        mid_method_name = [m[1] for m in construction_seq]
+        mid_item_name = [m[2] for m in construction_seq]
+        mid_method = [MethodDict[mn][1] for mn in mid_method_name]
+        mid_item_type = [MethodDict[mn][2] for mn in mid_method_name]
+        mid_type = [MethodDict[mn][3][-1] for mn in mid_method_name]
+
+        indicator_list = mid_item_name.copy()
+        for i in range(len(indicator_list)):
+            for j in range(len(indicator_list[i])):
+                indicator_list[i][j] = name_to_indicator(input_name, mid_name,indicator_list[i][j])
+
+        #need some more checks here, check each mid construction is legal in type
+        if not (mid_type[-1] == final_type) or not (mid_name[-1] == final_name):
+            raise ValueError("final construction do not meet requirements")
+        
+        new_method = ComplexMethod(method_name, mid_type, input_type, cmd_name)
+        new_method.implement(mid_method, indicator_list)
+        return new_method
+    # except:
+    #     print("Input method is not legal!")
+    #     print(info)
 
 with open(file_path) as file:
     lines = file.readlines() # list of lines
@@ -465,13 +520,8 @@ with open(file_path) as file:
 info_list = split_to_info(lines)
 
 for info in info_list:
-
-
-
-
-
-
-    
+    method = info_to_method(info)
+    print(method.name + " is implemented from " + file_path)
 
 
 current_tree = GraphTree()
@@ -484,12 +534,11 @@ if __name__ == '__main__':
     p3 = mid_pt.apply("p3", [p1, p2])
     print("p3 created")
     p4 = free_pt.apply("p4", [])
-    l1 = perp_bis.apply("l1", [p1, p2])
+    l1 = MethodDict["perp_bis"][1].apply("l1", [p1, p2])
     print("l1 created", l1)
     l = line.apply("l", [p1, p3])
     print("l created")
-    print(type (circum_center.apply))
-    o = circum_center.apply("o", [p1, p2, p4])
+    o = MethodDict["circum_center"][1].apply("o", [p1, p2, p4])
     print("o created")
     i = angle_bis.apply("i", [p1, p2, p4])
     print("i created")
