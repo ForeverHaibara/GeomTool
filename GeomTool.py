@@ -28,6 +28,42 @@ def numberform(realnum):
         return "{:.3f}".format(realnum)
 
 
+# A Tool used to calculate fig_intersection
+def fig_intersection(fig1c, fig1type, fig2c, fig2type):
+    if fig1type == "Line":
+        if fig2type == "Line":
+            if abs(fig1c[1] * fig2c[0] - fig1c[0] * fig2c[1]) > ERROR:
+                return [((fig1c[2] * fig2c[1] - fig1c[1] * fig2c[2])/(fig1c[1] * fig2c[0] - fig1c[0] * fig2c[1]), (-fig1c[2] * fig2c[0] + fig1c[0] * fig2c[2])/(fig1c[1] * fig2c[0] - fig1c[0] * fig2c[1]))]
+            else:
+                return []
+        if fig2type == "Circle":
+            Disc = (-(fig1c[2] + fig1c[0] * fig2c[0] + fig1c[1] * fig2c[1])**2 + (fig1c[0]**2 + fig1c[1]**2) * fig2c[2]**2)
+            if  Disc >= -ERROR:
+                Delta = fig1c[1]**2 * (-(fig1c[2] + fig1c[0] * fig2c[0] + fig1c[1] * fig2c[1])**2 + (fig1c[0]**2 + fig1c[1]**2) * fig2c[2]**2)
+                Delta = max(0, Delta)
+                x1 = -((-fig1c[1]**2 * fig2c[0] + fig1c[0] * (fig1c[2] + fig1c[1] * fig2c[1]) + Delta ** (1/2))/(fig1c[0]**2 + fig1c[1]**2))
+                x2 = -((-fig1c[1]**2 * fig2c[0] + fig1c[0] * (fig1c[2] + fig1c[1] * fig2c[1]) - Delta ** (1/2))/(fig1c[0]**2 + fig1c[1]**2))
+                Delta = fig1c[0]**2 * (-(fig1c[2] + fig1c[1] * fig2c[1] + fig1c[0] * fig2c[0])**2 + (fig1c[1]**2 + fig1c[0]**2) * fig2c[2]**2)
+                Delta = max(0, Delta)
+                y1 = -((-fig1c[0]**2 * fig2c[1] + fig1c[1] * (fig1c[2] + fig1c[0] * fig2c[0]) + Delta ** (1/2))/(fig1c[1]**2 + fig1c[0]**2))
+                y2 = -((-fig1c[0]**2 * fig2c[1] + fig1c[1] * (fig1c[2] + fig1c[0] * fig2c[0]) - Delta ** (1/2))/(fig1c[1]**2 + fig1c[0]**2))
+                if Disc >= ERROR:
+                    if abs(fig1c[0] * x1 + fig1c[1] * y1 + fig1c[2]) < ERROR:
+                        return [(x1, y1), (x2, y2)]
+                    else:
+                        return [(x1, y2), (x2, y1)]
+                else:
+                    return [(x1, y1)]
+    if fig1type == "Circle":
+        if fig2type == "Line":
+            return fig_intersection(fig2c, "Line", fig1c, "Circle")
+        if fig2type == "Circle":
+            if abs(fig1c[0] - fig2c[0]) > ERROR or abs(fig1c[1] - fig2c[1]) > ERROR:
+                fig3c = (2 * (fig2c[0] - fig1c[0]), 2 * (fig2c[1] - fig1c[1]), (fig1c[0]**2 + fig1c[1]**2 - fig1c[2]**2) - (fig2c[0]**2 + fig2c[1]**2 - fig2c[2]**2))
+                return fig_intersection(fig3c, "Line", fig1c, "Circle")
+    return []
+
+
 class GeomObj:
     def __init__(self, in_name, in_type, in_method, in_item, in_visible = True, in_movable = False, in_tree = None):
         if in_name == None:
@@ -335,14 +371,13 @@ pt_on_line = BasicMethod("pt_on_line", ["Point"], ["Line"], "pt", in_movable=Tru
 pt_on_line_fun = lambda self : (self.item[0].item[0].c[0] + (self.item[0].item[1].c[0] - self.item[0].item[0].c[0]) * self.freec, self.item[0].item[0].c[1] + (self.item[0].item[1].c[1] - self.item[0].item[0].c[1]) * self.freec)
 pt_on_line.implement_check_triv(pt_on_line_fun)
 
-pt_on_circle = BasicMethod("pt_on_circle", ["Point"], ["Circle"], "pt", in_movable=True)
-pt_on_circle_fun = lambda self : (self.item[0].item[0].c[0] - self.item[0].item[0].c[0] * math.cos(self.freec) + self.item[0].item[1].c[0] * math.cos(self.freec) + self.item[0].item[0].c[1] * math.sin(self.freec) - self.item[0].item[1].c[1] * math.sin(self.freec), self.item[0].item[0].c[1] - self.item[0].item[0].c[1] * math.cos(self.freec) + self.item[0].item[1].c[1] * math.cos(self.freec) - self.item[0].item[0].c[0] * math.sin(self.freec) + self.item[0].item[1].c[0] * math.sin(self.freec))
-pt_on_circle.implement_check_triv(pt_on_circle_fun)
-
-
 circle = BasicMethod("circle", ["Circle"], ["Point", "Point"], "circ")
 circle_fun = lambda self: (self.item[0].c[0], self.item[0].c[1], ((self.item[0].c[0] - self.item[1].c[0])**2 + (self.item[0].c[1] - self.item[1].c[1])**2)**(1/2))
 circle.implement_check_triv(circle_fun)
+
+pt_on_circle = BasicMethod("pt_on_circle", ["Point"], ["Circle"], "pt", in_movable=True)
+pt_on_circle_fun = lambda self : (self.item[0].item[0].c[0] - self.item[0].item[0].c[0] * math.cos(self.freec) + self.item[0].item[1].c[0] * math.cos(self.freec) + self.item[0].item[0].c[1] * math.sin(self.freec) - self.item[0].item[1].c[1] * math.sin(self.freec), self.item[0].item[0].c[1] - self.item[0].item[0].c[1] * math.cos(self.freec) + self.item[0].item[1].c[1] * math.cos(self.freec) - self.item[0].item[0].c[0] * math.sin(self.freec) + self.item[0].item[1].c[0] * math.sin(self.freec))
+pt_on_circle.implement_check_triv(pt_on_circle_fun)
 
 circle_center = BasicMethod("circle_center", ["Point"], ["Circle"], "mdpt")
 circle_center_fun = lambda self: (self.item[0].c[0], self.item[0].c[1])
@@ -353,6 +388,44 @@ inx_line_line_check = lambda self: abs(self.item[0].c[0] * self.item[1].c[1] - s
 inx_line_line_errorinfo = lambda self: "Line " + self.item[0].name + " and Line " + self.item[1].name + " are parallel" if not(inx_line_line_check(self)) else ""
 inx_line_line_fun = lambda self: ((self.item[0].c[1] * self.item[1].c[2] - self.item[0].c[2] * self.item[1].c[1]) / (self.item[0].c[0] * self.item[1].c[1] - self.item[0].c[1] * self.item[1].c[0]), (self.item[0].c[2] * self.item[1].c[0] - self.item[0].c[0] * self.item[1].c[2]) / (self.item[0].c[0] * self.item[1].c[1] - self.item[0].c[1] * self.item[1].c[0]))
 inx_line_line.implement(inx_line_line_fun, inx_line_line_check, inx_line_line_errorinfo)
+
+inx_fig_fig_check = lambda self: len(fig_intersection(self.item[0].c, self.item[0].type, self.item[1].c, self.item[1].type)) > 0
+inx_fig_fig_errorinfo = lambda self: self.item[0].type + " " + self.item[0].name + " and " + self.item[1].type + " " + self.item[1].name + " do not intersect" if not(inx_fig_fig_check(self)) else ""
+inx_line_circle_close = BasicMethod("inx_line_circle_close", ["Point"], ["Line", "Circle"], "pt")
+def inx_line_circle_close_fun(self):
+    inxptlist = fig_intersection(self.item[0].c, "Line", self.item[1].c, "Circle")
+    if len(inxptlist) == 1:
+        return inxptlist[0]
+    else:
+        if ((inxptlist[0][0] * -self.item[0].c[1] + inxptlist[0][1] * self.item[0].c[0]) > (inxptlist[1][0] * -self.item[0].c[1] + inxptlist[1][1] * self.item[0].c[0])) ^ ((self.item[0].item[0].c[0] * -self.item[0].c[1] + self.item[0].item[0].c[1] * self.item[0].c[0]) > (self.item[0].item[1].c[0] * -self.item[0].c[1] +self.item[0].item[1].c[1] * self.item[0].c[0])):
+            return inxptlist[1]
+        else:
+            return inxptlist[0]
+inx_line_circle_close.implement(inx_line_circle_close_fun, inx_fig_fig_check, inx_fig_fig_errorinfo)
+
+inx_line_circle_far = BasicMethod("inx_line_circle_far", ["Point"], ["Line", "Circle"], "pt")
+def inx_line_circle_far_fun(self):
+    inxptlist = fig_intersection(self.item[0].c, "Line", self.item[1].c, "Circle")
+    if len(inxptlist) == 1:
+        return inxptlist[0]
+    else:
+        if ((inxptlist[0][0] * -self.item[0].c[1] + inxptlist[0][1] * self.item[0].c[0]) > (inxptlist[1][0] * -self.item[0].c[1] + inxptlist[1][1] * self.item[0].c[0])) ^ ((self.item[0].item[0].c[0] * -self.item[0].c[1] + self.item[0].item[0].c[1] * self.item[0].c[0]) > (self.item[0].item[1].c[0] * -self.item[0].c[1] +self.item[0].item[1].c[1] * self.item[0].c[0])):
+            return inxptlist[0]
+        else:
+            return inxptlist[1]
+inx_line_circle_far.implement(inx_line_circle_far_fun, inx_fig_fig_check, inx_fig_fig_errorinfo)
+
+inx_circle_circle_pos = BasicMethod("inx_circle_circle_pos", ["Point"], ["Circle", "Circle"], "pt")
+def inx_circle_circle_pos_fun(self):
+    inxptlist = fig_intersection(self.item[0].c, "Circle", self.item[1].c, "Circle")
+    if len(inxptlist) == 1:
+        return inxptlist[0]
+    else:
+        if -inxptlist[0][1] * self.item[0].c[0] + inxptlist[0][0] * self.item[0].c[1] + inxptlist[0][1] * self.item[1].c[0] - self.item[0].c[1] * self.item[1].c[0] - inxptlist[0][0] * self.item[1].c[1] + self.item[0].c[0] * self.item[1].c[1] >= 0:
+            return inxptlist[0]
+        else:
+            return inxptlist[1]
+inx_circle_circle_pos.implement(inx_circle_circle_pos_fun, inx_fig_fig_check, inx_fig_fig_errorinfo)
 
 mid_pt = BasicMethod("mid_pt", ["Point"], ["Point", "Point"], "mdpt")
 mid_pt_fun = lambda self: ((self.item[0].c[0] + self.item[1].c[0]) / 2, (self.item[0].c[1] + self.item[1].c[1]) / 2)
@@ -376,8 +449,9 @@ perp_line_method_list = [perp_line_pt, line]
 perp_line_indicator_list = [[("i",0), ("i",1)], [("i",0), ("m",0)]]
 perp_line.implement(perp_line_method_list, perp_line_indicator_list)
 
-
 '''
+# Old Versions of para and perp as Basic Methods
+
 para_line = BasicMethod("para_line", ["Line"], ["Point", "Line"], "para")
 para_line_fun = lambda self: (self.item[1].c[0], self.item[1].c[1], -self.item[1].c[0] * self.item[0].c[0] - self.item[1].c[1] * self.item[0].c[1])
 para_line.implement_check_triv(para_line_fun)

@@ -99,11 +99,35 @@ class ExplainLine:
             if word_num == len(self.wordlist) - 5 and self.wordtype(self.wordlist[word_num + 1]) == "Line" and self.wordtype(self.wordlist[word_num + 2]) == "Line" and self.wordtype(self.wordlist[word_num + 3]) == "Number" and self.wordtype(self.wordlist[word_num + 4]) == "Number":
                 return [GeomTool.MethodDict['inx_line_line'][1], [self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2])]]
             if word_num == len(self.wordlist) - 5 and self.wordtype(self.wordlist[word_num + 1]) == "Line" and self.wordtype(self.wordlist[word_num + 2]) == "Circle" and self.wordtype(self.wordlist[word_num + 3]) == "Number" and self.wordtype(self.wordlist[word_num + 4]) == "Number":
-                return []
-            if word_num == len(self.wordlist) - 5 and self.wordtype(self.wordlist[word_num + 1]) == "Circle" and self.wordtype(self.wordlist[word_num + 2]) == "Circle" and self.wordtype(self.wordlist[word_num + 3]) == "Number" and self.wordtype(self.wordlist[word_num + 4]) == "Number":
-                return []
+                lineobj = self.isnameobj(self.wordlist[word_num + 1])
+                circobj = self.isnameobj(self.wordlist[word_num + 2])
+                testx = float(self.wordlist[word_num + 3])
+                testy = float(self.wordlist[word_num + 4])
+                isclose = ((testx * -lineobj.c[1] + testy * lineobj.c[0]) > (circobj.c[0] * -lineobj.c[1] + circobj.c[1] * lineobj.c[0])) ^ ((lineobj.item[0].c[0] * -lineobj.c[1] + lineobj.item[0].c[1] * lineobj.c[0]) > (lineobj.item[1].c[0] * -lineobj.c[1] + lineobj.item[1].c[1] * lineobj.c[0]))
+                if isclose:
+                    return [GeomTool.MethodDict['inx_line_circle_far'][1], [self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2])]]
+                else:
+                    return [GeomTool.MethodDict['inx_line_circle_close'][1], [self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2])]]
             if word_num == len(self.wordlist) - 5 and self.wordtype(self.wordlist[word_num + 1]) == "Circle" and self.wordtype(self.wordlist[word_num + 2]) == "Line" and self.wordtype(self.wordlist[word_num + 3]) == "Number" and self.wordtype(self.wordlist[word_num + 4]) == "Number":
-                return []
+                lineobj = self.isnameobj(self.wordlist[word_num + 2])
+                circobj = self.isnameobj(self.wordlist[word_num + 1])
+                testx = float(self.wordlist[word_num + 3])
+                testy = float(self.wordlist[word_num + 4])
+                isclose = ((testx * -lineobj.c[1] + testy * lineobj.c[0]) > (circobj.c[0] * -lineobj.c[1] + circobj.c[1] * lineobj.c[0])) ^ ((lineobj.item[0].c[0] * -lineobj.c[1] + lineobj.item[0].c[1] * lineobj.c[0]) > (lineobj.item[1].c[0] * -lineobj.c[1] + lineobj.item[1].c[1] * lineobj.c[0]))
+                if isclose:
+                    return [GeomTool.MethodDict['inx_line_circle_far'][1], [self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2])]]
+                else:
+                    return [GeomTool.MethodDict['inx_line_circle_close'][1], [self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2])]]
+
+            if word_num == len(self.wordlist) - 5 and self.wordtype(self.wordlist[word_num + 1]) == "Circle" and self.wordtype(self.wordlist[word_num + 2]) == "Circle" and self.wordtype(self.wordlist[word_num + 3]) == "Number" and self.wordtype(self.wordlist[word_num + 4]) == "Number":
+                circ1obj = self.isnameobj(self.wordlist[word_num + 1])
+                circ2obj = self.isnameobj(self.wordlist[word_num + 2])
+                testx = float(self.wordlist[word_num + 3])
+                testy = float(self.wordlist[word_num + 4])
+                if -testy * circ1obj.c[0] + testx * circ1obj.c[1] + testy * circ2obj.c[0] - circ1obj.c[1] * circ2obj.c[0] - testx * circ2obj.c[1] + circ1obj.c[0] * circ2obj.c[1] >= 0:
+                    return [GeomTool.MethodDict['inx_circle_circle_pos'][1], [self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2])]]
+                else:
+                    return [GeomTool.MethodDict['inx_circle_circle_pos'][1], [self.isnameobj(self.wordlist[word_num + 2]), self.isnameobj(self.wordlist[word_num + 1])]]
         
         if mode_name == "para":
             if word_num == len(self.wordlist) - 3 and self.wordtype(self.wordlist[word_num + 1]) == "Point" and self.wordtype(self.wordlist[word_num + 2]) == "Line":
