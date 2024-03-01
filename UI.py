@@ -49,7 +49,7 @@ GEOM_PICK_DIST = 9.4
 QUICK_CHOOSE_DIST = 4
 
 # Geometry setting
-ERROR = 1e-13
+ERROR = GeomTool.ERROR
 
 CMD_LINE_HEIGHT = 25
 
