@@ -198,7 +198,7 @@ class ComplexMethod(Method):
 
     '''
     Class of complex methods, recursively create all needed geometric constructions.
-    use apply to create all objects recursively, use calc to calc all coordinates of dependending objects recursively
+    use apply to create all objects recursively, use calcc to calc all coordinates of dependending objects recursively
     '''
     def __init__(self, in_name, in_gen_type: list, in_item_type: list, in_cmd_name : str):
         super().__init__(in_name, in_gen_type, in_item_type, in_cmd_name)
@@ -272,7 +272,13 @@ class GraphTree:
 ##    Methods     ##
 ####################
 
-# The Global Dict used in other programs
+'''
+The Global Dictionary of all methods. All methods should be included here. Format:
+key : unique name
+query : List( cmd name : str , Method itself, input_type_list, output_type_list)
+
+All methods will be add to this dict automatically once the are created.
+'''
 MethodDict = {}
 
 free_pt = BasicMethod("free_pt", ["Point"], [], "pt", in_movable=True)
@@ -371,11 +377,53 @@ angle_bis_indicator_list = [[("i",0), ("i",1), ("i",2)], [("i",1), ("m",0)]]
 angle_bis.implement(angle_bis_method_list, angle_bis_indicator_list)
 
 
+######################
+## Methods from txt ##
+######################
 '''
-The Dictionary of all methods. All methods should be included here. Format:
-key : unique name
-query : List( cmd name : str , Method itself, input_type_list, output_type_list)
+Create methods from txt files. Example:
+
+circum_center "circ_cent" O : Point # MethodName, CMDName, Output Variable, Output Type 
+A B C : Point Point Point # Input variable, Input type. (please make sure no repeated varible is used)
+l1 = perp_bis A B, l2 = perp_bis A C, O = inx_line_line l1 l2 #Constructions
+    # this line is left for DD
+
 '''
+comment_marker = "#"
+file_path = "Construction.txt"
+
+def split_to_info( lines:list ):
+    rlist = [] 
+    new_method = True
+    for l in lines :
+        r = l.split(comment_marker)[0] #delete comments
+        words = r.split() #split each line into words
+        if words == [] :
+            new_method = True
+            continue
+        if new_method :
+            new_method = False
+            rlist += [[words]] 
+        else:
+            rlist[-1] += [words]
+    return rlist # a list, each term corresponds to a new method. each term is a list of lines, each line is a list of words 
+
+def info_to_method ()
+
+with open(file_path) as file:
+    lines = file.readlines() # list of lines
+
+info_list = split_to_info(lines)
+
+for info in info_list:
+
+
+
+
+
+
+    
+
 
 current_tree = GraphTree()
     
