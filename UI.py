@@ -33,6 +33,8 @@ ORIGINAL_DRAW_HEIGHT = 800
 BACKGROUND_COLOR = (244, 244, 244)
 
 FIGURE_COLOR = (0, 0, 0)
+FREE2_COLOR = (14, 93, 240)
+FREE1_COLOR = (28, 187, 255)
 TEXT_COLOR = (0, 0, 0)
 PICKED_FIGURE_COLOR = (131, 251, 128)
 CHOSEN_FIGURE_COLOR = (249, 176, 79)
@@ -188,7 +190,20 @@ class GeomUI:
                         self.screen.blit(pygame.font.SysFont('TimesNewRoman', 20, bold=True).render(self.geom_list[fig_num].name , True , TAG_COLOR), self.cc(self.geom_list[fig_num].c))
                 if (fig_num not in self.geom_chosen) and (fig_num not in self.geom_picked_list):
                     ordernum += 0.1
-                    color = FIGURE_COLOR
+                    if self.geom_list[fig_num].movable:
+                        if self.geom_list[fig_num].method.name == "free_pt":
+                            color = FREE2_COLOR
+                            width += 1
+                        elif self.geom_list[fig_num].method.name == "pt_on_line":
+                            color = FREE1_COLOR
+                            width += 1
+                        elif self.geom_list[fig_num].method.name == "pt_on_circle":
+                            color = FREE1_COLOR
+                            width += 1
+                        else:
+                            color = FIGURE_COLOR
+                    else:
+                        color = FIGURE_COLOR
                 if (fig_num in self.geom_chosen) and (fig_num not in self.geom_picked_list):
                     ordernum += 0.2
                     color = CHOSEN_FIGURE_COLOR
