@@ -334,7 +334,7 @@ perp_line.implement_check_triv(perp_line_fun)
 
 angle_bis_pt = BasicMethod("angle_bis_pt", ["Point"], ["Point", "Point", "Point"], "abispoint")
 angle_bis_pt_check = lambda self: ((abs(self.item[0].c[0] - self.item[1].c[0]) > ERROR) or (abs(self.item[0].c[1] - self.item[1].c[1]) > ERROR)) and ((abs(self.item[2].c[0] - self.item[1].c[0]) > ERROR) or (abs(self.item[2].c[1] - self.item[1].c[1]) > ERROR))
-angle_bis_pt_errorinfo = lambda self: "Point " + self.item[0].name + " and Point " + self.item[1].name + " and Point " + self.item[2].name + " do not form an angle" if not(angle_bis_check(self)) else ""
+angle_bis_pt_errorinfo = lambda self: "Point " + self.item[0].name + " and Point " + self.item[1].name + " and Point " + self.item[2].name + " do not form an angle" if not(angle_bis_pt_check(self)) else ""
 def angle_bis_pt_fun(self):
     deltax1 = self.item[0].c[0] - self.item[1].c[0]
     deltay1 = self.item[0].c[1] - self.item[1].c[1]
