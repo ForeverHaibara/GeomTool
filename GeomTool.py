@@ -5,7 +5,7 @@ A temporory naming choice. Please rewrite this once dependency is finished.
 '''
 
 name_initial = {
-    "Point" : "P",
+    "Point" : "p",
     "Line" : "l",
     "Circle" : "c"}
 def default_name (Type : str) :
