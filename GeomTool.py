@@ -10,15 +10,15 @@ name_initial = {
     "Circle" : "c"}
 def default_name (Type : str) :
     name_list = [obj.name for obj in current_tree.obj_list]
-    i = 0
+    name_num = 0
     if Type in name_initial.keys():
-        while (name_initial[Type] + str(i)) in name_list:
-            i += 1
-        return (name_initial[Type] + str(i))
+        while (name_initial[Type] + str(name_num)) in name_list:
+            name_num += 1
+        return (name_initial[Type] + str(name_num))
     else:
-        while ("NoName" + str(i)) in name_list:
-            i += 1
-        return ("NoName" + str(i))
+        while ("NoName" + str(name_num)) in name_list:
+            name_num += 1
+        return ("NoName" + str(name_num))
     
 ERROR = 1e-13
 def numberform(realnum):
