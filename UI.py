@@ -467,25 +467,55 @@ class GeomUI:
         pygame.draw.circle(self.screen, color, center=realc, radius=width, width=width)
         
     def draw_line(self, c, color, width):
-        if abs(c[0]) < ERROR:
-            ht = self.cc((0, -c[2]/c[1]))[1]
-            point1 = (0, ht)
-            point2 = (self.SCREEN_WIDTH, ht)
+        if abs(c[0]) < abs(c[1]):
+            lf = self.cc2((0, 0))[0]
+            rt = self.cc2((self.SCREEN_WIDTH, 0))[0]
+            point1 = self.cc((lf, (-c[2]-c[0]*lf)/c[1]))
+            point2 = self.cc((rt, (-c[2]-c[0]*rt)/c[1]))
         else:
-            if abs(c[1]) < ERROR:
-                wd = self.cc((-c[2]/c[0], 0))[0]
-                point1 = (wd, 0)
-                point2 = (wd, self.SCREEN_HEIGHT)
-            else:
-                lf = self.cc2((0, 0))[0]
-                rt = self.cc2((self.SCREEN_WIDTH, 0))[0]
-                point1 = self.cc((lf, (-c[2]-c[0]*lf)/c[1]))
-                point2 = self.cc((rt, (-c[2]-c[0]*rt)/c[1]))
+            up = self.cc2((0, 0))[1]
+            dn = self.cc2((0, self.SCREEN_HEIGHT))[1]
+            point1 = self.cc(((-c[2]-c[1]*up)/c[0], up))
+            point2 = self.cc(((-c[2]-c[1]*dn)/c[0], dn))
         pygame.draw.line(self.screen, color, point1, point2, width=width)
         
     def draw_circle(self, c, color, width):
         realc = self.cc((c[0], c[1]))
-        pygame.draw.circle(self.screen, color, center=realc, radius=c[2]*self.r, width=width)
+        if realc[0] * realc[0] + realc[1] * realc[1] > 38000 * 38000:
+            lf = self.cc2((0, 0))[0]
+            rt = self.cc2((self.SCREEN_WIDTH, 0))[0]
+            up = self.cc2((0, 0))[1]
+            dn = self.cc2((0, self.SCREEN_HEIGHT))[1]
+            line1 = (0, -1, up)
+            for inxpt in GeomTool.fig_intersection(line1, "Line", c, "Circle"):
+                if lf <= inxpt[0] <= rt:
+                    deltax = inxpt[0] - c[0]
+                    deltay = inxpt[1] - c[1]
+                    self.draw_line((deltax, deltay, -deltax * inxpt[0] - deltay * inxpt[1]), color, width)
+                    return
+            line1 = (0, -1, dn)
+            for inxpt in GeomTool.fig_intersection(line1, "Line", c, "Circle"):
+                if lf <= inxpt[0] <= rt:
+                    deltax = inxpt[0] - c[0]
+                    deltay = inxpt[1] - c[1]
+                    self.draw_line((deltax, deltay, -deltax * inxpt[0] - deltay * inxpt[1]), color, width)
+                    return
+            line1 = (-1, 0, lf)
+            for inxpt in GeomTool.fig_intersection(line1, "Line", c, "Circle"):
+                if dn <= inxpt[1] <= up:
+                    deltax = inxpt[0] - c[0]
+                    deltay = inxpt[1] - c[1]
+                    self.draw_line((deltax, deltay, -deltax * inxpt[0] - deltay * inxpt[1]), color, width)
+                    return
+            line1 = (-1, 0, rt)
+            for inxpt in GeomTool.fig_intersection(line1, "Line", c, "Circle"):
+                if dn <= inxpt[1] <= up:
+                    deltax = inxpt[0] - c[0]
+                    deltay = inxpt[1] - c[1]
+                    self.draw_line((deltax, deltay, -deltax * inxpt[0] - deltay * inxpt[1]), color, width)
+                    return
+        else:
+            pygame.draw.circle(self.screen, color, center=realc, radius=c[2]*self.r, width=width)
     
     # measure the screen distance from mouse to a geom_figure
     
@@ -511,7 +541,8 @@ class GeomUI:
         self.cmd_modechange(exp.mode_appear)
         self.draw_init()
         
-    def cmd_modenamechangeline(self, line_num, mode_name, mode_list = ["mdpt", "pt", "line", "para", "perp", "pbis", "abis", "circ"]):
+    def cmd_modenamechangeline(self, line_num, mode_name):
+        mode_list = ["mdpt", "pt", "line", "para", "perp", "pbis", "abis", "circ"]
         if mode_name in mode_list:
             self.cmdlines[line_num] = mode_name + ' '
         else:
