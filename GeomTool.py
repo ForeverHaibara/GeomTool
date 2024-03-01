@@ -29,7 +29,7 @@ def numberform(realnum):
 
 
 class GeomObj:
-    def __init__(self, in_name, in_type, in_method, in_item, in_visible = True, in_movable = False, in_tree = None):
+    def __init__(self, in_name, in_type, in_method, in_item, in_visible = True, in_movable = False, in_tree = None, in_freec = 0):
         if in_name == None:
             self.name = default_name(in_type)
         else:
@@ -49,7 +49,15 @@ class GeomObj:
         self.tree.obj_list += [self]
         self.visible = in_visible
         self.movable = in_movable
-        print("init_run", self.name)
+        if in_method.name == "free_pt":
+            self.freec = (random.gauss(0, 1), random.gauss(0, 1))
+        elif in_method.name == "pt_on_line":
+            self.freec = random.gauss(1/2, 1)
+        elif in_method.name == "pt_on_circle":
+            self.freec = random.uniform(-math.pi, math.pi)
+        else:
+            self.freec = None
+        # print("init_run", self.name)
         
     def __str__(self):
         addstr = ''
@@ -134,8 +142,20 @@ class GeomObj:
     
     def move(self, in_c):
         if self.movable and self.method.name == "free_pt":
-            self.c = in_c
-            self.stupid_update()
+            self.freec = in_c
+        if self.movable and self.method.name == "pt_on_line":
+            perpfooty = ((-self.item[0].c[1] * self.item[0].c[2] - self.item[0].c[0] * self.item[0].c[1] * in_c[0] + self.item[0].c[0]**2 * in_c[1])/(self.item[0].c[0]**2 + self.item[0].c[1]**2))
+            if abs(self.item[0].item[0].c[0] - self.item[0].item[1].c[0]) > ERROR:
+                perpfootx = ((-self.item[0].c[0] * self.item[0].c[2] + self.item[0].c[1]**2 * in_c[0] - self.item[0].c[0] * self.item[0].c[1] * in_c[1])/(self.item[0].c[0]**2 + self.item[0].c[1]**2))
+                self.freec = (perpfootx - self.item[0].item[0].c[0]) / (self.item[0].item[1].c[0] - self.item[0].item[0].c[0])
+            else:
+                perpfooty = ((-self.item[0].c[1] * self.item[0].c[2] - self.item[0].c[0] * self.item[0].c[1] * in_c[0] + self.item[0].c[0]**2 * in_c[1])/(self.item[0].c[0]**2 + self.item[0].c[1]**2))
+                self.freec = (perpfooty - self.item[0].item[0].c[1]) / (self.item[0].item[1].c[1] - self.item[0].item[1].c[1])
+            
+        if self.movable and self.method.name == "pt_on_circle":
+            pass
+        self.calcc()
+        self.stupid_update()
             
             
     
@@ -276,7 +296,7 @@ class GraphTree:
 MethodDict = {}
 
 free_pt = BasicMethod("free_pt", ["Point"], [], "pt", in_movable=True)
-free_pt_fun = lambda self : (random.gauss(0, 1), random.gauss(0, 1))
+free_pt_fun = lambda self : self.freec
 free_pt.implement_check_triv(free_pt_fun)
 
 line = BasicMethod("line", ["Line"], ["Point", "Point"], "line")
@@ -284,6 +304,15 @@ line_check = lambda self : (abs(self.item[0].c[0] - self.item[1].c[0]) > ERROR) 
 line_errorinfo = lambda self: "Point " + self.item[0].name + " and Point " + self.item[1].name + " coincide" if not(line_check(self.in_name, self.item)) else ""
 line_fun = lambda self: (self.item[0].c[1] - self.item[1].c[1], self.item[1].c[0] - self.item[0].c[0], self.item[0].c[0] * self.item[1].c[1] - self.item[1].c[0] * self.item[0].c[1])
 line.implement(line_fun, line_check, line_errorinfo)
+
+pt_on_line = BasicMethod("pt_on_line", ["Point"], ["Line"], "pt", in_movable=True)
+pt_on_line_fun = lambda self : (self.item[0].item[0].c[0] + (self.item[0].item[1].c[0] - self.item[0].item[0].c[0]) * self.freec, self.item[0].item[0].c[1] + (self.item[0].item[1].c[1] - self.item[0].item[0].c[1]) * self.freec)
+pt_on_line.implement_check_triv(pt_on_line_fun)
+
+pt_on_circle = BasicMethod("pt_on_circle", ["Point"], ["Circle"], "pt", in_movable=True)
+pt_on_circle_fun = lambda self : (self.item[0].item[0].c[0] - self.item[0].item[0].c[0] * math.cos(self.freec) + self.item[0].item[1].c[0] * math.cos(self.freec) + self.item[0].item[0].c[1] * math.sin(self.freec) - self.item[0].item[1].c[1] * math.sin(self.freec), self.item[0].item[0].c[1] - self.item[0].item[0].c[1] * math.cos(self.freec) + self.item[0].item[1].c[1] * math.cos(self.freec) - self.item[0].item[0].c[0] * math.sin(self.freec) + self.item[0].item[1].c[0] * math.sin(self.freec))
+pt_on_circle.implement_check_triv(pt_on_circle_fun)
+
 
 circle = BasicMethod("circle", ["Circle"], ["Point", "Point"], "circ")
 circle_fun = lambda self: (self.item[0].c[0], self.item[0].c[1], ((self.item[0].c[0] - self.item[1].c[0])**2 + (self.item[0].c[1] - self.item[1].c[1])**2)**(1/2))
