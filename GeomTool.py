@@ -545,7 +545,7 @@ def name_to_indicator (ilist:list, mlist:list, name:str):
         return ("m",mlist.index(name))
 
 def info_to_method ( info : list) :
-    #try:
+    try:
         method_name = info[0][0]
         cmd_name = info[0][1].strip(cmd_marker)
         final_name = info[0][2]
@@ -584,9 +584,9 @@ def info_to_method ( info : list) :
         new_method = ComplexMethod(method_name, mid_type, input_type, cmd_name)
         new_method.implement(mid_method, indicator_list)
         return new_method
-    # except:
-    #     print("Input method is not legal!")
-    #     print(info)
+    except:
+        print("Input method is not legal!")
+        print(info)
 
 with open(file_path) as file:
     lines = file.readlines() # list of lines
