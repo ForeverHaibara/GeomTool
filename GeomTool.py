@@ -4,18 +4,21 @@ import random, math
 A temporory naming choice. Please rewrite this once dependency is finished.
 '''
 
-name_counter = 100
-def default_name (Type : str) : 
-    global name_counter 
-    name_counter = name_counter + 1
-    if Type == "Point":
-        return "p"+str(name_counter)
-    if Type == "Line":
-        return "l"+str(name_counter)
-    if Type == "Circle":
-        return "c"+str(name_counter)
+name_initial = {
+    "Point" : "P",
+    "Line" : "l",
+    "Circle" : "c"}
+def default_name (Type : str) :
+    name_list = [obj.name for obj in current_tree.obj_list]
+    i = 0
+    if Type in name_initial.keys():
+        while (name_initial[Type] + str(i)) in name_list:
+            i += 1
+        return (name_initial[Type] + str(i))
     else:
-        return "NoName"
+        while ("NoName" + str(i)) in name_list:
+            i += 1
+        return ("NoName" + str(i))
     
 ERROR = 1e-13
 def numberform(realnum):
