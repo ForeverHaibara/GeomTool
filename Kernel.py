@@ -3,13 +3,13 @@ import Explainer, GeomTool
 def runline(in_line, in_graph_tree):
     
     exp = Explainer.ExplainLine(in_line, in_graph_tree.obj_list)
-    protectedwordlist = ["=", ".", "+", "-", "*", "/", "?", ",", "!", "^", " ", "'", '"', "help", "hide", "hidenlist", "show", "showall", "objlist", "pt", "line", "circ", "mdpt", "para", "perp", "pbis", "abis"]
+    protectedwordlist = ["=", ".", "+", "-", "*", "/", "?", ",", "!", "^", " ", "'", '"', "help", "hide", "hidenlist", "show", "showall", "objlist", "run", "pt", "line", "circ", "mdpt", "para", "perp", "pbis", "abis"]
     
     if len(exp.wordlist) == 0:
         return ""
     
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "help":
-        return "Commands list: help, hide, hidenlist, show, showall, objlist. Use commands like 'help hide' to see details. Use 'help1' to see built-in commands. "
+        return "Commands list: help, hide, hidenlist, show, showall, objlist, run. Use commands like 'help hide' to see details. Use 'help1' to see built-in commands. "
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "help1":
         return "Built-in commands list: pt, line, circ, mdpt, para, perp, pbis, abis. Use commands like 'help pt' to see details. You can also input the name of an object to see details of the object. Use 'A = B' to rename object B by A. Use 'help2' to see more. "
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "help2":
@@ -29,7 +29,10 @@ def runline(in_line, in_graph_tree):
             return "showall: Show all geometric objects, including intermediate objects used in geometric constructions. "
         if exp.wordlist[1] == "objlist":
             return "objlist: Print a list of names of all hiden geometric objects, including intermediate objects used in geometric constructions. "
-        
+        if exp.wordlist[1] == "file":
+            return "run [Name]: Run all lines in a file"
+
+
         if exp.wordlist[1] == "pt":
             return "pt [Number] [Number]: Create a free point. pt [Line/Circle] [Number] [Number]: Create a free point on a line/circle. pt [Line/Circle] [Line/Circle] [Number] [Number]: Create the intersection point of a line/circle and another line/circle. The two numbers give the (x, y) coordinate of the closest intersection point. <NOTE> In the case of two lines, since the intersection point is unique, coordinate could be omitted. Use pt [Line] [Line] in this case. "
         if exp.wordlist[1] == "line":
@@ -47,7 +50,10 @@ def runline(in_line, in_graph_tree):
         if exp.wordlist[1] == "abis":
             return "abis [Point] [Point] [Point]: Create the angle bisector line of the angle formed by the three points. "
         
-        
+    
+    if len(exp.wordlist) == 2 and exp.wordlist[0] == "run":
+        return runfile(exp.wordlist[1], in_graph_tree)
+    
     if len(exp.wordlist) == 1 and exp.isnameobj(exp.wordlist[0]) != None:
         return str(exp.isnameobj(exp.wordlist[0]))
     
@@ -133,6 +139,22 @@ def runline(in_line, in_graph_tree):
         pass
     
     return "Failed to run '" + in_line[:-1] + "', use 'help' for help" # Should return information want to print
+
+def runfile(file_name, in_graph_tree):
+    try:
+        # 打开文件并逐行读取内容
+        with open(file_name, 'r') as file:
+            lines = file.readlines()
+            
+        # 输出每一行的内容
+        for line in lines:
+            print(runline(line + ' ', in_graph_tree))
+        return "Done"
+    
+    except FileNotFoundError:
+        return "File do not Exist"
+    except Exception as e:
+        return "Error with info: " + str(e)
 
 if __name__ == "__main__":
     intree = GeomTool.current_tree
