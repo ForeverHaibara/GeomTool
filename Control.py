@@ -1,3 +1,4 @@
+'''
 import random, math
 
 class ObjBase : 
@@ -44,7 +45,7 @@ class FullAction:
         NotImplemented
 
 # the coordinate of the points will not be calculated until one calls function calcc of every object
-
+'''
 
 '''
 class DDNode:
