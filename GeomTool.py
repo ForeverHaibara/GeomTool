@@ -1,5 +1,8 @@
 import random, math
 
+ERROR = 1e-13
+
+disturb_strength = 1e-4
 
 name_initial = {
     "Point" : "p",
@@ -21,7 +24,7 @@ def default_name (Type : str) :
             name_num += 1
         return ("NoName" + str(name_num))
     
-ERROR = 1e-13
+
 def numberform(realnum):
     '''
     String a number in a relatively short form
@@ -234,6 +237,21 @@ class GeomObj:
             
         self.calcc()
         self.stupid_update()
+    
+    def disturb(self, disturb_strength = disturb_strength):
+        '''
+        disturb an object. change freec into freec * (1 + e) + e'
+        '''
+        if self.freec == None :
+            return
+        else :
+            if type(self.freec) == tuple:
+                new_fc = tuple( [i * (1 + random.gauss(0, disturb_strength)) + random.gauss(0, disturb_strength) for i in self.freec] )
+            else:
+                new_fc = self.freec * (1 + random.gauss(0, disturb_strength)) + random.gauss(0, disturb_strength)
+            self.freec = new_fc
+            self.calcc()
+            self.stupid_update()
             
             
     
@@ -381,6 +399,14 @@ class GraphTree:
             if obj.movable:
                 r += [obj]
         return r
+    
+    def calc_all(self):
+        for obj in self.obj_list:
+            obj.calcc()
+    
+    def disturb_all(self, ds = disturb_strength):
+        for obj in self.obj_list:
+            obj.disturb(ds)
 
 
 ####################
@@ -623,8 +649,8 @@ def info_to_method ( info : list) :
         new_method = ComplexMethod(method_name, mid_type, input_type, cmd_name)
         new_method.implement(mid_method, indicator_list)
         return new_method
-    except:
-        print("Input method is not legal!")
+    except Exception as e:
+        print("Input method is not legal!" + str(e))
         print(info)
 
 with open(file_path) as file:
@@ -663,5 +689,18 @@ if __name__ == '__main__':
     print("o calculated", o.hasc, o.c)
     i.calcc()
     print("i calculated", i.hasc, i.c)
+    print("the following points directly depends on p1")
     print( [i.name for i in p1.affect_item] )
+    current_tree.calc_all()
+    print("all objs:")
+    print([i.name for i in current_tree.obj_list])
+    print( [i.c for i in current_tree.obj_list])
+    p1.disturb()
+    print("after disturb p1")
+    print( [i.name for i in current_tree.obj_list] )
+    print( [i.c for i in current_tree.obj_list])
+    current_tree.disturb_all()
+    print("after disturb all")
+    print( [i.name for i in current_tree.obj_list] )
+    print( [i.c for i in current_tree.obj_list])
     
