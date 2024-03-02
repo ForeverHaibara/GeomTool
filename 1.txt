@@ -30,4 +30,5 @@ pp3 = pt c2
 
 eqinfo
 colinfo
+cycinfo
 distinfo

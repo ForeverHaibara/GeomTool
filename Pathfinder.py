@@ -94,7 +94,6 @@ class GeomInformation:
                     dist_dict[d0] = [(pt_num1, pt_num2)]
         self.dist_dict = dist_dict
         return printchecklist(self.dist_dict.values(), lambda x: "|" + self.points[x[0]].name + " " + self.points[x[1]].name + "|")
-        
     
     def colinfo(self):
         colinear_dict = dict()
@@ -111,7 +110,42 @@ class GeomInformation:
         outstr = ''
         for sublst in self.colinear_list:
             if len(sublst) > 2:
-                outstr += "line "
+                outstr += "Line "
+                for obj in sublst:
+                    outstr += obj.name + " "
+                outstr = outstr[:-1] + ", "
+        if outstr != '':
+            return outstr[:-2]
+        else:
+            return "None"
+        
+        
+    def cycinfo(self):
+        cyclic_dict = dict()
+        for pt_num1 in range(len(self.points)):
+            for pt_num2 in range(pt_num1 + 1, len(self.points)):
+                for pt_num3 in range(pt_num2 + 1, len(self.points)):
+                    x1 = self.points[pt_num1].c[0]
+                    x2 = self.points[pt_num2].c[0]
+                    x3 = self.points[pt_num3].c[0]
+                    y1 = self.points[pt_num1].c[1]
+                    y2 = self.points[pt_num2].c[1]
+                    y3 = self.points[pt_num3].c[1]
+                    d0 = (x2 * y1 - x3 * y1 - x1 * y2 + x3 * y2 + x1 * y3 - x2 * y3)
+                    if abs(d0) > GeomTool.ERROR:
+                        x0 = (x2**2 * y1 - x3**2 * y1 - x1**2 * y2 + x3**2 * y2 - y1**2 * y2 + y1 * y2**2 + x1**2 * y3 - x2**2 * y3 + y1**2 * y3 - y2**2 * y3 - y1 * y3**2 + y2 * y3**2)/(2 * d0)
+                        y0 = (x1**2 * x2 - x1 * x2**2 - x1**2 * x3 + x2**2 * x3 + x1 * x3**2 - x2 * x3**2 + x2 * y1**2 - x3 * y1**2 - x1 * y2**2 + x3 * y2**2 + x1 * y3**2 - x2 * y3**2)/(2 * d0)
+                        r0 = (((x1 - x2)**2 + (y1 - y2)**2) * ((x1 - x3)**2 + (y1 - y3)**2) * ((x2 - x3)**2 + (y2 - y3)**2))** (1/2) / abs(2 * d0)
+                        c0 = (rnd(x0), rnd(y0), rnd(r0))
+                        if c0 in cyclic_dict:
+                            cyclic_dict[c0] = cyclic_dict[c0].union({pt_num1, pt_num2, pt_num3})
+                        else:
+                            cyclic_dict[c0] = {pt_num1, pt_num2, pt_num3}
+        self.cyclic_list = [[self.points[num] for num in st] for st in cyclic_dict.values()]
+        outstr = ''
+        for sublst in self.cyclic_list:
+            if len(sublst) > 3:
+                outstr += "Circle "
                 for obj in sublst:
                     outstr += obj.name + " "
                 outstr = outstr[:-1] + ", "

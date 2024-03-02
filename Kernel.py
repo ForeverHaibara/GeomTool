@@ -109,6 +109,10 @@ def runline(in_line, in_graph_tree):
         finder = Pathfinder.GeomInformation(in_graph_tree)
         return finder.colinfo()
     
+    if len(exp.wordlist) == 1 and exp.wordlist[0] == "cycinfo":
+        finder = Pathfinder.GeomInformation(in_graph_tree)
+        return finder.cycinfo()
+    
     """------------
     !!!   NEW   !!!
     ------------"""
