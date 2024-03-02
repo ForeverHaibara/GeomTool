@@ -5,7 +5,7 @@ def runline(in_line, in_graph_tree):
     in_line = in_line + ' '
     exp = Explainer.ExplainLine(in_line, in_graph_tree.obj_list)
     protectedwordlist = ["=", ".", "+", "-", "*", "/", "?", ",", "!", "^", " ", "'", '"', "help", "hide", "hidenlist", "show", "showall", "objlist", "run",
-                         "eqinfo", "pt", "line", "circ", "mdpt", "para", "perp", "pbis", "abis"]
+                         "pt", "line", "circ", "mdpt", "para", "perp", "pbis", "abis"]
     
     if len(exp.wordlist) == 0:
         return ""
@@ -34,8 +34,8 @@ def runline(in_line, in_graph_tree):
         if exp.wordlist[1] == "run":
             return "run [Name]: Run all lines in a txt file"
         
-        if exp.wordlist[1] == "eqinfo":
-            return "eqinfo: Find all VISIBLE coincident objects and print a list of equalities"
+        if exp.wordlist[1] == "eq":
+            return "eq: Find all VISIBLE coincident objects and print a list of equalities"
 
 
         if exp.wordlist[1] == "pt":
@@ -94,27 +94,31 @@ def runline(in_line, in_graph_tree):
         return "All objects are shown"
     
     """------------
-    !!!   NEW   !!!
+    !!!   NEW   !!!---------------------------------------+----
     ------------"""
     
-    if len(exp.wordlist) == 1 and exp.wordlist[0] == "eqinfo":
+    if len(exp.wordlist) == 1 and exp.wordlist[0] == "eq":
         finder = Pathfinder.GeomInformation(in_graph_tree)
-        return finder.eqinfo()
+        return finder.eq()
     
-    if len(exp.wordlist) == 1 and exp.wordlist[0] == "distinfo":
+    if len(exp.wordlist) == 1 and exp.wordlist[0] == "deq":
         finder = Pathfinder.GeomInformation(in_graph_tree)
-        return finder.dist_info()
+        return finder.deq()
     
-    if len(exp.wordlist) == 1 and exp.wordlist[0] == "colinfo":
+    if len(exp.wordlist) == 1 and exp.wordlist[0] == "col":
         finder = Pathfinder.GeomInformation(in_graph_tree)
-        return finder.colinfo()
+        return finder.col()
     
-    if len(exp.wordlist) == 1 and exp.wordlist[0] == "cycinfo":
+    if len(exp.wordlist) == 1 and exp.wordlist[0] == "cyc":
         finder = Pathfinder.GeomInformation(in_graph_tree)
-        return finder.cycinfo()
+        return finder.cyc()
+    
+    if len(exp.wordlist) == 1 and exp.wordlist[0] == "simtri":
+        finder = Pathfinder.GeomInformation(in_graph_tree)
+        return finder.simtri()
     
     """------------
-    !!!   NEW   !!!
+    !!!   NEW   !!!---------------------------------------+----
     ------------"""
     
     if exp.wordlist[0] == "show":
@@ -167,8 +171,8 @@ def runline(in_line, in_graph_tree):
     try:
         ev = eval(in_line)
         return str(ev)
-    except:
-        pass
+    except Exception as e:
+        return "ΔError with info: " + str(e)
     
     return "Failed to run '" + in_line[:-1] + "', use 'help' for help" # Should return information want to print
 
@@ -189,7 +193,7 @@ def runfile(file_name, in_graph_tree):
     except FileNotFoundError:
         return "File " + file_name + " do not Exist"
     except Exception as e:
-        return "Error with info: " + str(e)
+        return "ΔError with info: " + str(e)
 
 if __name__ == "__main__":
     intree = GeomTool.current_tree

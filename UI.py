@@ -1,7 +1,5 @@
 import pygame, tkinter
-import GeomTool
-import Explainer
-import Kernel
+import GeomTool, Explainer, Kernel
 
 """
 KEY_ESCAPE: Exit
