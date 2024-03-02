@@ -1,14 +1,15 @@
 import random, math
 
-'''
-A temporory naming choice. Please rewrite this once dependency is finished.
-'''
 
 name_initial = {
     "Point" : "p",
     "Line" : "l",
     "Circle" : "c"}
+
 def default_name (Type : str) :
+    '''
+    Generate a default name for GeomObj if no name is specified.
+    '''
     name_list = [obj.name for obj in current_tree.obj_list]
     name_num = 0
     if Type in name_initial.keys():
@@ -22,7 +23,9 @@ def default_name (Type : str) :
     
 ERROR = 1e-13
 def numberform(realnum):
-    # String a number in a relatively short form
+    '''
+    String a number in a relatively short form
+    '''
     if abs(realnum) < ERROR:
         return "0.000"
     if abs(realnum) < 1e-2 or abs(realnum) > 1e3:
@@ -31,8 +34,11 @@ def numberform(realnum):
         return "{:.3f}".format(realnum)
 
 
-# A Tool used to calculate fig_intersection
+
 def fig_intersection(fig1c, fig1type, fig2c, fig2type):
+    '''
+    A tool used to calculate fig_intersection, suitable Line + Line, Line + Circle, Circle + Circle.
+    '''
     if fig1type == "Line":
         if fig2type == "Line":
             if abs(fig1c[1] * fig2c[0] - fig1c[0] * fig2c[1]) > ERROR:
@@ -76,18 +82,18 @@ class GeomObj:
         self.type = in_type # Type of the object
         self.method = in_method # The method used to generate the object
         self.item = in_item # The items used to generate the object
-        self.hasc = False
-        self.affect_item = []  #The items using this object to generate object
+        self.hasc = False # Marker that constants needed is calcualted
+        self.affect_item = []  # The items using this object to generate object
         for parent_item in in_item:
             parent_item.affect_item += [ self ]
-        global current_tree
+        global current_tree 
         if in_tree == None:
-            self.tree = current_tree
+            self.tree = current_tree # which tree to put this object into
         else:
             self.tree = in_tree
         self.tree.obj_list += [self]
-        self.visible = in_visible
-        self.movable = in_movable
+        self.visible = in_visible # visibility
+        self.movable = in_movable # mobility
         if in_method.name == "free_pt":
             self.freec = (random.gauss(0, 1), random.gauss(0, 1))
         elif in_method.name == "pt_on_line":
@@ -105,10 +111,16 @@ class GeomObj:
         return self.type + ' ' + self.name + ', method = ' + self.method.name + ', visible = ' + str(self.visible) + addstr
 
     def getc(self, in_tuple):
+        '''
+        update c by an input
+        '''
         self.c = in_tuple # The coordinate or the equation coefficients of the object
         self.hasc = True
 
     def calcc(self):
+        '''
+        recursively calc c of all depending objects
+        '''
         for parent_item in self.item:
             if parent_item.type != "Others" and (not parent_item.hasc):
                 parent_item.calcc()
@@ -117,6 +129,9 @@ class GeomObj:
         self.hasc = True
 
     def basic_check(self): # only after all depending objects hasc, this method would be safe. Do NOT use this function alone! 
+        '''
+        In the case of all depending objects being calculated, check if this object can be created.
+        '''
         if len(self.item) != len(self.method.item_type):
             return False
         for item_num in range(len(self.item)):
@@ -126,7 +141,11 @@ class GeomObj:
                 return False
         return self.method.check(self)
         
-    def check_and_calcc(self): # recursively check and calc, return False when any depending obj check fails, return true and calc c for all depending obj. This may cause some depending objs being calculated while self is not.
+    def check_and_calcc(self): 
+        '''
+        recursively check and calc, return False when any depending obj check fails, return true and calc c for all depending obj. 
+        This may cause some depending objs being calculated while self is not when returning False.
+        '''
         for parent_item in self.item:
             parent_item_check = parent_item.check_and_calcc()
             if not parent_item_check:
@@ -235,6 +254,9 @@ class BasicMethod(Method):
     Basic Geometic construction methods class. Creates only one object. Stores dependency information.
     '''
     def __init__(self, in_name, in_gen_type: list, in_item_type: list, in_cmd_name : str, in_movable = False):
+        '''
+        Create a BasicMethod, further information will be provide in implement function. 
+        '''
         super().__init__(in_name, in_gen_type, in_item_type, in_cmd_name)
         if len(in_gen_type) != 1:
             print("Error during init " + in_name + " method, Basic method must create exactly one object!")
@@ -243,7 +265,10 @@ class BasicMethod(Method):
         self.errorinfo = None
         self.movable = in_movable
 
-    def implement(self, in_fun, in_check, in_errorinfo): # fill more information needed
+    def implement(self, in_fun, in_check, in_errorinfo): 
+        '''
+        fill in more information needed for this method.
+        '''
         self.apply = lambda in_name, in_item, in_visible = True, aux_visible = False : GeomObj(in_name, self.gen_type[0], self, in_item, in_visible = in_visible, in_movable = self.movable) # The function apply to generate a geom_object
         #aux_visible is not needed in BasicMethod, keeps for aligning with ComplexMethod
         self.fun = in_fun # The numerical function to give out coordinate or equation coefficients, input self
@@ -256,8 +281,17 @@ class BasicMethod(Method):
         
     
 class ComplexMethod(Method):
+    '''
+    Class of complex methods, recursively create all needed geometric constructions.
+    use apply to create all objects recursively, use calcc to calc all coordinates of dependending objects recursively.
+    '''
+
+    # A complex method is a series of basic or complex methods, so all correct complex methods finally breaks down into a series of basic methods. So information directly related to the creation of construction is not needed here, they are already provided in Basic Methods.
 
     def construct_in_item (in_item : list, m_item : list, indicator_list : list, i : int):
+        '''
+        Private function used in ComplexMethod only
+        '''
         item_list = []
         for j in indicator_list[i]:
             if j[0] == "i":
@@ -267,6 +301,9 @@ class ComplexMethod(Method):
         return item_list
 
     def recursively_apply (final_name : str, in_item, method_list : list, indicator_list : list, in_visible = True, aux_visible = False):
+        '''
+        Private function used in ComplexMethod only
+        '''
         m_item = []
         for i in range(len(method_list)):
             item_list = ComplexMethod.construct_in_item(in_item, m_item, indicator_list, i) 
@@ -275,10 +312,7 @@ class ComplexMethod(Method):
             else:
                 m_item += [method_list[i].apply(None, item_list, in_visible = aux_visible, aux_visible = aux_visible)]
 
-    '''
-    Class of complex methods, recursively create all needed geometric constructions.
-    use apply to create all objects recursively, use calcc to calc all coordinates of dependending objects recursively
-    '''
+
     def __init__(self, in_name, in_gen_type: list, in_item_type: list, in_cmd_name : str):
         super().__init__(in_name, in_gen_type, in_item_type, in_cmd_name)
         
@@ -297,32 +331,35 @@ class ComplexMethod(Method):
         self.apply = lambda in_name, in_item, in_visible = True, aux_visible = False: ComplexMethod.recursively_apply(in_name, in_item, self.method_list, self.indicator_list, in_visible = in_visible, aux_visible = aux_visible)
         self.implemented = True
 
-        
-        ##self.fun = in_fun # The numerical function to give out coordinate or equation coefficients, input self
-        ##self.check = in_check # The numerical boolean check function, input self
-        ##self.errorinfo = in_errorinfo # The error info output function, input self
-
-
-## in_item : b c,    
-## a = f b c
-## d = g a b
-## indicator_list : [("i",0), ("i",1)], [("m",0), ("i",0)]
-## method_list : ["f", "g"]
-
+    '''
+    An example of indicator list and method list:
+    in_item : b c,    
+    a = f b c
+    d = g a b
+    indicator_list : [("i",0), ("i",1)], [("m",0), ("i",0)]
+    method_list : ["f", "g"]
+    '''
 
 class GraphTree:
+    '''
+    stores all objs created
+    '''
     def __init__(self):
         self.obj_list = []
     
-    def get_totally_free(self):
-        r = []
-        for obj in self.obj_list:
-            if obj.item == []:
-                r += [obj]
-        return r
+    # def get_totally_free(self):
+    #     r = []
+    #     for obj in self.obj_list:
+    #         if obj.item == []:
+    #             r += [obj]
+    #     return r
     
     def get_has_free(self):
-        NotImplemented
+        r = []
+        for obj in self.obj_list:
+            if not (obj.freec == None):
+                r += [obj]
+        return r
     
     def get_visible(self):
         r = []
@@ -330,7 +367,6 @@ class GraphTree:
             if obj.visible:
                 r += [obj]
         return r
-
 
     def get_invisible(self):
         r = []
@@ -580,7 +616,7 @@ def info_to_method ( info : list) :
             for j in range(len(indicator_list[i])):
                 indicator_list[i][j] = name_to_indicator(input_name, mid_name,indicator_list[i][j])
 
-        #need some more checks here, check each mid construction is legal in type
+        # need some more checks here, check each mid construction is legal in type
         if not (mid_type[-1] == final_type) or not (mid_name[-1] == final_name):
             raise ValueError("final construction do not meet requirements")
         
@@ -600,7 +636,9 @@ for info in info_list:
     method = info_to_method(info)
     print(method.name + " is implemented from " + file_path)
 
-
+'''
+The global variable of GraphTree is created here, use in other file as GeomTool.current_tree.
+'''
 current_tree = GraphTree()
     
 if __name__ == '__main__':
