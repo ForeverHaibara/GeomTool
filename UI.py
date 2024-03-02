@@ -121,6 +121,7 @@ class GeomUI:
         self.cmdline_from = [0, 0, 1]
         self.CMD_SHOW_LINE = int((self.DRAW_HEIGHT - 80)/CMD_LINE_HEIGHT)
         self.CMD_LINE_CHAR = int((self.SCREEN_WIDTH - self.DRAW_WIDTH - 30) / 12)
+        self.cmdview = 0
     
     def choose_fig_list(self, mouse, allows = ("Point", "Line", "Circle")):
         # Choose a fig in geom_list that has geom_show
@@ -215,7 +216,25 @@ class GeomUI:
         for stuff in draw_temp_list:
             stuff[1](stuff[2], stuff[3], stuff[4])
             
-
+    
+    def draw_cmd(self):
+        # Draw cmd ONLY
+        if self.yn_button_pressed[0] == 1 and (not self.moving_background) and (not self.moving_point):
+            pygame.draw.rect(self.screen, BACKGROUND_COLOR, pygame.Rect(2 + self.DRAW_WIDTH, 2, self.SCREEN_WIDTH - self.DRAW_WIDTH - 5, self.DRAW_HEIGHT - 5))
+            pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [2 + self.DRAW_WIDTH, 2, self.SCREEN_WIDTH - self.DRAW_WIDTH - 5, self.DRAW_HEIGHT - 5], 1)
+            textlist = []
+            for line_num in range(len(self.cmdlines)):
+                linetext = ('>>> ' if self.cmdline_from[line_num] == 1 else 'GT: ') + self.cmdlines[line_num] + ('|' if line_num == len(self.cmdlines) - 1 else '')
+                newline = True
+                while len(linetext) > 0:
+                    textlist.append(('    ' if (not newline) else '') + (linetext[:self.CMD_LINE_CHAR - 4]) if (not newline) else linetext[:self.CMD_LINE_CHAR])
+                    linetext = (linetext[self.CMD_LINE_CHAR - 4:]) if (not newline) else linetext[self.CMD_LINE_CHAR:]
+                    newline = False
+            line_num = 0
+            for linetext in textlist[max(0, len(textlist) -self.cmdview -self.CMD_SHOW_LINE) : max(len(textlist) -self.cmdview, self.CMD_SHOW_LINE)]:
+                self.screen.blit(pygame.font.SysFont('Consolas', 20, bold=False).render(linetext , True , TEXT_COLOR), (12 + self.DRAW_WIDTH, line_num * CMD_LINE_HEIGHT + 12))
+                line_num += 1
+    
     def draw_init(self):
         # Draw geometric objects and buttons
         
@@ -237,21 +256,7 @@ class GeomUI:
             self.yn_button_draw_fun[button_num](self.yn_button_range[button_num][0], self.yn_button_range[button_num][1], self.yn_button_pressed[button_num])
     
         # Draw command area
-        if self.yn_button_pressed[0] == 1 and (not self.moving_background) and (not self.moving_point):
-            pygame.draw.rect(self.screen, BACKGROUND_COLOR, pygame.Rect(2 + self.DRAW_WIDTH, 2, self.SCREEN_WIDTH - self.DRAW_WIDTH - 5, self.DRAW_HEIGHT - 5))
-            pygame.draw.rect(self.screen, BUTTON_COLOR_DARK, [2 + self.DRAW_WIDTH, 2, self.SCREEN_WIDTH - self.DRAW_WIDTH - 5, self.DRAW_HEIGHT - 5], 1)
-            textlist = []
-            for line_num in range(len(self.cmdlines)):
-                linetext = ('>>> ' if self.cmdline_from[line_num] == 1 else 'GT: ') + self.cmdlines[line_num] + ('|' if line_num == len(self.cmdlines) - 1 else '')
-                newline = True
-                while len(linetext) > 0:
-                    textlist.append(('    ' if (not newline) else '') + (linetext[:self.CMD_LINE_CHAR - 4]) if (not newline) else linetext[:self.CMD_LINE_CHAR])
-                    linetext = (linetext[self.CMD_LINE_CHAR - 4:]) if (not newline) else linetext[self.CMD_LINE_CHAR:]
-                    newline = False
-            line_num = 0
-            for linetext in textlist[-self.CMD_SHOW_LINE:]:
-                self.screen.blit(pygame.font.SysFont('Consolas', 20, bold=False).render(linetext , True , TEXT_COLOR), (12 + self.DRAW_WIDTH, line_num * CMD_LINE_HEIGHT + 12))
-                line_num += 1
+        self.draw_cmd()
 
 
     # Coordinate change functions
@@ -755,6 +760,10 @@ class GeomUI:
                 eventlist.append("K_LEFT")
             if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_RIGHT):
                 eventlist.append("K_RIGHT")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_PAGEUP):
+                eventlist.append("K_PAGEUP")
+            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_PAGEDOWN):
+                eventlist.append("K_PAGEDOWN")
             if (event.type == pygame.KEYDOWN) and ((event.key == pygame.K_LSHIFT) or (event.key == pygame.K_RSHIFT)):
                 self.shifted = True
             if (event.type == pygame.KEYUP) and ((event.key == pygame.K_LSHIFT) or (event.key == pygame.K_RSHIFT)):
@@ -891,7 +900,7 @@ class GeomUI:
     def run_kernel(self):
         self.cmdlines[-1] += ' '
         
-        received = Kernel.runline(self.cmdlines[-1], self.graph_tree).splitlines()
+        received = Kernel.runline(self.cmdlines[-1], self.graph_tree, self.cmdlines, self.cmdline_from).splitlines()
         
         for line in received:
             self.cmdlines.append(line)
@@ -1174,6 +1183,7 @@ class GeomUI:
             if ("KEYDOWN" in eventlist) and ("KEYDOWN" not in last_eventlist) and (self.yn_button_pressed[0] == 1):
                 for event in eventlist:
                     if len(event) == 3:
+                        self.cmdview = 0
                         self.cmdlines[-1] += event[-1]
                         self.load_chosen_and_mode_from_cmdline(-1)
                     if event == "K_BACKSPACE":
@@ -1183,6 +1193,18 @@ class GeomUI:
                         self.cmd_clearline(-1)
                     if event == "K_ENTER":
                         self.run_kernel()
+                    if event == "K_UP":
+                        self.cmdview += 1
+                        self.draw_cmd()
+                    if event == "K_DOWN":
+                        self.cmdview = max(0, self.cmdview - 1)
+                        self.draw_cmd()
+                    if event == "K_PAGEUP":
+                        self.cmdview += self.CMD_SHOW_LINE
+                        self.draw_cmd()
+                    if event == "K_PAGEDOWN":
+                        self.cmdview = max(0, self.cmdview - self.CMD_SHOW_LINE)
+                        self.draw_cmd()
             
                 
             if ("KEYDOWN" in eventlist) and ("KEYDOWN" not in last_eventlist) and (self.yn_button_pressed[0] == -1):

@@ -1,15 +1,20 @@
-# Test File
-a = pt
-b = pt
-ci = circ a b
-c = pt ci
-bc = line b c
-l = perp a bc
-d = pt bc l
+A = pt
+B = pt
+C = pt
+ab = line A B
+bc = line B C
+ca = line C A
+F = mdpt A B
+E = mdpt A C
+be = line B E
+cf = line C F
+G = pt be cf
+abp = pbis A B
+acp = pbis A C
+O = pt abp acp
+bp = perp B ca
+cp = perp C ab
+H = pt bp cp
+hide be cf abp acp bp cp
 
-eqdist
-col
-cyc
-simtri
-eqratio
-eqangle
+cheat

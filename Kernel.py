@@ -1,17 +1,17 @@
 import Explainer, GeomTool, Pathfinder
 
-def runline(in_line, in_graph_tree):
+def runline(in_line, in_graph_tree, all_lines, line_from):
     
     in_line = in_line + ' '
     exp = Explainer.ExplainLine(in_line, in_graph_tree.obj_list)
-    protectedwordlist = ["=", ".", "+", "-", "*", "/", "?", ",", "!", "^", " ", "'", '"', "help", "hide", "hidenlist", "show", "showall", "objlist", "run",
+    protectedwordlist = ["=", ".", "+", "-", "*", "/", "?", ",", "!", "^", " ", "'", '"', "help", "hide", "hidenlist", "show", "showall", "objlist", "run", "save"
                          "pt", "line", "circ", "mdpt", "para", "perp", "pbis", "abis"]
     
     if len(exp.wordlist) == 0:
         return ""
     
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "help":
-        return "Commands list: help, hide, hidenlist, show, showall, objlist, run, eqinfo. \nUse commands like 'help hide' to see details. \nUse 'help1' to get help about built-in commands. "
+        return "Commands list: help, hide, hidenlist, show, showall, objlist, run, save. \nUse commands like 'help hide' to see details. \nUse 'help1' to get help about built-in commands. "
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "help1":
         return "Built-in commands list: pt, line, circ, mdpt, para, perp, pbis, abis. \nUse commands like 'help pt' to see details. \nYou can also input the name of an object to see details of the object. \nUse commands like 'A = B' to rename object B by A. Use commands like 'A = pt' to create an object with given name. \nUse 'help2' to see more. "
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "help2":
@@ -33,9 +33,8 @@ def runline(in_line, in_graph_tree):
             return "objlist: Print a list of names of all hiden geometric objects, including intermediate objects used in geometric constructions. "
         if exp.wordlist[1] == "run":
             return "run [Name]: Run all lines in a txt file"
-        
-        if exp.wordlist[1] == "eq":
-            return "eq: Find all VISIBLE coincident objects and print a list of equalities"
+        if exp.wordlist[1] == "save":
+            return "save [Name]: Save all input lines in a txt file. Also save all cmd lines in a log file. "
 
 
         if exp.wordlist[1] == "pt":
@@ -57,7 +56,29 @@ def runline(in_line, in_graph_tree):
         
     
     if len(exp.wordlist) == 2 and exp.wordlist[0] == "run":
-        return runfile(exp.wordlist[1], in_graph_tree)
+        return runfile(exp.wordlist[1], in_graph_tree, all_lines, line_from)
+    
+    if len(exp.wordlist) == 2 and exp.wordlist[0] == "save":
+        try:
+            file = open(exp.wordlist[1] + ".txt", "w")
+            wrdata = ""
+            for line_num in range(len(all_lines)):
+                if line_from[line_num] == 1:
+                    wrdata += all_lines[line_num] + "\n"
+            file.write(wrdata)
+            file.close()
+            file2 = open(exp.wordlist[1] + "_log.txt", "w")
+            wrdata = ""
+            for line_num in range(len(all_lines)):
+                if line_from[line_num] == 1:
+                    wrdata += ">>> " + all_lines[line_num] + "\n"
+                else:
+                    wrdata += "GT: " + all_lines[line_num] + "\n"
+            file2.write(wrdata)
+            file2.close()
+            return "saved to file " + exp.wordlist[1] + ".txt and " + exp.wordlist[1] + "_log.txt"
+        except Exception as e:
+            return "ΔError with info: " + str(e)
     
     if len(exp.wordlist) == 1 and exp.isnameobj(exp.wordlist[0]) != None:
         return str(exp.isnameobj(exp.wordlist[0]))
@@ -194,7 +215,7 @@ def runline(in_line, in_graph_tree):
     
     return "Failed to run '" + in_line[:-1] + "', use 'help' for help" # Should return information want to print
 
-def runfile(file_name, in_graph_tree):
+def runfile(file_name, in_graph_tree, all_lines, line_from):
     try:
         if file_name[-4:] != '.txt':
             file_name = file_name + '.txt'
@@ -203,10 +224,11 @@ def runfile(file_name, in_graph_tree):
             lines = file.readlines()
             
         # 输出每一行的内容
+        outstr = ""
         for line in lines:
             if line[0] != "#":
-                print(runline(line.replace('\n', '') + ' ', in_graph_tree))
-        return "Done"
+                outstr += runline(line.replace('\n', '') + ' ', in_graph_tree, all_lines, line_from) + "\n"
+        return outstr[:-1]
     
     except FileNotFoundError:
         return "File " + file_name + " do not Exist"
@@ -217,4 +239,4 @@ if __name__ == "__main__":
     intree = GeomTool.current_tree
     while True:
         inline = input() + ' '
-        print(runline(inline, intree))
+        print(runline(inline, intree, [], []))
