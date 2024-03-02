@@ -1,5 +1,11 @@
 import GeomTool
 
+NodeTypeList = ['pt', 'line', 'dist', 'ang'] # geom obj
+PredicateDict = {
+    'coll' : ['Point', 'Point', 'Point'], 
+    'cong' : ['dist', 'dist']
+}
+
 class DDNode:
     NotImplemented
 

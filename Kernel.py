@@ -145,8 +145,10 @@ def runline(in_line, in_graph_tree):
     newname = exp.newname()
     if kerneluse not in (None, []):
         if newname == None or exp.isname(exp.wordlist[0]) > 0 or exp.wordlist[0] in protectedwordlist or Explainer.is_float(exp.wordlist[0]):
-            newname = GeomTool.default_name(kerneluse[0].gen_type[-1])
-        newobj = kerneluse[0].apply(newname, kerneluse[1])
+            newobj = kerneluse[0].apply( None , kerneluse[1])
+            newname = newobj.name
+        else:
+            newobj = kerneluse[0].apply(newname, kerneluse[1])
         new_obj_check = newobj.check_and_calcc() # Bool
         
         if kerneluse[0].name in ("free_pt", "pt_on_line", "pt_on_circle"):
