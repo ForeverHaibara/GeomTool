@@ -11,11 +11,11 @@ def runline(in_line, in_graph_tree):
         return ""
     
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "help":
-        return "Commands list: help, hide, hidenlist, show, showall, objlist, run, eqinfo. Use commands like 'help hide' to see details. Use 'help1' to see built-in commands. "
+        return "Commands list: help, hide, hidenlist, show, showall, objlist, run, eqinfo. \nUse commands like 'help hide' to see details. \nUse 'help1' to get help about built-in commands. "
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "help1":
-        return "Built-in commands list: pt, line, circ, mdpt, para, perp, pbis, abis. Use commands like 'help pt' to see details. You can also input the name of an object to see details of the object. Use 'A = B' to rename object B by A. Use 'help2' to see more. "
+        return "Built-in commands list: pt, line, circ, mdpt, para, perp, pbis, abis. \nUse commands like 'help pt' to see details. \nYou can also input the name of an object to see details of the object. \nUse commands like 'A = B' to rename object B by A. Use commands like 'A = pt' to create an object with given name. \nUse 'help2' to see more. "
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "help2":
-        return "For points, c = (x, y) is the coordinate. For lines, c = (p, q, r) defines a line px+qy+r=0. For circles, c = (x0, y0, r) determines the center (x0, y0) and radius r. Use 'help3' to see more. "
+        return "For point, c = (x, y) is the coordinate of the point. \nFor line, c = (p, q, r) defines a line equation px+qy+r=0. \nAnd for circle, c = (x0, y0, r) determines the center (x0, y0) and radius r. \nUse 'help3' to see more. "
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "help3":
         return "I cannot help you anymore! There is no royal way in geometry! "
     if len(exp.wordlist) == 2 and exp.wordlist[0] == "help":
@@ -39,13 +39,13 @@ def runline(in_line, in_graph_tree):
 
 
         if exp.wordlist[1] == "pt":
-            return "pt [Number] [Number]: Create a free point. pt [Line/Circle] [Number] [Number]: Create a free point on a line/circle. pt [Line/Circle] [Line/Circle] [Number] [Number]: Create the intersection point of a line/circle and another line/circle. The two numbers give the (x, y) coordinate of the closest intersection point. <NOTE> In the case of two lines, since the intersection point is unique, coordinate could be omitted. Use pt [Line] [Line] in this case. "
+            return "pt [Number] [Number]: Create a free point. \npt [Line/Circle] [Number] [Number]: Create a free point on a line/circle. \npt [Line/Circle] [Line/Circle] [Number] [Number]: Create the intersection point of a line/circle and another line/circle. The two numbers give the (x, y) coordinate of the closest intersection point. \n<NOTE> In the case of two lines, since the intersection point is unique, coordinate could be omitted. Use pt [Line] [Line] in this case. "
         if exp.wordlist[1] == "line":
             return "line [Point] [Point]: Create a line passing through the two points. "
         if exp.wordlist[1] == "circ":
             return "circ [Point] [Point]: Create a circle whose center is the first point and passing through the second point. "
         if exp.wordlist[1] == "mdpt":
-            return "mdpt [Point] [Point]: Create the mid-point of two points. mdpt [Circle]: Create the circumcenter of a circle. "
+            return "mdpt [Point] [Point]: Create the mid-point of two points. \nmdpt [Circle]: Create the circumcenter of a circle. "
         if exp.wordlist[1] == "para":
             return "para [Point] [Line], para [Line] [Point]: Create a line passing through the point and parallel to the line. "
         if exp.wordlist[1] == "perp":

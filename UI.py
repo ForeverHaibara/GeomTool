@@ -891,8 +891,11 @@ class GeomUI:
     def run_kernel(self):
         self.cmdlines[-1] += ' '
         
-        self.cmdlines.append(Kernel.runline(self.cmdlines[-1], self.graph_tree))
-        self.cmdline_from.append(0)
+        received = Kernel.runline(self.cmdlines[-1], self.graph_tree).splitlines()
+        
+        for line in received:
+            self.cmdlines.append(line)
+            self.cmdline_from.append(0)
         
         self.cmdlines.append("")
         self.cmdline_from.append(1)
