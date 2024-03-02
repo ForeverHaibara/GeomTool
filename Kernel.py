@@ -129,6 +129,10 @@ def runline(in_line, in_graph_tree):
         finder = Pathfinder.GeomInformation(in_graph_tree)
         return finder.eqangle()
     
+    if len(exp.wordlist) == 1 and exp.wordlist[0] == "cheat":
+        finder = Pathfinder.GeomInformation(in_graph_tree)
+        return finder.eq() + "\n" + finder.col() + "\n" + finder.cyc() + "\n" + finder.para() + "\n" + finder.simtri() + "\n" + finder.eqratio() + "\n" + finder.eqangle()
+    
     """------------
     !!!   NEW   !!!---------------------------------------+----
     ------------"""

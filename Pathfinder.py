@@ -93,7 +93,7 @@ class GeomInformation:
         self.circles = difflist(self.circles_checklist)
         
     def eq(self):
-        return "Points: " + printchecklist(self.points_checklist) + "\nLines: " + printchecklist(self.lines_checklist) + "\nCircles: " + printchecklist(self.circles_checklist)
+        return "eqPoints: " + printchecklist(self.points_checklist) + "\neqLines: " + printchecklist(self.lines_checklist) + "\neqCircles: " + printchecklist(self.circles_checklist)
     
     def eqdist(self):
         dist_dict = dict()
@@ -110,7 +110,7 @@ class GeomInformation:
                     dist_precise_dict[d0] = ((pt1.c[0] - pt2.c[0]) ** 2 + (pt1.c[1] - pt2.c[1]) ** 2) **(1/2)
         self.dist_dict = dist_dict
         self.dist_precise_dict = dist_precise_dict
-        return printchecklist(self.dist_dict.values(), lambda x: "|" + self.points[x[0]].name + " " + self.points[x[1]].name + "|", midsymbol2='\n')
+        return "eqDist: " + printchecklist(self.dist_dict.values(), lambda x: "|" + self.points[x[0]].name + " " + self.points[x[1]].name + "|", midsymbol2='\n')
     
     def col(self):
         colinear_dict = dict()
@@ -136,9 +136,9 @@ class GeomInformation:
                     outstr += obj.name + " "
                 outstr = outstr[:-1] + ", "
         if outstr != '':
-            return outstr[:-2]
+            return "Colinear: " + outstr[:-2]
         else:
-            return "None"
+            return "Colinear: None"
     
     def para(self):
         self.col()
@@ -163,9 +163,9 @@ class GeomInformation:
                     outstr += "// "
                 outstr = outstr[:-4] + "\n"
         if outstr != '':
-            return outstr[:-1]
+            return "Parallel: " + outstr[:-1]
         else:
-            return "None"
+            return "Parallel: None"
         
     def cyc(self):
         cyclic_dict = dict()
@@ -197,9 +197,9 @@ class GeomInformation:
                     outstr += obj.name + " "
                 outstr = outstr[:-1] + ", "
         if outstr != '':
-            return outstr[:-2]
+            return "Cyclic: " + outstr[:-2]
         else:
-            return "None"
+            return "Cyclic: None"
     
     def simtri(self):
         simtri_dict = dict()
