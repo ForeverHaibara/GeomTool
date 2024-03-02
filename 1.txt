@@ -23,3 +23,11 @@ c3 = circ s ppc
 c4 = circ c a
 c5 = circ c b
 c6 = circ c b
+
+pp1 = pt c1
+pp2 = pt c1
+pp3 = pt c2
+
+eqinfo
+colinfo
+distinfo

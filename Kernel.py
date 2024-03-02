@@ -93,9 +93,25 @@ def runline(in_line, in_graph_tree):
             obj.visible = True
         return "All objects are shown"
     
+    """------------
+    !!!   NEW   !!!
+    ------------"""
+    
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "eqinfo":
         finder = Pathfinder.GeomInformation(in_graph_tree)
         return finder.eqinfo()
+    
+    if len(exp.wordlist) == 1 and exp.wordlist[0] == "distinfo":
+        finder = Pathfinder.GeomInformation(in_graph_tree)
+        return finder.dist_info()
+    
+    if len(exp.wordlist) == 1 and exp.wordlist[0] == "colinfo":
+        finder = Pathfinder.GeomInformation(in_graph_tree)
+        return finder.colinfo()
+    
+    """------------
+    !!!   NEW   !!!
+    ------------"""
     
     if exp.wordlist[0] == "show":
         outstr = ''
