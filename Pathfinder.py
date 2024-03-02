@@ -25,15 +25,15 @@ def objchecklist(in_list, fun):
     return list(outdict.values())
 
 
-def printchecklist(in_list, fun=lambda x: x.name, midsymbol="="):
+def printchecklist(in_list, fun=lambda x: x.name, midsymbol="=", midsymbol2=", "):
     outstr = ""
     for sublst in in_list:
         if len(sublst) > 1:
             for obj in sublst:
                 outstr += fun(obj) + " " + midsymbol + " "
-            outstr = outstr[:-3] + ", "
+            outstr = outstr[:-3] + midsymbol2
     if outstr != '':
-        return outstr[:-2]
+        return outstr[:-len(midsymbol2)]
     else:
         return "None"
 
@@ -80,7 +80,7 @@ class GeomInformation:
         self.circles = difflist(self.circles_checklist)
         
     def eq(self):
-        return "Points: " + printchecklist(self.points_checklist) + "; Lines: " + printchecklist(self.lines_checklist) + "; Circles: " + printchecklist(self.circles_checklist)
+        return "Points: " + printchecklist(self.points_checklist) + "\nLines: " + printchecklist(self.lines_checklist) + "\nCircles: " + printchecklist(self.circles_checklist)
     
     def deq(self):
         dist_dict = dict()
@@ -94,7 +94,7 @@ class GeomInformation:
                 else:
                     dist_dict[d0] = [(pt_num1, pt_num2)]
         self.dist_dict = dist_dict
-        return printchecklist(self.dist_dict.values(), lambda x: "|" + self.points[x[0]].name + " " + self.points[x[1]].name + "|")
+        return printchecklist(self.dist_dict.values(), lambda x: "|" + self.points[x[0]].name + " " + self.points[x[1]].name + "|", midsymbol2='\n')
     
     def col(self):
         colinear_dict = dict()
@@ -176,7 +176,7 @@ class GeomInformation:
                         else:
                             simtri_dict[c0] = [(pt_num1, pt_num2, pt_num3)]
         self.simtri_dict = simtri_dict
-        return printchecklist(self.simtri_dict.values(), lambda x: "Δ(" + self.points[x[0]].name + " " + self.points[x[1]].name + " " + self.points[x[2]].name + ")", midsymbol="~")
+        return printchecklist(self.simtri_dict.values(), lambda x: "Δ(" + self.points[x[0]].name + " " + self.points[x[1]].name + " " + self.points[x[2]].name + ")", midsymbol="~", midsymbol2="\n")
     
     def dratio(self):
         preplist = [()]
