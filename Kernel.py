@@ -101,13 +101,17 @@ def runline(in_line, in_graph_tree):
         finder = Pathfinder.GeomInformation(in_graph_tree)
         return finder.eq()
     
-    if len(exp.wordlist) == 1 and exp.wordlist[0] == "deq":
+    if len(exp.wordlist) == 1 and exp.wordlist[0] == "eqdist":
         finder = Pathfinder.GeomInformation(in_graph_tree)
-        return finder.deq()
+        return finder.eqdist()
     
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "col":
         finder = Pathfinder.GeomInformation(in_graph_tree)
         return finder.col()
+    
+    if len(exp.wordlist) == 1 and exp.wordlist[0] == "para":
+        finder = Pathfinder.GeomInformation(in_graph_tree)
+        return finder.para()
     
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "cyc":
         finder = Pathfinder.GeomInformation(in_graph_tree)
@@ -117,9 +121,13 @@ def runline(in_line, in_graph_tree):
         finder = Pathfinder.GeomInformation(in_graph_tree)
         return finder.simtri()
     
-    if len(exp.wordlist) == 1 and exp.wordlist[0] == "dratio":
+    if len(exp.wordlist) == 1 and exp.wordlist[0] == "eqratio":
         finder = Pathfinder.GeomInformation(in_graph_tree)
-        return finder.dratio()
+        return finder.eqratio()
+    
+    if len(exp.wordlist) == 1 and exp.wordlist[0] == "eqangle":
+        finder = Pathfinder.GeomInformation(in_graph_tree)
+        return finder.eqangle()
     
     """------------
     !!!   NEW   !!!---------------------------------------+----

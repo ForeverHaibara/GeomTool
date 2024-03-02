@@ -1,13 +1,15 @@
 # Test File
 a = pt
 b = pt
-c = pt
-d = mdpt b c
-e = mdpt c a
-f = mdpt a b
+ci = circ a b
+c = pt ci
+bc = line b c
+l = perp a bc
+d = pt bc l
 
-deq
+eqdist
 col
 cyc
 simtri
-dratio
+eqratio
+eqangle
