@@ -1,77 +1,466 @@
 GT: GeomToolKernel Version 1.0
 GT: All rights reserved to Euclid
->>> run 1 
-GT: A is created
-GT: B is created
-GT: C is created
-GT: ab is created
-GT: bc is created
-GT: ca is created
-GT: F is created
-GT: E is created
-GT: be is created
-GT: cf is created
-GT: G is created
-GT: abp is created
-GT: acp is created
-GT: O is created
-GT: bp is created
-GT: cp is created
-GT: H is created
-GT: be cf abp acp bp cp hiden
-GT: 
+>>> run 2 
+GT: p0 is created
+GT: p1 is created
+GT: p2 is created
+GT: l1 is created
+GT: l3 is created
+GT: p7 is created
 GT: eqPoints: None
 GT: eqLines: None
 GT: eqCircles: None
-GT: Colinear: Line A B F, Line A C E, Line B E G, Line C F G, Line G O H
-GT: Cyclic: Circle A F E O
-GT: Parallel: Line B C // Line F E
-GT: Line B H // Line E O
-GT: Line C H // Line F O
-GT: (A B C) ~ (A F E)
-GT: (A F O) ~ (B F O)
-GT: (A E O) ~ (C E O)
-GT: (B C G) ~ (F E G)
-GT: (B C H) ~ (F E O)
-GT: (B G H) ~ (E G O)
-GT: (C G H) ~ (F G O)
-GT: 1/3 ~ |B E| / |E G| ~ |C F| / |F G| ~ |G O| / |O H|
-GT: 1/2 ~ |A B| / |A F| ~ |A C| / |A E| ~ |B C| / |F E| ~ |B G| / |E G| ~ |B H| / |E O| ~ |C G| / |F G| ~ |C H| / |F O| ~ |G O| / |G H|
-GT: 2/3 ~ |B E| / |B G| ~ |C F| / |C G| ~ |G H| / |O H|
-GT: |A B| / |A C| ~ |A F| / |A E|
-GT: |A B| / |B C| ~ |A F| / |F E|
-GT: |A B| / |B G| ~ |A F| / |E G|
-GT: |A B| / |B H| ~ |A F| / |E O|
-GT: |A B| / |C G| ~ |A F| / |F G|
-GT: |A B| / |C H| ~ |A F| / |F O|
-GT: |A B| / |G H| ~ |A F| / |G O|
-GT: |A C| / |B C| ~ |A E| / |F E|
-GT: |A C| / |B G| ~ |A E| / |E G|
-GT: |A C| / |B H| ~ |A E| / |E O|
-GT: |A C| / |C G| ~ |A E| / |F G|
-GT: |A C| / |C H| ~ |A E| / |F O|
-GT: |A C| / |G H| ~ |A E| / |G O|
-GT: |B C| / |B G| ~ |F E| / |E G|
-GT: |B C| / |B H| ~ |F E| / |E O|
-GT: |B C| / |C G| ~ |F E| / |F G|
-GT: |B C| / |C H| ~ |F E| / |F O|
-GT: |B C| / |G H| ~ |F E| / |G O|
-GT: |B E| / |C F| ~ |B G| / |C G| ~ |F G| / |E G|
-GT: |B E| / |O H| ~ |B G| / |G H| ~ |E G| / |G O|
-GT: |B G| / |B H| ~ |E G| / |E O|
-GT: |B G| / |C H| ~ |F O| / |E G|
-GT: |B H| / |C G| ~ |F G| / |E O|
-GT: |B H| / |C H| ~ |F O| / |E O|
-GT: |B H| / |G H| ~ |E O| / |G O|
-GT: |C F| / |O H| ~ |C G| / |G H| ~ |F G| / |G O|
-GT: |C G| / |C H| ~ |F G| / |F O|
-GT: |C H| / |G H| ~ |F O| / |G O|
-GT: pi/2 ~ <A B, C H> ~ <A C, B H> ~ <A H, B C>
-GT: <A B, A C> ~ <A H, B O> ~ <A H, C O> ~ <B H, C H>
-GT: <A B, A O> ~ <A B, B O> ~ <A C, A H> ~ <B C, B H>
-GT: <A B, A H> ~ <A C, A O> ~ <A C, C O> ~ <B C, C H>
-GT: <A B, B C> ~ <A O, B H> ~ <A H, C H> ~ <B H, C O>
-GT: <A B, B H> ~ <A C, C H> ~ <B C, B O> ~ <B C, C O>
-GT: <A C, B C> ~ <A O, C H> ~ <A H, B H> ~ <B O, C H>
->>> save 2 
+GT: Colinear: None
+GT: Cyclic: None
+GT: Parallel: None
+GT: None
+GT: eqDist: |p0 p7| = |p1 p7| = |p2 p7|
+GT: None
+GT: <p0 p1, p0 p7> ~ <p0 p1, p1 p7>
+GT: <p0 p2, p0 p7> ~ <p0 p2, p2 p7>
+GT: <p1 p2, p1 p7> ~ <p1 p2, p2 p7>
+GT: c0 is created
+GT: l4 is created
+GT: p8 is created
+GT: eqPoints: None
+GT: eqLines: None
+GT: eqCircles: None
+GT: Colinear: Line p0 p7 p8
+GT: Cyclic: Circle p0 p1 p2 p8
+GT: Parallel: None
+GT: None
+GT: eqDist: |p0 p7| = |p1 p7| = |p2 p7| = |p7 p8|
+GT: 1/2 ~ |p0 p7| / |p0 p8|
+GT: pi/2 ~ <p0 p1, p1 p8> ~ <p0 p2, p2 p8>
+GT: <p0 p1, p0 p2> ~ <p1 p8, p2 p8>
+GT: <p0 p1, p0 p7> ~ <p0 p1, p1 p7> ~ <p1 p2, p2 p8>
+GT: <p0 p1, p1 p2> ~ <p0 p7, p2 p8> ~ <p2 p7, p2 p8>
+GT: <p0 p1, p2 p8> ~ <p0 p2, p1 p8> ~ <p1 p2, p1 p7> ~ <p1 p2, p2 p7>
+GT: <p0 p2, p0 p7> ~ <p0 p2, p2 p7> ~ <p1 p2, p1 p8>
+GT: <p0 p2, p1 p2> ~ <p0 p7, p1 p8> ~ <p1 p7, p1 p8>
+GT: l5 is created
+GT: p10 is created
+GT: eqPoints: None
+GT: eqLines: None
+GT: eqCircles: None
+GT: Colinear: Line p0 p7 p8
+GT: Cyclic: Circle p0 p1 p2 p8 p10
+GT: Parallel: None
+GT: None
+GT: eqDist: |p0 p7| = |p1 p7| = |p2 p7| = |p7 p8| = |p7 p10|
+GT: |p1 p10| = |p2 p10|
+GT: 1/2 ~ |p0 p7| / |p0 p8|
+GT: pi/2 ~ <p0 p1, p1 p8> ~ <p0 p2, p2 p8> ~ <p0 p10, p8 p10> ~ <p1 p2, p7 p10>
+GT: <p0 p1, p0 p2> ~ <p1 p7, p7 p10> ~ <p1 p8, p2 p8> ~ <p1 p10, p2 p10> ~ <p2 p7, p7 p10>
+GT: <p0 p1, p0 p7> ~ <p0 p1, p1 p7> ~ <p0 p2, p7 p10> ~ <p1 p2, p2 p8> ~ <p1 p10, p8 p10>
+GT: <p0 p1, p0 p10> ~ <p0 p2, p0 p10> ~ <p1 p2, p1 p10> ~ <p1 p2, p2 p10> ~ <p1 p8, p8 p10> ~ <p2 p8, p8 p10>
+GT: <p0 p1, p1 p2> ~ <p0 p7, p2 p8> ~ <p0 p10, p2 p10> ~ <p1 p8, p7 p10> ~ <p2 p7, p2 p8>
+GT: <p0 p1, p1 p10> ~ <p0 p2, p2 p10> ~ <p0 p7, p8 p10> ~ <p0 p10, p1 p2> ~ <p7 p10, p8 p10>
+GT: <p0 p1, p2 p8> ~ <p0 p2, p1 p8> ~ <p1 p2, p1 p7> ~ <p1 p2, p2 p7>
+GT: <p0 p1, p2 p10> ~ <p2 p7, p8 p10>
+GT: <p0 p1, p7 p10> ~ <p0 p2, p0 p7> ~ <p0 p2, p2 p7> ~ <p1 p2, p1 p8> ~ <p2 p10, p8 p10>
+GT: <p0 p1, p8 p10> ~ <p0 p2, p8 p10> ~ <p0 p10, p1 p8> ~ <p0 p10, p2 p8> ~ <p1 p7, p1 p10> ~ <p1 p10, p7 p10> ~ <p2 p7, p2 p10> ~ <p2 p10, p7 p10>
+GT: <p0 p2, p1 p2> ~ <p0 p7, p1 p8> ~ <p0 p10, p1 p10> ~ <p1 p7, p1 p8> ~ <p2 p8, p7 p10>
+GT: <p0 p2, p1 p10> ~ <p1 p7, p8 p10>
+GT: <p0 p7, p0 p10> ~ <p0 p10, p7 p10> ~ <p1 p2, p8 p10> ~ <p1 p8, p1 p10> ~ <p2 p8, p2 p10>
+GT: <p0 p10, p1 p7> ~ <p1 p10, p2 p8>
+GT: <p0 p10, p2 p7> ~ <p1 p8, p2 p10>
+GT: <p1 p7, p2 p10> ~ <p1 p10, p2 p7>
+GT: p11 is created
+GT: p12 is created
+GT: p13 is created
+GT: p14 is created
+GT: p15 is created
+GT: eqPoints: None
+GT: eqLines: None
+GT: eqCircles: None
+GT: Colinear: Line p0 p7 p8, Line p0 p10 p11 p12, Line p7 p11 p13 p15, Line p7 p12 p14
+GT: Cyclic: Circle p0 p1 p2 p8 p10 p13 p14 p15, Circle p1 p7 p10 p11, Circle p2 p7 p10 p12, Circle p11 p12 p14 p15
+GT: Parallel: Line p0 p10 p11 p12 // Line p14 p15
+GT: Line p0 p13 // Line p15 p8
+GT: Line p0 p15 // Line p13 p8
+GT: Line p1 p8 // Line p7 p11 p13 p15
+GT: Line p1 p14 // Line p15 p10
+GT: Line p2 p8 // Line p7 p12 p14
+GT: Line p2 p15 // Line p14 p10
+GT: Line p8 p10 // Line p13 p14
+GT: (p0 p1 p2) ~ (p1 p10 p11) ~ (p2 p10 p12)
+GT: (p0 p7 p11) ~ (p1 p7 p11) ~ (p7 p10 p12)
+GT: (p0 p7 p12) ~ (p2 p7 p12) ~ (p7 p10 p11)
+GT: (p0 p8 p13) ~ (p0 p8 p15) ~ (p0 p13 p15) ~ (p1 p13 p15) ~ (p8 p13 p15)
+GT: (p0 p8 p14) ~ (p10 p13 p15)
+GT: (p0 p10 p14) ~ (p0 p10 p15)
+GT: (p0 p11 p13) ~ (p0 p12 p14) ~ (p1 p11 p13) ~ (p2 p12 p14) ~ (p8 p13 p14) ~ (p10 p11 p15) ~ (p10 p13 p14)
+GT: (p0 p11 p14) ~ (p10 p12 p15)
+GT: (p0 p11 p15) ~ (p0 p13 p14) ~ (p1 p11 p15) ~ (p10 p11 p13) ~ (p10 p12 p14)
+GT: (p0 p12 p15) ~ (p10 p11 p14)
+GT: (p0 p14 p15) ~ (p1 p10 p15) ~ (p2 p10 p14) ~ (p10 p14 p15)
+GT: (p1 p8 p13) ~ (p1 p8 p15)
+GT: (p1 p10 p13) ~ (p8 p14 p15)
+GT: (p1 p10 p14) ~ (p1 p14 p15)
+GT: (p2 p10 p15) ~ (p2 p14 p15)
+GT: (p7 p11 p14) ~ (p7 p12 p15)
+GT: (p8 p10 p13) ~ (p8 p10 p14)
+GT: (p11 p12 p14) ~ (p11 p12 p15)
+GT: (p11 p14 p15) ~ (p12 p14 p15)
+GT: eqDist: |p0 p7| = |p1 p7| = |p2 p7| = |p7 p8| = |p7 p10| = |p7 p13| = |p7 p14| = |p7 p15|
+GT: |p0 p8| = |p13 p15|
+GT: |p0 p11| = |p1 p11| = |p10 p12|
+GT: |p0 p12| = |p2 p12| = |p10 p11|
+GT: |p0 p13| = |p1 p13| = |p8 p15|
+GT: |p0 p14| = |p2 p14| = |p10 p15|
+GT: |p0 p15| = |p1 p15| = |p8 p13| = |p10 p14|
+GT: |p1 p10| = |p2 p10| = |p14 p15|
+GT: |p7 p11| = |p7 p12|
+GT: |p8 p14| = |p10 p13|
+GT: |p11 p14| = |p12 p15|
+GT: |p11 p15| = |p12 p14|
+GT: 1/2 ~ |p0 p7| / |p0 p8|
+GT: |p0 p1| / |p0 p2| ~ |p0 p11| / |p0 p12|
+GT: |p0 p1| / |p0 p11| ~ |p0 p2| / |p0 p12| ~ |p0 p7| / |p13 p14| ~ |p1 p2| / |p1 p10| ~ |p7 p11| / |p8 p10|
+GT: |p0 p1| / |p0 p13| ~ |p0 p7| / |p0 p15|
+GT: |p0 p1| / |p0 p15| ~ |p0 p7| / |p0 p13|
+GT: |p0 p1| / |p1 p2| ~ |p0 p11| / |p1 p10|
+GT: |p0 p1| / |p8 p10| ~ |p0 p11| / |p7 p11|
+GT: |p0 p1| / |p13 p14| ~ |p0 p7| / |p0 p11|
+GT: |p0 p2| / |p0 p14| ~ |p0 p7| / |p8 p14|
+GT: |p0 p2| / |p1 p2| ~ |p0 p12| / |p1 p10|
+GT: |p0 p2| / |p8 p10| ~ |p0 p12| / |p7 p11|
+GT: |p0 p2| / |p8 p14| ~ |p0 p7| / |p0 p14|
+GT: |p0 p2| / |p13 p14| ~ |p0 p7| / |p0 p12|
+GT: |p0 p7| / |p1 p10| ~ |p1 p2| / |p13 p14| ~ |p7 p11| / |p11 p12|
+GT: |p0 p7| / |p7 p11| ~ |p1 p10| / |p11 p12| ~ |p8 p10| / |p13 p14|
+GT: |p0 p11| / |p0 p13| ~ |p0 p14| / |p11 p15| ~ |p0 p15| / |p13 p14|
+GT: |p0 p11| / |p0 p15| ~ |p0 p13| / |p13 p14| ~ |p8 p14| / |p11 p13|
+GT: |p0 p11| / |p11 p13| ~ |p0 p12| / |p11 p15| ~ |p0 p15| / |p8 p14|
+GT: |p0 p11| / |p11 p15| ~ |p0 p12| / |p11 p13| ~ |p0 p13| / |p0 p14|
+GT: |p0 p12| / |p0 p14| ~ |p0 p13| / |p11 p13| ~ |p8 p14| / |p13 p14|
+GT: |p0 p12| / |p8 p14| ~ |p0 p14| / |p13 p14| ~ |p0 p15| / |p11 p15|
+GT: |p1 p2| / |p8 p10| ~ |p1 p10| / |p7 p11|
+GT: |p1 p2| / |p11 p12| ~ |p7 p11| / |p13 p14|
+GT: |p1 p10| / |p13 p14| ~ |p8 p10| / |p11 p12|
+GT: pi/2 ~ <p0 p1, p1 p8> ~ <p0 p2, p2 p8> ~ <p0 p10, p8 p10> ~ <p0 p13, p0 p15> ~ <p0 p14, p14 p8> ~ <p1 p2, p7 p10> ~ <p13 p1, p1 p15> ~ <p1 p14, p13 p10> ~ <p13 p2, p2 p15>
+GT: <p0 p1, p0 p2> ~ <p0 p10, p1 p11> ~ <p0 p10, p2 p12> ~ <p1 p7, p7 p10> ~ <p1 p8, p2 p8> ~ <p1 p10, p2 p10> ~ <p13 p1, p13 p2> ~ <p1 p14, p14 p2> ~ <p1 p15, p2 p15> ~ <p2 p7, p7 p10>
+GT: <p0 p1, p0 p7> ~ <p0 p1, p1 p7> ~ <p0 p2, p7 p10> ~ <p0 p13, p1 p15> ~ <p0 p14, p13 p10> ~ <p0 p15, p13 p1> ~ <p1 p2, p2 p8> ~ <p1 p10, p8 p10> ~ <p1 p14, p14 p8>
+GT: <p0 p1, p0 p10> ~ <p0 p1, p1 p11> ~ <p0 p2, p0 p10> ~ <p0 p2, p2 p12> ~ <p0 p13, p14 p8> ~ <p0 p14, p0 p15> ~ <p1 p2, p1 p10> ~ <p1 p2, p2 p10> ~ <p1 p8, p8 p10> ~ <p13 p1, p13 p10> ~ <p1 p14, p1 p15> ~ <p1 p14, p2 p15> ~ <p2 p8, p8 p10> ~ <p13 p2, p13 p10> ~ <p14 p2, p2 p15>
+GT: <p0 p1, p0 p13> ~ <p0 p1, p13 p1> ~ <p0 p2, p13 p2> ~ <p0 p7, p0 p15> ~ <p0 p10, p14 p8> ~ <p0 p10, p13 p10> ~ <p0 p14, p8 p10> ~ <p0 p15, p1 p8> ~ <p1 p2, p13 p2> ~ <p1 p7, p1 p15> ~ <p1 p8, p1 p15> ~ <p1 p10, p13 p10> ~ <p1 p14, p8 p10> ~ <p2 p8, p2 p15> ~ <p2 p15, p7 p10>
+GT: <p0 p1, p0 p14> ~ <p0 p2, p1 p14> ~ <p0 p10, p1 p15> ~ <p0 p15, p1 p11> ~ <p1 p2, p14 p2> ~ <p1 p7, p13 p10> ~ <p1 p8, p14 p8> ~ <p1 p10, p2 p15> ~ <p13 p1, p8 p10> ~ <p2 p8, p13 p10> ~ <p2 p12, p2 p15>
+GT: <p0 p1, p0 p15> ~ <p0 p1, p1 p15> ~ <p0 p2, p2 p15> ~ <p0 p7, p0 p13> ~ <p0 p10, p0 p14> ~ <p0 p10, p1 p14> ~ <p0 p13, p1 p8> ~ <p1 p2, p2 p15> ~ <p1 p7, p13 p1> ~ <p1 p8, p13 p1> ~ <p1 p10, p1 p14> ~ <p2 p8, p13 p2> ~ <p2 p10, p14 p2> ~ <p2 p12, p14 p2> ~ <p13 p2, p7 p10> ~ <p8 p10, p14 p8> ~ <p8 p10, p13 p10>
+GT: <p0 p1, p1 p2> ~ <p0 p7, p2 p8> ~ <p0 p10, p2 p10> ~ <p0 p13, p13 p2> ~ <p0 p14, p14 p2> ~ <p0 p15, p2 p15> ~ <p1 p8, p7 p10> ~ <p1 p10, p1 p11> ~ <p2 p7, p2 p8>
+GT: <p0 p1, p1 p10> ~ <p0 p2, p2 p10> ~ <p0 p7, p8 p10> ~ <p0 p10, p1 p2> ~ <p0 p13, p13 p10> ~ <p0 p14, p2 p15> ~ <p0 p15, p1 p14> ~ <p13 p2, p14 p8> ~ <p7 p10, p8 p10>
+GT: <p0 p1, p1 p14> ~ <p0 p2, p0 p14> ~ <p0 p2, p14 p2> ~ <p0 p7, p14 p8> ~ <p0 p10, p0 p15> ~ <p0 p10, p2 p15> ~ <p0 p13, p8 p10> ~ <p1 p2, p1 p14> ~ <p1 p8, p13 p10> ~ <p1 p10, p1 p15> ~ <p1 p11, p1 p15> ~ <p2 p8, p14 p8> ~ <p2 p10, p2 p15> ~ <p13 p2, p8 p10> ~ <p7 p10, p13 p10>
+GT: <p0 p1, p2 p8> ~ <p0 p2, p1 p8> ~ <p1 p2, p1 p7> ~ <p1 p2, p2 p7> ~ <p1 p11, p8 p10> ~ <p13 p1, p2 p15> ~ <p1 p15, p13 p2> ~ <p2 p12, p8 p10> ~ <p14 p2, p13 p10>
+GT: <p0 p1, p2 p10> ~ <p0 p15, p14 p2> ~ <p1 p2, p1 p11> ~ <p2 p7, p8 p10>
+GT: <p0 p1, p2 p12> ~ <p0 p2, p1 p11> ~ <p1 p15, p14 p2>
+GT: <p0 p1, p13 p2> ~ <p0 p2, p0 p13> ~ <p0 p15, p2 p8> ~ <p1 p2, p13 p1> ~ <p1 p8, p2 p15> ~ <p1 p11, p13 p10> ~ <p1 p15, p7 p10> ~ <p2 p7, p2 p15> ~ <p2 p10, p13 p10> ~ <p2 p12, p14 p8> ~ <p14 p2, p8 p10>
+GT: <p0 p1, p14 p2> ~ <p0 p15, p2 p12> ~ <p1 p11, p2 p15> ~ <p1 p15, p2 p10> ~ <p2 p7, p13 p10>
+GT: <p0 p1, p2 p15> ~ <p0 p2, p0 p15> ~ <p0 p10, p14 p2> ~ <p0 p13, p2 p8> ~ <p0 p14, p2 p12> ~ <p1 p2, p1 p15> ~ <p1 p8, p13 p2> ~ <p1 p11, p1 p14> ~ <p13 p1, p7 p10> ~ <p1 p14, p2 p10> ~ <p2 p7, p13 p2>
+GT: <p0 p1, p7 p10> ~ <p0 p2, p0 p7> ~ <p0 p2, p2 p7> ~ <p0 p13, p2 p15> ~ <p0 p15, p13 p2> ~ <p1 p2, p1 p8> ~ <p2 p10, p8 p10> ~ <p14 p2, p14 p8>
+GT: <p0 p1, p8 p10> ~ <p0 p2, p8 p10> ~ <p0 p10, p1 p8> ~ <p0 p10, p2 p8> ~ <p0 p13, p0 p14> ~ <p0 p15, p14 p8> ~ <p1 p7, p1 p10> ~ <p1 p8, p1 p11> ~ <p1 p10, p7 p10> ~ <p13 p1, p1 p14> ~ <p1 p14, p13 p2> ~ <p1 p15, p13 p10> ~ <p2 p7, p2 p10> ~ <p2 p8, p2 p12> ~ <p2 p10, p7 p10> ~ <p13 p2, p14 p2> ~ <p2 p15, p13 p10>
+GT: <p0 p1, p14 p8> ~ <p0 p2, p13 p10> ~ <p0 p10, p13 p1> ~ <p0 p13, p1 p11> ~ <p0 p14, p1 p8> ~ <p1 p7, p1 p14> ~ <p1 p10, p13 p2> ~ <p1 p14, p2 p8> ~ <p1 p15, p8 p10> ~ <p2 p12, p13 p2> ~ <p14 p2, p7 p10>
+GT: <p0 p1, p13 p10> ~ <p0 p2, p14 p8> ~ <p0 p7, p0 p14> ~ <p0 p10, p0 p13> ~ <p0 p10, p13 p2> ~ <p0 p14, p2 p8> ~ <p0 p15, p8 p10> ~ <p1 p2, p13 p10> ~ <p1 p8, p1 p14> ~ <p1 p10, p13 p1> ~ <p1 p11, p13 p1> ~ <p1 p14, p7 p10> ~ <p2 p7, p14 p2> ~ <p2 p8, p14 p2> ~ <p2 p10, p13 p2> ~ <p2 p15, p8 p10>
+GT: <p0 p1, p14 p11> ~ <p0 p2, p15 p12>
+GT: <p0 p1, p15 p12> ~ <p0 p2, p14 p11>
+GT: <p0 p2, p1 p2> ~ <p0 p7, p1 p8> ~ <p0 p10, p1 p10> ~ <p0 p13, p13 p1> ~ <p0 p14, p1 p14> ~ <p0 p15, p1 p15> ~ <p1 p7, p1 p8> ~ <p2 p8, p7 p10> ~ <p2 p10, p2 p12> ~ <p14 p8, p13 p10>
+GT: <p0 p2, p1 p10> ~ <p0 p14, p1 p15> ~ <p1 p2, p2 p12> ~ <p1 p7, p8 p10> ~ <p13 p1, p14 p8>
+GT: <p0 p2, p13 p1> ~ <p1 p7, p2 p15> ~ <p1 p11, p14 p8> ~ <p1 p15, p2 p8> ~ <p2 p12, p13 p10>
+GT: <p0 p2, p1 p15> ~ <p0 p14, p1 p11> ~ <p1 p7, p13 p2> ~ <p1 p10, p14 p2> ~ <p13 p1, p2 p8> ~ <p1 p14, p2 p12>
+GT: <p0 p7, p0 p10> ~ <p0 p10, p7 p10> ~ <p0 p13, p1 p14> ~ <p0 p14, p13 p2> ~ <p0 p15, p13 p10> ~ <p1 p2, p8 p10> ~ <p1 p7, p1 p11> ~ <p1 p8, p1 p10> ~ <p2 p7, p2 p12> ~ <p2 p8, p2 p10> ~ <p2 p15, p14 p8>
+GT: <p0 p7, p1 p11> ~ <p0 p10, p1 p7> ~ <p0 p14, p13 p1> ~ <p1 p10, p2 p8> ~ <p1 p15, p14 p8> ~ <p2 p12, p7 p10>
+GT: <p0 p7, p13 p1> ~ <p0 p13, p1 p7> ~ <p0 p14, p1 p10>
+GT: <p0 p7, p1 p14> ~ <p0 p13, p1 p10> ~ <p0 p14, p7 p10> ~ <p1 p2, p14 p8>
+GT: <p0 p7, p1 p15> ~ <p0 p15, p1 p7> ~ <p1 p10, p14 p8>
+GT: <p0 p7, p2 p12> ~ <p0 p10, p2 p7> ~ <p0 p13, p14 p2> ~ <p1 p8, p2 p10> ~ <p1 p11, p7 p10>
+GT: <p0 p7, p13 p2> ~ <p0 p13, p7 p10> ~ <p0 p14, p2 p10> ~ <p0 p15, p1 p2>
+GT: <p0 p7, p14 p2> ~ <p0 p13, p2 p10> ~ <p0 p14, p2 p7>
+GT: <p0 p7, p2 p15> ~ <p0 p13, p1 p2> ~ <p0 p15, p7 p10> ~ <p2 p10, p14 p8>
+GT: <p0 p7, p13 p10> ~ <p0 p14, p1 p2> ~ <p0 p15, p1 p10> ~ <p7 p10, p14 p8>
+GT: <p0 p7, p14 p11> ~ <p7 p10, p15 p12>
+GT: <p0 p7, p15 p12> ~ <p7 p10, p14 p11>
+GT: <p0 p10, p14 p11> ~ <p0 p10, p15 p12>
+GT: <p0 p13, p2 p12> ~ <p1 p8, p14 p2> ~ <p1 p11, p13 p2> ~ <p13 p1, p2 p10> ~ <p1 p14, p2 p7>
+GT: <p0 p13, p14 p11> ~ <p13 p2, p15 p12>
+GT: <p0 p13, p15 p12> ~ <p13 p2, p14 p11>
+GT: <p0 p14, p14 p11> ~ <p1 p14, p15 p12>
+GT: <p0 p14, p15 p12> ~ <p1 p14, p14 p11>
+GT: <p0 p15, p2 p10> ~ <p2 p7, p14 p8>
+GT: <p0 p15, p14 p11> ~ <p2 p15, p15 p12>
+GT: <p0 p15, p15 p12> ~ <p2 p15, p14 p11>
+GT: <p1 p7, p2 p7> ~ <p1 p11, p2 p12>
+GT: <p1 p7, p2 p8> ~ <p1 p10, p2 p12>
+GT: <p1 p7, p2 p10> ~ <p1 p8, p2 p12> ~ <p1 p10, p2 p7> ~ <p1 p11, p2 p8> ~ <p13 p1, p14 p2>
+GT: <p1 p7, p14 p2> ~ <p13 p1, p2 p12>
+GT: <p1 p8, p2 p7> ~ <p1 p11, p2 p10>
+GT: <p1 p8, p14 p11> ~ <p2 p8, p15 p12>
+GT: <p1 p8, p15 p12> ~ <p2 p8, p14 p11>
+GT: <p1 p11, p14 p2> ~ <p13 p1, p2 p7>
+GT: <p1 p11, p14 p11> ~ <p2 p12, p15 p12>
+GT: <p1 p11, p15 p12> ~ <p2 p12, p14 p11>
+GT: <p8 p10, p14 p11> ~ <p8 p10, p15 p12>
+GT: <p14 p8, p14 p11> ~ <p13 p10, p15 p12>
+GT: <p14 p8, p15 p12> ~ <p13 p10, p14 p11>
 GT: saved to file 2.txt and 2_log.txt
+>>> showall 
+GT: All objects are shown
+>>> cheat 
+GT: eqPoints: None
+GT: eqLines: None
+GT: eqCircles: None
+GT: Colinear: Line p0 p1 p3, Line p0 p2 p5, Line p0 p7 p8, Line p0 p9 p10 p11 p12, Line p3 p4 p7 p11 p13 p15, Line p5 p6 p7 p12 p14
+GT: Cyclic: Circle p0 p1 p2 p8 p10 p13 p14 p15, Circle p0 p3 p5 p7, Circle p0 p4 p6 p7, Circle p1 p7 p10 p11, Circle p2 p7 p10 p12, Circle p11 p12 p14 p15
+GT: Parallel: Line p0 p9 p10 p11 p12 // Line p14 p15
+GT: Line p0 p13 // Line p8 p15
+GT: Line p0 p15 // Line p8 p13
+GT: Line p1 p2 // Line p3 p5
+GT: Line p8 p1 // Line p3 p4 p7 p11 p13 p15
+GT: Line p1 p14 // Line p10 p15
+GT: Line p8 p2 // Line p5 p6 p7 p12 p14
+GT: Line p2 p15 // Line p10 p14
+GT: Line p8 p10 // Line p13 p14
+GT: (p0 p1 p2) ~ (p0 p3 p5) ~ (p0 p4 p6) ~ (p1 p10 p11) ~ (p2 p10 p12)
+GT: (p0 p1 p8) ~ (p0 p3 p7) ~ (p1 p3 p7)
+GT: (p0 p2 p8) ~ (p0 p5 p7) ~ (p2 p5 p7)
+GT: (p0 p3 p4) ~ (p0 p5 p6) ~ (p1 p3 p4) ~ (p2 p5 p6)
+GT: (p0 p3 p11) ~ (p0 p5 p12) ~ (p1 p3 p11) ~ (p2 p5 p12) ~ (p13 p14 p15)
+GT: (p0 p3 p13) ~ (p0 p3 p15) ~ (p0 p8 p13) ~ (p0 p8 p15) ~ (p0 p13 p15) ~ (p1 p3 p13) ~ (p1 p3 p15) ~ (p1 p13 p15) ~ (p8 p13 p15)
+GT: (p0 p4 p7) ~ (p1 p4 p7)
+GT: (p0 p4 p11) ~ (p1 p4 p11)
+GT: (p0 p4 p13) ~ (p1 p4 p13)
+GT: (p0 p4 p15) ~ (p1 p4 p15)
+GT: (p0 p5 p14) ~ (p0 p8 p14) ~ (p2 p5 p14) ~ (p10 p13 p15)
+GT: (p0 p6 p7) ~ (p2 p6 p7)
+GT: (p0 p6 p12) ~ (p2 p6 p12)
+GT: (p0 p6 p14) ~ (p2 p6 p14)
+GT: (p0 p7 p11) ~ (p1 p7 p11) ~ (p7 p10 p12)
+GT: (p0 p7 p12) ~ (p2 p7 p12) ~ (p7 p10 p11)
+GT: (p0 p10 p14) ~ (p0 p10 p15)
+GT: (p0 p11 p13) ~ (p0 p12 p14) ~ (p1 p11 p13) ~ (p2 p12 p14) ~ (p8 p13 p14) ~ (p10 p11 p15) ~ (p10 p13 p14)
+GT: (p0 p11 p14) ~ (p10 p12 p15)
+GT: (p0 p11 p15) ~ (p0 p13 p14) ~ (p1 p11 p15) ~ (p10 p11 p13) ~ (p10 p12 p14)
+GT: (p0 p12 p15) ~ (p10 p11 p14)
+GT: (p0 p14 p15) ~ (p1 p10 p15) ~ (p2 p10 p14) ~ (p10 p14 p15)
+GT: (p1 p2 p8) ~ (p3 p5 p7)
+GT: (p1 p8 p13) ~ (p1 p8 p15)
+GT: (p1 p10 p13) ~ (p8 p14 p15)
+GT: (p1 p10 p14) ~ (p1 p14 p15)
+GT: (p2 p10 p15) ~ (p2 p14 p15)
+GT: (p7 p11 p14) ~ (p7 p12 p15)
+GT: (p8 p10 p13) ~ (p8 p10 p14)
+GT: (p11 p12 p14) ~ (p11 p12 p15)
+GT: (p11 p14 p15) ~ (p12 p14 p15)
+GT: eqDist: |p0 p1| = |p3 p4|
+GT: |p0 p2| = |p5 p6|
+GT: |p0 p3| = |p1 p3|
+GT: |p0 p4| = |p1 p4|
+GT: |p0 p5| = |p2 p5|
+GT: |p0 p6| = |p2 p6|
+GT: |p0 p7| = |p1 p7| = |p2 p7| = |p7 p8| = |p7 p10| = |p7 p13| = |p7 p14| = |p7 p15|
+GT: |p0 p8| = |p13 p15|
+GT: |p0 p11| = |p1 p11| = |p10 p12|
+GT: |p0 p12| = |p2 p12| = |p10 p11|
+GT: |p0 p13| = |p1 p13| = |p8 p15|
+GT: |p0 p14| = |p2 p14| = |p10 p15|
+GT: |p0 p15| = |p1 p15| = |p8 p13| = |p10 p14|
+GT: |p1 p10| = |p2 p10| = |p14 p15|
+GT: |p7 p11| = |p7 p12|
+GT: |p8 p14| = |p10 p13|
+GT: |p11 p14| = |p12 p15|
+GT: |p11 p15| = |p12 p14|
+GT: 1/2 ~ |p0 p1| / |p0 p3| ~ |p0 p2| / |p0 p5| ~ |p0 p7| / |p0 p8| ~ |p1 p2| / |p3 p5| ~ |p1 p8| / |p3 p7| ~ |p2 p8| / |p5 p7|
+GT: |p0 p1| / |p0 p2| ~ |p0 p3| / |p0 p5| ~ |p0 p4| / |p0 p6| ~ |p0 p11| / |p0 p12| ~ |p3 p11| / |p5 p12|
+GT: |p0 p1| / |p0 p4| ~ |p0 p2| / |p0 p6| ~ |p1 p2| / |p4 p6|
+GT: |p0 p1| / |p0 p8| ~ |p0 p3| / |p0 p7|
+GT: |p0 p1| / |p0 p11| ~ |p0 p2| / |p0 p12| ~ |p0 p7| / |p13 p14| ~ |p1 p2| / |p1 p10| ~ |p7 p11| / |p8 p10|
+GT: |p0 p1| / |p0 p13| ~ |p0 p7| / |p0 p15|
+GT: |p0 p1| / |p0 p15| ~ |p0 p7| / |p0 p13|
+GT: |p0 p1| / |p1 p2| ~ |p0 p3| / |p3 p5| ~ |p0 p4| / |p4 p6| ~ |p0 p11| / |p1 p10|
+GT: |p0 p1| / |p1 p8| ~ |p0 p3| / |p3 p7|
+GT: |p0 p1| / |p2 p8| ~ |p0 p3| / |p5 p7|
+GT: |p0 p1| / |p3 p11| ~ |p0 p2| / |p5 p12|
+GT: |p0 p1| / |p8 p10| ~ |p0 p11| / |p7 p11|
+GT: |p0 p1| / |p13 p14| ~ |p0 p7| / |p0 p11|
+GT: |p0 p2| / |p0 p8| ~ |p0 p5| / |p0 p7|
+GT: |p0 p2| / |p0 p14| ~ |p0 p7| / |p8 p14|
+GT: |p0 p2| / |p1 p2| ~ |p0 p5| / |p3 p5| ~ |p0 p6| / |p4 p6| ~ |p0 p12| / |p1 p10|
+GT: |p0 p2| / |p1 p8| ~ |p0 p5| / |p3 p7|
+GT: |p0 p2| / |p2 p8| ~ |p0 p5| / |p5 p7|
+GT: |p0 p2| / |p8 p10| ~ |p0 p12| / |p7 p11|
+GT: |p0 p2| / |p8 p14| ~ |p0 p7| / |p0 p14|
+GT: |p0 p2| / |p13 p14| ~ |p0 p7| / |p0 p12|
+GT: |p0 p3| / |p0 p4| ~ |p0 p5| / |p0 p6| ~ |p3 p5| / |p4 p6|
+GT: |p0 p3| / |p0 p11| ~ |p0 p5| / |p0 p12| ~ |p0 p8| / |p13 p14| ~ |p1 p10| / |p3 p5|
+GT: |p0 p3| / |p0 p13| ~ |p0 p8| / |p0 p15| ~ |p0 p15| / |p3 p15|
+GT: |p0 p3| / |p0 p15| ~ |p0 p8| / |p0 p13| ~ |p0 p13| / |p3 p13|
+GT: |p0 p3| / |p3 p11| ~ |p0 p5| / |p5 p12| ~ |p1 p10| / |p13 p14| ~ |p8 p10| / |p11 p12|
+GT: |p0 p3| / |p3 p13| ~ |p0 p3| / |p3 p15| ~ |p0 p13| / |p0 p15|
+GT: |p0 p3| / |p8 p10| ~ |p3 p11| / |p11 p12|
+GT: |p0 p3| / |p13 p14| ~ |p0 p8| / |p0 p11| ~ |p1 p10| / |p3 p11|
+GT: |p0 p4| / |p0 p11| ~ |p0 p6| / |p0 p12| ~ |p1 p10| / |p4 p6|
+GT: |p0 p4| / |p3 p11| ~ |p0 p6| / |p5 p12|
+GT: |p0 p5| / |p0 p14| ~ |p0 p8| / |p8 p14|
+GT: |p0 p5| / |p5 p14| ~ |p0 p14| / |p8 p14|
+GT: |p0 p5| / |p8 p10| ~ |p5 p12| / |p11 p12|
+GT: |p0 p5| / |p8 p14| ~ |p0 p8| / |p0 p14| ~ |p0 p14| / |p5 p14|
+GT: |p0 p5| / |p13 p14| ~ |p0 p8| / |p0 p12| ~ |p1 p10| / |p5 p12|
+GT: |p0 p7| / |p1 p10| ~ |p1 p2| / |p13 p14| ~ |p7 p11| / |p11 p12|
+GT: |p0 p7| / |p3 p5| ~ |p0 p8| / |p1 p2|
+GT: |p0 p7| / |p3 p7| ~ |p0 p8| / |p1 p8|
+GT: |p0 p7| / |p5 p7| ~ |p0 p8| / |p2 p8|
+GT: |p0 p7| / |p7 p11| ~ |p1 p10| / |p11 p12| ~ |p8 p10| / |p13 p14|
+GT: |p0 p8| / |p1 p10| ~ |p0 p11| / |p3 p11| ~ |p0 p12| / |p5 p12| ~ |p3 p5| / |p13 p14| ~ |p3 p12| / |p8 p11| ~ |p5 p11| / |p8 p12|
+GT: |p0 p8| / |p8 p11| ~ |p1 p10| / |p3 p12|
+GT: |p0 p8| / |p8 p12| ~ |p1 p10| / |p5 p11|
+GT: |p0 p11| / |p0 p13| ~ |p0 p14| / |p11 p15| ~ |p0 p15| / |p13 p14|
+GT: |p0 p11| / |p0 p15| ~ |p0 p13| / |p13 p14| ~ |p8 p14| / |p11 p13|
+GT: |p0 p11| / |p8 p11| ~ |p3 p11| / |p3 p12|
+GT: |p0 p11| / |p8 p12| ~ |p3 p11| / |p5 p11|
+GT: |p0 p11| / |p11 p13| ~ |p0 p12| / |p11 p15| ~ |p0 p15| / |p8 p14|
+GT: |p0 p11| / |p11 p15| ~ |p0 p12| / |p11 p13| ~ |p0 p13| / |p0 p14|
+GT: |p0 p11| / |p13 p14| ~ |p3 p5| / |p3 p11|
+GT: |p0 p12| / |p0 p14| ~ |p0 p13| / |p11 p13| ~ |p8 p14| / |p13 p14|
+GT: |p0 p12| / |p8 p11| ~ |p3 p12| / |p5 p12|
+GT: |p0 p12| / |p8 p12| ~ |p5 p11| / |p5 p12|
+GT: |p0 p12| / |p8 p14| ~ |p0 p14| / |p13 p14| ~ |p0 p15| / |p11 p15|
+GT: |p0 p12| / |p13 p14| ~ |p3 p5| / |p5 p12|
+GT: |p1 p2| / |p1 p8| ~ |p3 p5| / |p3 p7|
+GT: |p1 p2| / |p2 p8| ~ |p3 p5| / |p5 p7|
+GT: |p1 p2| / |p8 p10| ~ |p1 p10| / |p7 p11|
+GT: |p1 p2| / |p11 p12| ~ |p7 p11| / |p13 p14|
+GT: |p1 p8| / |p2 p8| ~ |p3 p7| / |p5 p7|
+GT: |p3 p5| / |p3 p12| ~ |p8 p11| / |p13 p14|
+GT: |p3 p5| / |p5 p11| ~ |p8 p12| / |p13 p14|
+GT: |p3 p12| / |p5 p11| ~ |p8 p11| / |p8 p12|
+GT: pi/2 ~ <p0 p1, p8 p1> ~ <p0 p2, p8 p2> ~ <p0 p9, p8 p10> ~ <p0 p13, p0 p15> ~ <p0 p14, p8 p14> ~ <p1 p2, p10 p7> ~ <p1 p13, p1 p15> ~ <p1 p14, p10 p13> ~ <p2 p13, p2 p15>
+GT: <p0 p1, p0 p2> ~ <p0 p4, p0 p6> ~ <p0 p9, p1 p11> ~ <p0 p9, p2 p12> ~ <p1 p4, p2 p6> ~ <p1 p7, p10 p7> ~ <p8 p1, p8 p2> ~ <p1 p10, p2 p10> ~ <p1 p13, p2 p13> ~ <p1 p14, p2 p14> ~ <p1 p15, p2 p15> ~ <p2 p7, p10 p7>
+GT: <p0 p1, p0 p4> ~ <p0 p1, p1 p4> ~ <p0 p2, p0 p6> ~ <p0 p2, p2 p6> ~ <p1 p2, p4 p6>
+GT: <p0 p1, p0 p6> ~ <p0 p2, p1 p4>
+GT: <p0 p1, p0 p7> ~ <p0 p1, p1 p7> ~ <p0 p2, p10 p7> ~ <p0 p13, p1 p15> ~ <p0 p14, p10 p13> ~ <p0 p15, p1 p13> ~ <p1 p2, p8 p2> ~ <p1 p10, p8 p10> ~ <p1 p14, p8 p14>
+GT: <p0 p1, p0 p9> ~ <p0 p1, p1 p11> ~ <p0 p2, p0 p9> ~ <p0 p2, p2 p12> ~ <p0 p13, p8 p14> ~ <p0 p14, p0 p15> ~ <p1 p2, p1 p10> ~ <p1 p2, p2 p10> ~ <p8 p1, p8 p10> ~ <p1 p13, p10 p13> ~ <p1 p14, p1 p15> ~ <p1 p14, p2 p15> ~ <p8 p2, p8 p10> ~ <p2 p13, p10 p13> ~ <p2 p14, p2 p15>
+GT: <p0 p1, p0 p13> ~ <p0 p1, p1 p13> ~ <p0 p2, p2 p13> ~ <p0 p7, p0 p15> ~ <p0 p9, p8 p14> ~ <p0 p9, p10 p13> ~ <p0 p14, p8 p10> ~ <p0 p15, p8 p1> ~ <p1 p2, p2 p13> ~ <p1 p7, p1 p15> ~ <p8 p1, p1 p15> ~ <p1 p10, p10 p13> ~ <p1 p14, p8 p10> ~ <p8 p2, p2 p15> ~ <p2 p15, p10 p7>
+GT: <p0 p1, p0 p14> ~ <p0 p2, p1 p14> ~ <p0 p9, p1 p15> ~ <p0 p15, p1 p11> ~ <p1 p2, p2 p14> ~ <p1 p7, p10 p13> ~ <p8 p1, p8 p14> ~ <p1 p10, p2 p15> ~ <p1 p13, p8 p10> ~ <p8 p2, p10 p13> ~ <p2 p12, p2 p15>
+GT: <p0 p1, p0 p15> ~ <p0 p1, p1 p15> ~ <p0 p2, p2 p15> ~ <p0 p7, p0 p13> ~ <p0 p9, p0 p14> ~ <p0 p9, p1 p14> ~ <p0 p13, p8 p1> ~ <p1 p2, p2 p15> ~ <p1 p7, p1 p13> ~ <p8 p1, p1 p13> ~ <p1 p10, p1 p14> ~ <p8 p2, p2 p13> ~ <p2 p10, p2 p14> ~ <p2 p12, p2 p14> ~ <p2 p13, p10 p7> ~ <p8 p10, p8 p14> ~ <p8 p10, p10 p13>
+GT: <p0 p1, p1 p2> ~ <p0 p4, p4 p6> ~ <p0 p7, p8 p2> ~ <p0 p9, p2 p10> ~ <p0 p13, p2 p13> ~ <p0 p14, p2 p14> ~ <p0 p15, p2 p15> ~ <p8 p1, p10 p7> ~ <p1 p10, p1 p11> ~ <p2 p7, p8 p2>
+GT: <p0 p1, p1 p10> ~ <p0 p2, p2 p10> ~ <p0 p7, p8 p10> ~ <p0 p9, p1 p2> ~ <p0 p13, p10 p13> ~ <p0 p14, p2 p15> ~ <p0 p15, p1 p14> ~ <p2 p13, p8 p14> ~ <p10 p7, p8 p10>
+GT: <p0 p1, p1 p14> ~ <p0 p2, p0 p14> ~ <p0 p2, p2 p14> ~ <p0 p7, p8 p14> ~ <p0 p9, p0 p15> ~ <p0 p9, p2 p15> ~ <p0 p13, p8 p10> ~ <p1 p2, p1 p14> ~ <p8 p1, p10 p13> ~ <p1 p10, p1 p15> ~ <p1 p11, p1 p15> ~ <p8 p2, p8 p14> ~ <p2 p10, p2 p15> ~ <p2 p13, p8 p10> ~ <p10 p7, p10 p13>
+GT: <p0 p1, p2 p6> ~ <p0 p2, p0 p4>
+GT: <p0 p1, p8 p2> ~ <p0 p2, p8 p1> ~ <p1 p2, p1 p7> ~ <p1 p2, p2 p7> ~ <p1 p11, p8 p10> ~ <p1 p13, p2 p15> ~ <p1 p15, p2 p13> ~ <p2 p12, p8 p10> ~ <p2 p14, p10 p13>
+GT: <p0 p1, p2 p10> ~ <p0 p15, p2 p14> ~ <p1 p2, p1 p11> ~ <p2 p7, p8 p10>
+GT: <p0 p1, p2 p12> ~ <p0 p2, p1 p11> ~ <p1 p15, p2 p14>
+GT: <p0 p1, p2 p13> ~ <p0 p2, p0 p13> ~ <p0 p15, p8 p2> ~ <p1 p2, p1 p13> ~ <p8 p1, p2 p15> ~ <p1 p11, p10 p13> ~ <p1 p15, p10 p7> ~ <p2 p7, p2 p15> ~ <p2 p10, p10 p13> ~ <p2 p12, p8 p14> ~ <p2 p14, p8 p10>
+GT: <p0 p1, p2 p14> ~ <p0 p15, p2 p12> ~ <p1 p11, p2 p15> ~ <p1 p15, p2 p10> ~ <p2 p7, p10 p13>
+GT: <p0 p1, p2 p15> ~ <p0 p2, p0 p15> ~ <p0 p9, p2 p14> ~ <p0 p13, p8 p2> ~ <p0 p14, p2 p12> ~ <p1 p2, p1 p15> ~ <p8 p1, p2 p13> ~ <p1 p11, p1 p14> ~ <p1 p13, p10 p7> ~ <p1 p14, p2 p10> ~ <p2 p7, p2 p13>
+GT: <p0 p1, p3 p12> ~ <p8 p10, p8 p11>
+GT: <p0 p1, p4 p6> ~ <p1 p2, p1 p4>
+GT: <p0 p1, p10 p7> ~ <p0 p2, p0 p7> ~ <p0 p2, p2 p7> ~ <p0 p13, p2 p15> ~ <p0 p15, p2 p13> ~ <p1 p2, p8 p1> ~ <p2 p10, p8 p10> ~ <p2 p14, p8 p14>
+GT: <p0 p1, p8 p10> ~ <p0 p2, p8 p10> ~ <p0 p9, p8 p1> ~ <p0 p9, p8 p2> ~ <p0 p13, p0 p14> ~ <p0 p15, p8 p14> ~ <p1 p7, p1 p10> ~ <p8 p1, p1 p11> ~ <p1 p10, p10 p7> ~ <p1 p13, p1 p14> ~ <p1 p14, p2 p13> ~ <p1 p15, p10 p13> ~ <p2 p7, p2 p10> ~ <p8 p2, p2 p12> ~ <p2 p10, p10 p7> ~ <p2 p13, p2 p14> ~ <p2 p15, p10 p13>
+GT: <p0 p1, p8 p11> ~ <p3 p12, p8 p10>
+GT: <p0 p1, p8 p14> ~ <p0 p2, p10 p13> ~ <p0 p9, p1 p13> ~ <p0 p13, p1 p11> ~ <p0 p14, p8 p1> ~ <p1 p7, p1 p14> ~ <p1 p10, p2 p13> ~ <p1 p14, p8 p2> ~ <p1 p15, p8 p10> ~ <p2 p12, p2 p13> ~ <p2 p14, p10 p7>
+GT: <p0 p1, p10 p13> ~ <p0 p2, p8 p14> ~ <p0 p7, p0 p14> ~ <p0 p9, p0 p13> ~ <p0 p9, p2 p13> ~ <p0 p14, p8 p2> ~ <p0 p15, p8 p10> ~ <p1 p2, p10 p13> ~ <p8 p1, p1 p14> ~ <p1 p10, p1 p13> ~ <p1 p11, p1 p13> ~ <p1 p14, p10 p7> ~ <p2 p7, p2 p14> ~ <p8 p2, p2 p14> ~ <p2 p10, p2 p13> ~ <p2 p15, p8 p10>
+GT: <p0 p1, p11 p14> ~ <p0 p2, p12 p15>
+GT: <p0 p1, p12 p15> ~ <p0 p2, p11 p14>
+GT: <p0 p2, p1 p2> ~ <p0 p6, p4 p6> ~ <p0 p7, p8 p1> ~ <p0 p9, p1 p10> ~ <p0 p13, p1 p13> ~ <p0 p14, p1 p14> ~ <p0 p15, p1 p15> ~ <p1 p7, p8 p1> ~ <p8 p2, p10 p7> ~ <p2 p10, p2 p12> ~ <p8 p14, p10 p13>
+GT: <p0 p2, p1 p10> ~ <p0 p14, p1 p15> ~ <p1 p2, p2 p12> ~ <p1 p7, p8 p10> ~ <p1 p13, p8 p14>
+GT: <p0 p2, p1 p13> ~ <p1 p7, p2 p15> ~ <p1 p11, p8 p14> ~ <p1 p15, p8 p2> ~ <p2 p12, p10 p13>
+GT: <p0 p2, p1 p15> ~ <p0 p14, p1 p11> ~ <p1 p7, p2 p13> ~ <p1 p10, p2 p14> ~ <p1 p13, p8 p2> ~ <p1 p14, p2 p12>
+GT: <p0 p2, p4 p6> ~ <p1 p2, p2 p6>
+GT: <p0 p2, p11 p5> ~ <p8 p10, p8 p12>
+GT: <p0 p2, p8 p12> ~ <p11 p5, p8 p10>
+GT: <p0 p4, p0 p7> ~ <p1 p4, p1 p7> ~ <p2 p6, p10 p7> ~ <p8 p2, p4 p6>
+GT: <p0 p4, p0 p9> ~ <p0 p6, p2 p12> ~ <p0 p9, p2 p6> ~ <p1 p4, p1 p11> ~ <p2 p10, p4 p6>
+GT: <p0 p4, p0 p13> ~ <p1 p4, p1 p13> ~ <p2 p6, p2 p13> ~ <p2 p13, p4 p6>
+GT: <p0 p4, p0 p14> ~ <p1 p14, p2 p6> ~ <p2 p14, p4 p6>
+GT: <p0 p4, p0 p15> ~ <p1 p4, p1 p15> ~ <p2 p6, p2 p15> ~ <p2 p15, p4 p6>
+GT: <p0 p4, p1 p4> ~ <p0 p6, p2 p6>
+GT: <p0 p4, p1 p7> ~ <p0 p6, p10 p7> ~ <p0 p7, p1 p4>
+GT: <p0 p4, p8 p1> ~ <p0 p6, p8 p2> ~ <p1 p4, p8 p1> ~ <p2 p6, p8 p2> ~ <p4 p6, p10 p7>
+GT: <p0 p4, p1 p10> ~ <p0 p6, p2 p10>
+GT: <p0 p4, p1 p11> ~ <p0 p6, p0 p9> ~ <p0 p9, p1 p4> ~ <p1 p10, p4 p6> ~ <p2 p6, p2 p12>
+GT: <p0 p4, p1 p13> ~ <p0 p6, p2 p13> ~ <p0 p13, p1 p4>
+GT: <p0 p4, p1 p14> ~ <p0 p6, p2 p14> ~ <p0 p14, p2 p6>
+GT: <p0 p4, p1 p15> ~ <p0 p6, p2 p15> ~ <p0 p15, p1 p4>
+GT: <p0 p4, p8 p2> ~ <p8 p1, p2 p6> ~ <p2 p7, p4 p6>
+GT: <p0 p4, p2 p12> ~ <p1 p11, p2 p6>
+GT: <p0 p4, p2 p13> ~ <p0 p13, p2 p6>
+GT: <p0 p4, p2 p15> ~ <p0 p15, p2 p6>
+GT: <p0 p4, p10 p7> ~ <p0 p6, p2 p7> ~ <p0 p7, p2 p6>
+GT: <p0 p4, p8 p10> ~ <p2 p6, p8 p10>
+GT: <p0 p4, p8 p14> ~ <p2 p6, p10 p13>
+GT: <p0 p4, p10 p13> ~ <p2 p6, p8 p14>
+GT: <p0 p4, p11 p14> ~ <p2 p6, p12 p15>
+GT: <p0 p4, p12 p15> ~ <p2 p6, p11 p14>
+GT: <p0 p6, p0 p7> ~ <p1 p4, p10 p7> ~ <p8 p1, p4 p6> ~ <p2 p6, p2 p7>
+GT: <p0 p6, p0 p13> ~ <p1 p4, p2 p13> ~ <p1 p13, p4 p6>
+GT: <p0 p6, p0 p14> ~ <p1 p4, p1 p14> ~ <p1 p14, p4 p6> ~ <p2 p6, p2 p14>
+GT: <p0 p6, p0 p15> ~ <p1 p4, p2 p15> ~ <p1 p15, p4 p6>
+GT: <p0 p6, p8 p1> ~ <p1 p4, p8 p2> ~ <p1 p7, p4 p6>
+GT: <p0 p6, p1 p11> ~ <p1 p4, p2 p12>
+GT: <p0 p6, p1 p14> ~ <p0 p14, p1 p4>
+GT: <p0 p6, p8 p10> ~ <p1 p4, p8 p10>
+GT: <p0 p6, p8 p14> ~ <p1 p4, p10 p13> ~ <p4 p6, p10 p13>
+GT: <p0 p6, p10 p13> ~ <p1 p4, p8 p14>
+GT: <p0 p6, p11 p14> ~ <p1 p4, p12 p15>
+GT: <p0 p6, p12 p15> ~ <p1 p4, p11 p14>
+GT: <p0 p7, p0 p9> ~ <p0 p9, p10 p7> ~ <p0 p13, p1 p14> ~ <p0 p14, p2 p13> ~ <p0 p15, p10 p13> ~ <p1 p2, p8 p10> ~ <p1 p7, p1 p11> ~ <p8 p1, p1 p10> ~ <p2 p7, p2 p12> ~ <p8 p2, p2 p10> ~ <p2 p15, p8 p14>
+GT: <p0 p7, p1 p11> ~ <p0 p9, p1 p7> ~ <p0 p14, p1 p13> ~ <p1 p10, p8 p2> ~ <p1 p15, p8 p14> ~ <p2 p12, p10 p7>
+GT: <p0 p7, p1 p13> ~ <p0 p13, p1 p7> ~ <p0 p14, p1 p10>
+GT: <p0 p7, p1 p14> ~ <p0 p13, p1 p10> ~ <p0 p14, p10 p7> ~ <p1 p2, p8 p14>
+GT: <p0 p7, p1 p15> ~ <p0 p15, p1 p7> ~ <p1 p10, p8 p14>
+GT: <p0 p7, p2 p12> ~ <p0 p9, p2 p7> ~ <p0 p13, p2 p14> ~ <p8 p1, p2 p10> ~ <p1 p11, p10 p7>
+GT: <p0 p7, p2 p13> ~ <p0 p13, p10 p7> ~ <p0 p14, p2 p10> ~ <p0 p15, p1 p2>
+GT: <p0 p7, p2 p14> ~ <p0 p13, p2 p10> ~ <p0 p14, p2 p7>
+GT: <p0 p7, p2 p15> ~ <p0 p13, p1 p2> ~ <p0 p15, p10 p7> ~ <p2 p10, p8 p14>
+GT: <p0 p7, p3 p12> ~ <p1 p10, p8 p11>
+GT: <p0 p7, p11 p5> ~ <p2 p10, p8 p12>
+GT: <p0 p7, p8 p11> ~ <p1 p10, p3 p12>
+GT: <p0 p7, p8 p12> ~ <p2 p10, p11 p5>
+GT: <p0 p7, p10 p13> ~ <p0 p14, p1 p2> ~ <p0 p15, p1 p10> ~ <p10 p7, p8 p14>
+GT: <p0 p7, p11 p14> ~ <p10 p7, p12 p15>
+GT: <p0 p7, p12 p15> ~ <p10 p7, p11 p14>
+GT: <p0 p9, p3 p12> ~ <p8 p1, p8 p11>
+GT: <p0 p9, p4 p6> ~ <p1 p4, p1 p10> ~ <p2 p6, p2 p10>
+GT: <p0 p9, p11 p5> ~ <p8 p2, p8 p12>
+GT: <p0 p9, p8 p11> ~ <p8 p1, p3 p12>
+GT: <p0 p9, p8 p12> ~ <p8 p2, p11 p5>
+GT: <p0 p9, p11 p14> ~ <p0 p9, p12 p15>
+GT: <p0 p13, p2 p12> ~ <p8 p1, p2 p14> ~ <p1 p11, p2 p13> ~ <p1 p13, p2 p10> ~ <p1 p14, p2 p7>
+GT: <p0 p13, p3 p12> ~ <p1 p14, p8 p11>
+GT: <p0 p13, p11 p5> ~ <p2 p14, p8 p12>
+GT: <p0 p13, p8 p11> ~ <p1 p14, p3 p12>
+GT: <p0 p13, p8 p12> ~ <p2 p14, p11 p5>
+GT: <p0 p13, p11 p14> ~ <p2 p13, p12 p15>
+GT: <p0 p13, p12 p15> ~ <p2 p13, p11 p14>
+GT: <p0 p14, p3 p12> ~ <p1 p13, p8 p11>
+GT: <p0 p14, p11 p5> ~ <p2 p13, p8 p12>
+GT: <p0 p14, p8 p11> ~ <p1 p13, p3 p12>
+GT: <p0 p14, p8 p12> ~ <p2 p13, p11 p5>
+GT: <p0 p14, p11 p14> ~ <p1 p14, p12 p15>
+GT: <p0 p14, p12 p15> ~ <p1 p14, p11 p14>
+GT: <p0 p15, p2 p10> ~ <p2 p7, p8 p14>
+GT: <p0 p15, p3 p12> ~ <p8 p11, p10 p13>
+GT: <p0 p15, p8 p11> ~ <p3 p12, p10 p13>
+GT: <p0 p15, p11 p14> ~ <p2 p15, p12 p15>
+GT: <p0 p15, p12 p15> ~ <p2 p15, p11 p14>
+GT: <p1 p4, p2 p10> ~ <p1 p11, p4 p6>
+GT: <p1 p7, p2 p7> ~ <p1 p11, p2 p12>
+GT: <p1 p7, p8 p2> ~ <p1 p10, p2 p12>
+GT: <p1 p7, p2 p10> ~ <p8 p1, p2 p12> ~ <p1 p10, p2 p7> ~ <p1 p11, p8 p2> ~ <p1 p13, p2 p14>
+GT: <p1 p7, p2 p14> ~ <p1 p13, p2 p12>
+GT: <p8 p1, p2 p7> ~ <p1 p11, p2 p10>
+GT: <p8 p1, p11 p5> ~ <p2 p12, p8 p12>
+GT: <p8 p1, p8 p12> ~ <p2 p12, p11 p5>
+GT: <p8 p1, p11 p14> ~ <p8 p2, p12 p15>
+GT: <p8 p1, p12 p15> ~ <p8 p2, p11 p14>
+GT: <p1 p10, p2 p6> ~ <p2 p12, p4 p6>
+GT: <p1 p11, p2 p14> ~ <p1 p13, p2 p7>
+GT: <p1 p11, p3 p12> ~ <p8 p2, p8 p11>
+GT: <p1 p11, p8 p11> ~ <p8 p2, p3 p12>
+GT: <p1 p11, p11 p14> ~ <p2 p12, p12 p15>
+GT: <p1 p11, p12 p15> ~ <p2 p12, p11 p14>
+GT: <p1 p15, p3 p12> ~ <p8 p11, p8 p14>
+GT: <p1 p15, p8 p11> ~ <p3 p12, p8 p14>
+GT: <p2 p15, p11 p5> ~ <p8 p12, p8 p14>
+GT: <p2 p15, p8 p12> ~ <p11 p5, p8 p14>
+GT: <p8 p10, p11 p14> ~ <p8 p10, p12 p15>
+GT: <p8 p14, p11 p14> ~ <p10 p13, p12 p15>
+GT: <p8 p14, p12 p15> ~ <p10 p13, p11 p14>
+>>> save 2 
