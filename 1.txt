@@ -2,34 +2,12 @@
 a = pt
 b = pt
 c = pt
-bc = line b c
-ca = line c a
-ab = line a b
-l4 = abis a b c
-l5 = abis a c b
-i = pt l4 l5
-l6 = abis b a c
-j = pt l4 l6
-k = pt l5 l6
-l7 = line c b
-s = pt bc l6
-l8 = line s b
-l9 = line s c
-pc = pt l8 ca
-ppc = pt l9 l7
-c1 = circ s c
-c2 = circ s pc
-c3 = circ s ppc
-c4 = circ c a
-c5 = circ c b
-c6 = circ c b
+d = mdpt b c
+e = mdpt c a
+f = mdpt a b
 
-pp1 = pt c1
-pp2 = pt c1
-pp3 = pt c2
-
-eq
+deq
 col
 cyc
-deq
 simtri
+dratio

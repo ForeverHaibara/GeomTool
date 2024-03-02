@@ -24,6 +24,15 @@ def objchecklist(in_list, fun):
             outdict[key] = [obj]
     return list(outdict.values())
 
+def nontrivchecklist(in_list, fun):
+    outlst = []
+    for sublst in in_list:
+        if len(sublst) > 1:
+            subappend = []
+            for obj in sublst:
+                subappend.append(fun(obj))
+            outlst.append(subappend)
+    return outlst
 
 def printchecklist(in_list, fun=lambda x: x.name, midsymbol="=", midsymbol2=", "):
     outstr = ""
@@ -84,6 +93,7 @@ class GeomInformation:
     
     def deq(self):
         dist_dict = dict()
+        dist_precise_dict = dict()
         for pt_num1 in range(len(self.points)):
             for pt_num2 in range(pt_num1 + 1, len(self.points)):
                 pt1 = self.points[pt_num1]
@@ -93,7 +103,9 @@ class GeomInformation:
                     dist_dict[d0].append((pt_num1, pt_num2))
                 else:
                     dist_dict[d0] = [(pt_num1, pt_num2)]
+                    dist_precise_dict[d0] = ((pt1.c[0] - pt2.c[0]) ** 2 + (pt1.c[1] - pt2.c[1]) ** 2) **(1/2)
         self.dist_dict = dist_dict
+        self.dist_precise_dict = dist_precise_dict
         return printchecklist(self.dist_dict.values(), lambda x: "|" + self.points[x[0]].name + " " + self.points[x[1]].name + "|", midsymbol2='\n')
     
     def col(self):
@@ -175,8 +187,32 @@ class GeomInformation:
                             simtri_dict[c0].append((pt_num1, pt_num2, pt_num3))
                         else:
                             simtri_dict[c0] = [(pt_num1, pt_num2, pt_num3)]
-        self.simtri_dict = simtri_dict
-        return printchecklist(self.simtri_dict.values(), lambda x: "Δ(" + self.points[x[0]].name + " " + self.points[x[1]].name + " " + self.points[x[2]].name + ")", midsymbol="~", midsymbol2="\n")
+        vl = simtri_dict.values()
+        del(simtri_dict)
+        self.simtri_nontriv_list = nontrivchecklist(vl, lambda x: (self.points[x[0]], self.points[x[1]], self.points[x[2]]))
+        return printchecklist(vl, lambda x: "(" + self.points[x[0]].name + " " + self.points[x[1]].name + " " + self.points[x[2]].name + ")", midsymbol="~", midsymbol2="\n")
     
     def dratio(self):
-        preplist = [()]
+        self.deq()
+        preplist = ["1/4", "1/3", "1/2", "1/sqrt(3)", "(sqrt(5)-1)/2", "2/3", "1/sqrt(2)", "3/4", "sqrt(2/3)"]
+        prepval = [1/4, 1/3, 1/2, 1/(3**(1/2)), (5**(1/2)-1)/2, 2/3, 1/(2**(1/2)), 3/4, (2/3)**(1/2)]
+        dratio_dict = dict()
+        for num in range(len(preplist)):
+            dratio_dict[rnd(prepval[num] + 1/prepval[num])] = [preplist[num]]
+        
+        dist_list = list(self.dist_dict)
+        dist_precise_list = list(self.dist_precise_dict[key] for key in dist_list)
+        for num1 in range(len(dist_list)):
+            for num2 in range(num1 + 1, len(dist_list)):
+                r = rnd(dist_precise_list[num1] / dist_precise_list[num2] + dist_precise_list[num2] / dist_precise_list[num1])
+                if r in dratio_dict:
+                    dratio_dict[r].append((dist_list[num1], dist_list[num2]))
+                else:
+                    dratio_dict[r] = [(dist_list[num1], dist_list[num2])]
+        vl = dratio_dict.values()
+        print(dratio_dict)
+        del(dratio_dict)
+        self.dratio_list = nontrivchecklist(vl, lambda x: x if type(x) == str else (self.points[self.dist_dict[x[0]][0][0]], self.points[self.dist_dict[x[0]][0][1]], self.points[self.dist_dict[x[1]][0][0]], self.points[self.dist_dict[x[1]][0][1]]))
+        return printchecklist(vl, lambda x: x if type(x) == str else "|" + self.points[self.dist_dict[x[0]][0][0]].name + " " + self.points[self.dist_dict[x[0]][0][1]].name + "| / |" + self.points[self.dist_dict[x[1]][0][0]].name + " " + self.points[self.dist_dict[x[1]][0][1]].name + "|", midsymbol="~", midsymbol2 = "\n")
+        
+        

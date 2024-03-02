@@ -117,6 +117,10 @@ def runline(in_line, in_graph_tree):
         finder = Pathfinder.GeomInformation(in_graph_tree)
         return finder.simtri()
     
+    if len(exp.wordlist) == 1 and exp.wordlist[0] == "dratio":
+        finder = Pathfinder.GeomInformation(in_graph_tree)
+        return finder.dratio()
+    
     """------------
     !!!   NEW   !!!---------------------------------------+----
     ------------"""
