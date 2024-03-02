@@ -2,7 +2,7 @@ import random
 import GeomTool
 
 # auto perturbation
-PERT_NUM = 1e-8
+PERT_NUM = 1e-6
 
 def is_float(s):
     try:
@@ -103,11 +103,11 @@ class ExplainLine:
             if word_num == len(self.wordlist) - 2 and self.wordtype(self.wordlist[word_num + 1]) == "Circle":
                 return [GeomTool.MethodDict['pt_on_circle'][1], [self.isnameobj(self.wordlist[word_num + 1])]]
             if word_num == len(self.wordlist) - 3 and self.wordtype(self.wordlist[word_num + 1]) == "Number" and self.wordtype(self.wordlist[word_num + 2]) == "Number":
-                return [GeomTool.MethodDict['free_pt'][1], [], float(self.wordlist[word_num + 1]) * (1 + PERT_NUM * random.gauss(0, 1)), float(self.wordlist[word_num + 2]) * (1 + PERT_NUM * random.gauss(0, 1))]
+                return [GeomTool.MethodDict['free_pt'][1], [], float(self.wordlist[word_num + 1]) * random.gauss(1, PERT_NUM) + random.gauss(0, PERT_NUM), float(self.wordlist[word_num + 2]) * random.gauss(1, PERT_NUM) + random.gauss(0, PERT_NUM)]
             if word_num == len(self.wordlist) - 4 and self.wordtype(self.wordlist[word_num + 1]) == "Line" and self.wordtype(self.wordlist[word_num + 2]) == "Number" and self.wordtype(self.wordlist[word_num + 3]) == "Number":
-                return [GeomTool.MethodDict['pt_on_line'][1], [self.isnameobj(self.wordlist[word_num + 1])], float(self.wordlist[word_num + 2]) * (1 + PERT_NUM * random.gauss(0, 1)), float(self.wordlist[word_num + 3]) * (1 + PERT_NUM * random.gauss(0, 1))]
+                return [GeomTool.MethodDict['pt_on_line'][1], [self.isnameobj(self.wordlist[word_num + 1])], float(self.wordlist[word_num + 2]) * random.gauss(1, PERT_NUM) + random.gauss(0, PERT_NUM), float(self.wordlist[word_num + 3]) * random.gauss(1, PERT_NUM) + random.gauss(0, PERT_NUM)]
             if word_num == len(self.wordlist) - 4 and self.wordtype(self.wordlist[word_num + 1]) == "Circle" and self.wordtype(self.wordlist[word_num + 2]) == "Number" and self.wordtype(self.wordlist[word_num + 3]) == "Number":
-                return [GeomTool.MethodDict['pt_on_circle'][1], [self.isnameobj(self.wordlist[word_num + 1])], float(self.wordlist[word_num + 2]) * (1 + PERT_NUM * random.gauss(0, 1)), float(self.wordlist[word_num + 3]) * (1 + PERT_NUM * random.gauss(0, 1))]
+                return [GeomTool.MethodDict['pt_on_circle'][1], [self.isnameobj(self.wordlist[word_num + 1])], float(self.wordlist[word_num + 2]) * random.gauss(1, PERT_NUM) + random.gauss(0, PERT_NUM), float(self.wordlist[word_num + 3]) * random.gauss(1, PERT_NUM) + random.gauss(0, PERT_NUM)]
             if word_num == len(self.wordlist) - 3 and self.wordtype(self.wordlist[word_num + 1]) == "Line" and self.wordtype(self.wordlist[word_num + 2]) == "Line":
                 return [GeomTool.MethodDict['inx_line_line'][1], [self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2])]]
             if word_num == len(self.wordlist) - 4 and self.wordtype(self.wordlist[word_num + 1]) == "Line" and self.wordtype(self.wordlist[word_num + 2]) == "Line" and self.wordtype(self.wordlist[word_num + 3]) == "Number":
