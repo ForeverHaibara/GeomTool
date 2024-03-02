@@ -28,7 +28,8 @@ pp1 = pt c1
 pp2 = pt c1
 pp3 = pt c2
 
-eqinfo
-colinfo
-cycinfo
-distinfo
+eq
+col
+cyc
+deq
+simtri
