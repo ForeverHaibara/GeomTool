@@ -13,14 +13,29 @@ def is_float(s):
 
 def calculate(in_text, geom_list):
     for obj in geom_list:
-        in_text.replace(obj.name + '.x', str(obj.c[0]))
-        in_text.replace(obj.name + '.y', str(obj.c[1]))
-        in_text.replace(obj.name + '.a', str(obj.c[0]))
-        in_text.replace(obj.name + '.b', str(obj.c[1]))
-        in_text.replace(obj.name + '.c', str(obj.c[2]))
-        in_text.replace(obj.name + '[0]', str(obj.c[0]))
-        in_text.replace(obj.name + '[1]', str(obj.c[1]))
-        in_text.replace(obj.name + '[2]', str(obj.c[2]))
+        if obj.name + '.' in in_text or obj.name + '[' in in_text:
+            if obj.hasc:
+                if obj.type == "Point":
+                    in_text = in_text.replace(obj.name + '.x', str(obj.c[0]))
+                    in_text = in_text.replace(obj.name + '.y', str(obj.c[1]))
+                    in_text = in_text.replace(obj.name + '[0]', str(obj.c[0]))
+                    in_text = in_text.replace(obj.name + '[1]', str(obj.c[1]))
+                if obj.type == "Line":
+                    in_text = in_text.replace(obj.name + '.a', str(obj.c[0]))
+                    in_text = in_text.replace(obj.name + '.b', str(obj.c[1]))
+                    in_text = in_text.replace(obj.name + '.c', str(obj.c[2]))
+                    in_text = in_text.replace(obj.name + '[0]', str(obj.c[0]))
+                    in_text = in_text.replace(obj.name + '[1]', str(obj.c[1]))
+                    in_text = in_text.replace(obj.name + '[2]', str(obj.c[2]))
+                if obj.type == "Circle":
+                    in_text = in_text.replace(obj.name + '.x', str(obj.c[0]))
+                    in_text = in_text.replace(obj.name + '.y', str(obj.c[1]))
+                    in_text = in_text.replace(obj.name + '.r', str(obj.c[2]))
+                    in_text = in_text.replace(obj.name + '[0]', str(obj.c[0]))
+                    in_text = in_text.replace(obj.name + '[1]', str(obj.c[1]))
+                    in_text = in_text.replace(obj.name + '[2]', str(obj.c[2]))
+            else:
+                return None
     try:
         return eval(in_text)
     except Exception:
@@ -30,19 +45,31 @@ class ExplainLine:
     def __init__(self, in_text, geom_list):
         mode_list=["mdpt", "pt", "line", "para", "perp", "pbis", "abis", "circ"]
         inword = False
+        informula = False
         word = ''
         self.wordlist = []
         self.geom_list = geom_list
         self.mode_list = mode_list
         while len(in_text) > 0:
             read_char = in_text[0]
-            if read_char != ' ' or (not inword and read_char == '$'):
-                inword = True
-                word += read_char
-            if (inword and read_char == ' ') and (not inword and read_char == '$'):
-                inword = False
-                self.wordlist.append(word)
-                word = ''
+            if informula:
+                if read_char == '$':
+                    informula = False
+                    self.wordlist.append(word)
+                    word = ''
+                else:
+                    word += read_char
+            else:
+                if read_char == '$':
+                    informula = True
+                else:
+                    if read_char != ' ':
+                        inword = True
+                        word += read_char
+                    if (inword and read_char == ' '):
+                        inword = False
+                        self.wordlist.append(word)
+                        word = ''
             in_text = in_text[1:]
         self.geom_appear = []
         self.mode_appear = ""
@@ -65,11 +92,13 @@ class ExplainLine:
         return None
     
     def wordtype(self, instr):
-        if is_float(instr) or is_float(str(calculate(instr, self.geom_list))):
-            return "Number"
         isn = self.isname(instr)
         if isn >= 0:
             return self.geom_list[isn].type
+        if is_float(instr):
+            return "Number"
+        if is_float(str(calculate(instr, self.geom_list))):
+            return "Formula"
         return None
     
     def newname(self):

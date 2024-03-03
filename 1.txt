@@ -1,20 +1,7 @@
-A = pt
-B = pt
-C = pt
-ab = line A B
-bc = line B C
-ca = line C A
-F = mdpt A B
-E = mdpt A C
-be = line B E
-cf = line C F
-G = pt be cf
-abp = pbis A B
-acp = pbis A C
-O = pt abp acp
-bp = perp B ca
-cp = perp C ab
-H = pt bp cp
-hide be cf abp acp bp cp
-
-cheat
+A = pt 0 0
+B = pt 2 3
+l = line A B
+lock A B
+C = pt l 4 5
+D = pt l 6 7
+descent $C.x - 1$ $D.x + 1$

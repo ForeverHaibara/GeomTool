@@ -1,4 +1,4 @@
-import Explainer, GeomTool, Pathfinder
+import Explainer, GeomTool, Pathfinder, GradientDescent
 
 def runline(in_line, in_UI):
 
@@ -132,6 +132,17 @@ def runline(in_line, in_UI):
         in_graph_tree.disturb_all(float(exp.wordlist[1]))
         return "All movable objects disturbed"
     
+    ALL_FORMULA = True
+    instr = ""
+    for word_num in range(1, len(exp.wordlist)):
+        if exp.wordtype(exp.wordlist[word_num]) != "Formula":
+            ALL_FORMULA = False
+            break
+        instr += "(" + exp.wordlist[word_num] + ")**2 + "
+    if len(exp.wordlist) >= 2 and exp.wordlist[0] == "descent" and ALL_FORMULA: 
+        timer = GradientDescent.descent(instr[:-3], in_graph_tree)
+        return "Tried " + str(timer) + " times"
+    
     """------------
     !!!   NEW   !!!---------------------------------------+----
     ------------"""
@@ -215,6 +226,26 @@ def runline(in_line, in_UI):
                 outstr += obj.name + ' '
         if outstr != '':
             return outstr + 'hiden'
+        
+    if exp.wordlist[0] == "unlock":
+        outstr = ''
+        for word_num in range(1, len(exp.wordlist)):
+            obj = exp.isnameobj(exp.wordlist[word_num])
+            if obj != None:
+                obj.movable = True
+                outstr += obj.name + ' '
+        if outstr != '':
+            return outstr + 'unlocked'
+    
+    if exp.wordlist[0] == "lock":
+        outstr = ''
+        for word_num in range(1, len(exp.wordlist)):
+            obj = exp.isnameobj(exp.wordlist[word_num])
+            if obj != None:
+                obj.movable = False
+                outstr += obj.name + ' '
+        if outstr != '':
+            return outstr + 'locked'
     
     kerneluse = exp.kerneluse()
     newname = exp.newname()
@@ -246,6 +277,8 @@ def runline(in_line, in_UI):
             return "Name changed"
     
     try:
+        if len(exp.wordlist) == 1 and exp.wordtype(exp.wordlist[0]) == "Formula":
+            return str(Explainer.calculate(exp.wordlist[0], in_graph_tree.obj_list))
         ev = eval(in_line)
         return str(ev)
     except Exception as e:
@@ -270,9 +303,3 @@ def runfile(file_name, in_UI):
         return "File " + file_name + " do not Exist"
     except Exception as e:
         return "ΔError with info: " + str(e)
-
-if __name__ == "__main__":
-    intree = GeomTool.current_tree
-    while True:
-        inline = input() + ' '
-        print(runline(inline, intree, [], []))
