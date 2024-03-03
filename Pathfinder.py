@@ -110,7 +110,7 @@ class GeomInformation:
                     dist_precise_dict[d0] = ((pt1.c[0] - pt2.c[0]) ** 2 + (pt1.c[1] - pt2.c[1]) ** 2) **(1/2)
         self.dist_dict = dist_dict
         self.dist_precise_dict = dist_precise_dict
-        return "eqDist: " + printchecklist(self.dist_dict.values(), lambda x: "|" + self.points[x[0]].name + " " + self.points[x[1]].name + "|", midsymbol2='\n')
+        return printchecklist(self.dist_dict.values(), lambda x: "|" + self.points[x[0]].name + " " + self.points[x[1]].name + "|", midsymbol2='\n')
     
     def col(self):
         colinear_dict = dict()
@@ -223,8 +223,30 @@ class GeomInformation:
         vl = simtri_dict.values()
         del(simtri_dict)
         self.simtri_nontriv_list = nontrivchecklist(vl, lambda x: (self.points[x[0]], self.points[x[1]], self.points[x[2]]))
-        return printchecklist(vl, lambda x: "(" + self.points[x[0]].name + " " + self.points[x[1]].name + " " + self.points[x[2]].name + ")", midsymbol="~", midsymbol2="\n")
-    
+        return printchecklist(self.simtri_nontriv_list, lambda x: "(" + x[0].name + " " + x[1].name + " " + x[2].name + ")", midsymbol="~", midsymbol2="\n")
+
+    def eqarea(self):
+        area_dict = dict()
+        for pt_num1 in range(len(self.points)):
+            for pt_num2 in range(pt_num1 + 1, len(self.points)):
+                for pt_num3 in range(pt_num2 + 1, len(self.points)):
+                    x1 = self.points[pt_num1].c[0]
+                    x2 = self.points[pt_num2].c[0]
+                    x3 = self.points[pt_num3].c[0]
+                    y1 = self.points[pt_num1].c[1]
+                    y2 = self.points[pt_num2].c[1]
+                    y3 = self.points[pt_num3].c[1]
+                    area = rnd(abs((x2 * y1 - x3 * y1 - x1 * y2 + x3 * y2 + x1 * y3 - x2 * y3)))
+                    if abs(area) > CHECK_NUM:
+                        if area in area_dict:
+                            area_dict[area].append((pt_num1, pt_num2, pt_num3))
+                        else:
+                            area_dict[area] = [(pt_num1, pt_num2, pt_num3)]
+        vl = area_dict.values()
+        del(area_dict)
+        self.area_nontriv_dict = nontrivchecklist(vl, lambda x: (self.points[x[0]], self.points[x[1]], self.points[x[2]]))
+        return printchecklist(self.area_nontriv_dict, lambda x: "[" + x[0].name + " " + x[1].name + " " + x[2].name + "]", midsymbol="=", midsymbol2="\n") 
+ 
     def eqratio(self):
         self.eqdist()
         preplist = ["1/4", "1/3", "1/2", "1/sqrt(3)", "(sqrt(5)-1)/2", "2/3", "1/sqrt(2)", "3/4", "sqrt(2/3)"]
@@ -245,7 +267,7 @@ class GeomInformation:
         vl = ratio_dict.values()
         del(ratio_dict)
         self.ratio_list = nontrivchecklist(vl, lambda x: x if type(x) == str else (self.points[self.dist_dict[x[0]][0][0]], self.points[self.dist_dict[x[0]][0][1]], self.points[self.dist_dict[x[1]][0][0]], self.points[self.dist_dict[x[1]][0][1]]))
-        return printchecklist(vl, lambda x: x if type(x) == str else "|" + self.points[self.dist_dict[x[0]][0][0]].name + " " + self.points[self.dist_dict[x[0]][0][1]].name + "| / |" + self.points[self.dist_dict[x[1]][0][0]].name + " " + self.points[self.dist_dict[x[1]][0][1]].name + "|", midsymbol="~", midsymbol2 = "\n")
+        return printchecklist(self.ratio_list, lambda x: x if type(x) == str else "|" + x[0].name + " " + x[1].name + "| / |" + x[2].name + " " + x[3].name + "|", midsymbol="~", midsymbol2 = "\n")
     
     def eqangle(self):
         self.para()
@@ -274,4 +296,4 @@ class GeomInformation:
         vl = tan_dict.values()
         del(tan_dict)
         self.tan_list = nontrivchecklist(vl, lambda x: x if type(x) == str else (self.points[list(self.para_dict[x[0]][0])[0]], self.points[list(self.para_dict[x[0]][0])[1]], self.points[list(self.para_dict[x[1]][0])[0]], self.points[list(self.para_dict[x[1]][0])[1]]))
-        return printchecklist(vl, lambda x: x if type(x) == str else "<" + self.points[list(self.para_dict[x[0]][0])[0]].name + " " + self.points[list(self.para_dict[x[0]][0])[1]].name + ", " + self.points[list(self.para_dict[x[1]][0])[0]].name + " " + self.points[list(self.para_dict[x[1]][0])[1]].name + ">", midsymbol="~", midsymbol2 = "\n")
+        return printchecklist(self.tan_list, lambda x: x if type(x) == str else "<" + x[0].name + " " + x[1].name + ", " + x[2].name + " " + x[3].name + ">", midsymbol="~", midsymbol2 = "\n")

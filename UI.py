@@ -551,17 +551,6 @@ class GeomUI:
         else:
             self.cmdlines[line_num] = ''
         self.load_chosen_and_mode_from_cmdline(line_num)
-        
-        '''
-        success = False
-        for change_name in mode_list:
-            if change_name + " " in self.cmdlines[line_num]:
-                self.cmdlines[line_num] = self.cmdlines[line_num].replace(change_name + " ", mode_name + " " if mode_name != "" else "")
-                success = True
-                break
-        if not success:
-            self.cmdlines[line_num] += mode_name + " " if mode_name != "" else ""
-        '''
     
     def cmd_modechange(self, mode_name):
         if mode_name == "pt":
@@ -1262,29 +1251,6 @@ class GeomUI:
             pygame.display.update()
         
 if __name__ == "__main__":
-    '''
-    p1 = GeomTool.free_pt.apply("p1",[])
-    print("p1 created")
-    p2 = GeomTool.free_pt.apply("p2",[])
-    print("p2 created")
-    p3 = GeomTool.mid_pt.apply("p3", [p1, p2])
-    print("p3 created")
-    p4 = GeomTool.free_pt.apply("p4", [])
-    l1 = GeomTool.perp_bis.apply("l1", [p1, p2])
-    print("l1 created", l1)
-    l = GeomTool.line.apply("l", [p1, p3])
-    print("l created")
-    print(type (GeomTool.circum_center.apply))
-    o = GeomTool.circum_center.apply("o", [p1, p2, p4])
-    print("o created")
-    l1.calcc()
-    p3.calcc()
-    print("l1 calculated", l1.hasc, l1.c)
-    o.calcc()
-    print("o calculated", o.hasc, o.c)
-    print( [i.name for i in p1.affect_item] )
-    print(GeomTool.MethodDict)
-    '''
     test = GeomUI(GeomTool.current_tree)
     test.run()
 

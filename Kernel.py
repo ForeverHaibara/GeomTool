@@ -142,6 +142,10 @@ def runline(in_line, in_graph_tree, all_lines, line_from):
         finder = Pathfinder.GeomInformation(in_graph_tree)
         return finder.simtri()
     
+    if len(exp.wordlist) == 1 and exp.wordlist[0] == "eqarea":
+        finder = Pathfinder.GeomInformation(in_graph_tree)
+        return finder.eqarea()
+    
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "eqratio":
         finder = Pathfinder.GeomInformation(in_graph_tree)
         return finder.eqratio()
@@ -152,7 +156,7 @@ def runline(in_line, in_graph_tree, all_lines, line_from):
     
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "cheat":
         finder = Pathfinder.GeomInformation(in_graph_tree)
-        return finder.eq() + "\n" + finder.col() + "\n" + finder.cyc() + "\n" + finder.para() + "\n" + finder.simtri() + "\n" + finder.eqdist() + "\n" + finder.eqratio() + "\n" + finder.eqangle()
+        return finder.eq() + "\n" + finder.col() + "\n" + finder.cyc() + "\n" + finder.para() + "\n" + finder.simtri() + "\n" + finder.eqdist() # + "\n" + finder.eqarea() + "\n" + finder.eqratio() + "\n" + finder.eqangle()
     
     """------------
     !!!   NEW   !!!---------------------------------------+----
@@ -211,9 +215,7 @@ def runline(in_line, in_graph_tree, all_lines, line_from):
         ev = eval(in_line)
         return str(ev)
     except Exception as e:
-        return "ΔError with info: " + str(e)
-    
-    return "Failed to run '" + in_line[:-1] + "', use 'help' for help" # Should return information want to print
+        return "Failed to run '" + in_line[:-1] + "', use 'help' for help" # Should return information want to print
 
 def runfile(file_name, in_graph_tree, all_lines, line_from):
     try:
