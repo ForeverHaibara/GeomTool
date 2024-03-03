@@ -107,7 +107,7 @@ class GeomUI:
         
         self.cx = self.DRAW_WIDTH / 2 + 0.01919810114514
         self.cy = self.DRAW_HEIGHT / 2 + 0.01145141919810
-        self.r = (self.DRAW_WIDTH + self.DRAW_HEIGHT) / 9 + 0.114514 + 0.1919810 + ERROR
+        self.r = (self.DRAW_WIDTH + self.DRAW_HEIGHT) / 12 + 0.114514 + 0.1919810 + ERROR
         
         self.graph_tree = in_graph_tree # The Graph Tree
         self.geom_list = in_graph_tree.obj_list # All geom objects
@@ -889,7 +889,7 @@ class GeomUI:
     def run_kernel(self):
         self.cmdlines[-1] += ' '
         
-        received = Kernel.runline(self.cmdlines[-1], self.graph_tree, self.cmdlines, self.cmdline_from).splitlines()
+        received = Kernel.runline(self.cmdlines[-1], self).splitlines()
         
         for line in received:
             self.cmdlines.append(line)
@@ -1176,6 +1176,7 @@ class GeomUI:
                         self.cmdlines[-1] += event[-1]
                         self.load_chosen_and_mode_from_cmdline(-1)
                     if event == "K_BACKSPACE":
+                        self.cmdview = 0
                         self.cmdlines[-1] = self.cmdlines[-1][:-1]
                         self.load_chosen_and_mode_from_cmdline(-1)
                     if event == "CLEARCMDLINE":
