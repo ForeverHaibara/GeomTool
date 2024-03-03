@@ -1,35 +1,20 @@
-# Test File
-a = pt
-b = pt
-c = pt
-bc = line b c
-ca = line c a
-ab = line a b
-l4 = abis a b c
-l5 = abis a c b
-i = pt l4 l5
-l6 = abis b a c
-j = pt l4 l6
-k = pt l5 l6
-l7 = line c b
-s = pt bc l6
-l8 = line s b
-l9 = line s c
-pc = pt l8 ca
-ppc = pt l9 l7
-c1 = circ s c
-c2 = circ s pc
-c3 = circ s ppc
-c4 = circ c a
-c5 = circ c b
-c6 = circ c b
+A = pt
+B = pt
+C = pt
+ab = line A B
+bc = line B C
+ca = line C A
+F = mdpt A B
+E = mdpt A C
+be = line B E
+cf = line C F
+G = pt be cf
+abp = pbis A B
+acp = pbis A C
+O = pt abp acp
+bp = perp B ca
+cp = perp C ab
+H = pt bp cp
+hide be cf abp acp bp cp
 
-pp1 = pt c1
-pp2 = pt c1
-pp3 = pt c2
-
-eq
-col
-cyc
-deq
-simtri
+cheat

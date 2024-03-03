@@ -242,7 +242,7 @@ class GeomObj:
         '''
         disturb an object. change freec into freec * (1 + e) + e'
         '''
-        if self.freec == None :
+        if (self.freec == None) or (not self.movable) :
             return
         else :
             if type(self.freec) == tuple:

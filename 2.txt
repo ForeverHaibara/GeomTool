@@ -1,0 +1,24 @@
+O = pt
+A = pt
+c = circ O A
+B = pt c
+C = pt c
+D = pt c
+l1 = abis D A B
+l2 = abis D C B
+I = pt l1 l2
+l3 = abis A B C
+l4 = abis A D C
+J = pt l3 l4
+l = line I J
+ab = line A B
+bc = line B C
+cd = line C D
+da = line D A
+P = pt ab l
+Q = pt bc l
+R = pt cd l
+S = pt da l
+M = mdpt P R
+N = mdpt Q S
+hide l1 l2 l3 l4

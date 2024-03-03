@@ -11,6 +11,21 @@ def is_float(s):
     except ValueError:
         pass
 
+def calculate(in_text, geom_list):
+    for obj in geom_list:
+        in_text.replace(obj.name + '.x', str(obj.c[0]))
+        in_text.replace(obj.name + '.y', str(obj.c[1]))
+        in_text.replace(obj.name + '.a', str(obj.c[0]))
+        in_text.replace(obj.name + '.b', str(obj.c[1]))
+        in_text.replace(obj.name + '.c', str(obj.c[2]))
+        in_text.replace(obj.name + '[0]', str(obj.c[0]))
+        in_text.replace(obj.name + '[1]', str(obj.c[1]))
+        in_text.replace(obj.name + '[2]', str(obj.c[2]))
+    try:
+        return eval(in_text)
+    except Exception:
+        return None
+
 class ExplainLine:
     def __init__(self, in_text, geom_list):
         mode_list=["mdpt", "pt", "line", "para", "perp", "pbis", "abis", "circ"]
@@ -21,10 +36,10 @@ class ExplainLine:
         self.mode_list = mode_list
         while len(in_text) > 0:
             read_char = in_text[0]
-            if read_char != ' ':
+            if read_char != ' ' or (not inword and read_char == '$'):
                 inword = True
                 word += read_char
-            if inword and read_char == ' ':
+            if (inword and read_char == ' ') and (not inword and read_char == '$'):
                 inword = False
                 self.wordlist.append(word)
                 word = ''
@@ -50,7 +65,7 @@ class ExplainLine:
         return None
     
     def wordtype(self, instr):
-        if is_float(instr):
+        if is_float(instr) or is_float(str(calculate(instr, self.geom_list))):
             return "Number"
         isn = self.isname(instr)
         if isn >= 0:
