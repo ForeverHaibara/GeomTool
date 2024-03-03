@@ -113,7 +113,7 @@ def runline(in_line, in_graph_tree, all_lines, line_from):
         in_graph_tree.disturb_all()
         return "All movable objects disturbed"
 
-    if len(exp.wordlist) == 2 and exp.wordlist[0] == "perturb" and Explainer.is_float(exp.wordlist[1]):
+    if len(exp.wordlist) == 2 and exp.wordlist[0] == "disturb" and Explainer.is_float(exp.wordlist[1]):
         in_graph_tree.disturb_all(float(exp.wordlist[1]))
         return "All movable objects disturbed"
     
@@ -144,21 +144,37 @@ def runline(in_line, in_graph_tree, all_lines, line_from):
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "simtri":
         finder = Pathfinder.GeomInformation(in_graph_tree)
         return finder.simtri()
+    if len(exp.wordlist) == 1 and exp.wordlist[0] == "simtri0":
+        finder = Pathfinder.GeomInformation(in_graph_tree, disturb=True)
+        return finder.simtri()
     
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "eqarea":
         finder = Pathfinder.GeomInformation(in_graph_tree)
+        return finder.eqarea()
+    if len(exp.wordlist) == 1 and exp.wordlist[0] == "eqarea0":
+        finder = Pathfinder.GeomInformation(in_graph_tree, disturb=True)
         return finder.eqarea()
     
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "eqratio":
         finder = Pathfinder.GeomInformation(in_graph_tree)
         return finder.eqratio()
+    if len(exp.wordlist) == 1 and exp.wordlist[0] == "eqratio0":
+        finder = Pathfinder.GeomInformation(in_graph_tree, disturb=True)
+        return finder.eqratio()
     
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "eqangle":
         finder = Pathfinder.GeomInformation(in_graph_tree)
         return finder.eqangle()
+    if len(exp.wordlist) == 1 and exp.wordlist[0] == "eqangle0":
+        finder = Pathfinder.GeomInformation(in_graph_tree, disturb=True)
+        return finder.eqangle()
     
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "cheat":
         finder = Pathfinder.GeomInformation(in_graph_tree)
+        return finder.eq() + "\n" + finder.col() + "\n" + finder.cyc() + "\n" + finder.para() + "\n" + finder.simtri() + "\n" + finder.eqdist() # + "\n" + finder.eqarea() + "\n" + finder.eqratio() + "\n" + finder.eqangle()
+    
+    if len(exp.wordlist) == 1 and exp.wordlist[0] == "cheat0":
+        finder = Pathfinder.GeomInformation(in_graph_tree, disturb=True)
         return finder.eq() + "\n" + finder.col() + "\n" + finder.cyc() + "\n" + finder.para() + "\n" + finder.simtri() + "\n" + finder.eqdist() # + "\n" + finder.eqarea() + "\n" + finder.eqratio() + "\n" + finder.eqangle()
     
     """------------
