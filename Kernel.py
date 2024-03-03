@@ -219,7 +219,7 @@ def runline(in_line, in_UI):
     kerneluse = exp.kerneluse()
     newname = exp.newname()
     if kerneluse not in (None, []):
-        if newname == None or exp.isname(exp.wordlist[0]) > 0 or exp.wordlist[0] in protectedwordlist or Explainer.is_float(exp.wordlist[0]):
+        if newname == None or exp.isname(exp.wordlist[0]) > 0 or exp.wordlist[0] in protectedwordlist or Explainer.is_float(exp.wordlist[0]) or ' ' in exp.wordlist[0] or '[' in exp.wordlist[0] or ']' in exp.wordlist[0] or '.' in exp.wordlist[0] or '$' in exp.wordlist[0]:
             newobj = kerneluse[0].apply( None , kerneluse[1])
             newname = newobj.name
         else:
@@ -239,7 +239,7 @@ def runline(in_line, in_UI):
             return exp.wordlist[2] + " is not an object name"
         elif exp.isname(exp.wordlist[0]) > 0:
             return exp.wordlist[0] + " is already an object name"
-        elif exp.wordlist[0] in protectedwordlist or Explainer.is_float(exp.wordlist[0]):
+        elif exp.wordlist[0] in protectedwordlist or Explainer.is_float(exp.wordlist[0]) or ' ' in exp.wordlist[0] or '[' in exp.wordlist[0] or ']' in exp.wordlist[0] or '.' in exp.wordlist[0] or '$' in exp.wordlist[0]:
             return exp.wordlist[0] + " can not be an object name"
         else:
             exp.isnameobj(exp.wordlist[2]).name = exp.wordlist[0]
