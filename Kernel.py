@@ -4,7 +4,7 @@ def runline(in_line, in_graph_tree, all_lines, line_from):
     
     in_line = in_line + ' '
     exp = Explainer.ExplainLine(in_line, in_graph_tree.obj_list)
-    protectedwordlist = ["=", ".", "+", "-", "*", "/", "?", ",", "!", "^", " ", "'", '"', "help", "hide", "hidenlist", "show", "showall", "objlist", "run", "save"
+    protectedwordlist = ["=", ".", "+", "-", "*", "/", "?", ",", "!", "^", " ", "'", '"', "help", "hide", "hidenlist", "show", "showall", "objlist", "run", "save", "disturb"
                          "pt", "line", "circ", "mdpt", "para", "perp", "pbis", "abis"]
     
     if len(exp.wordlist) == 0:
@@ -35,6 +35,8 @@ def runline(in_line, in_graph_tree, all_lines, line_from):
             return "run [Name]: Run all lines in a txt file"
         if exp.wordlist[1] == "save":
             return "save [Name]: Save all input lines in a txt file. Also save all cmd lines in a log file. "
+        if exp.wordlist[1] == "distrub":
+            return "disturb [Number]: Disturb all movable objects by a given scale, use 'disturb' to disturb by default value = 1e-4. "
 
 
         if exp.wordlist[1] == "pt":
@@ -82,13 +84,6 @@ def runline(in_line, in_graph_tree, all_lines, line_from):
     
     if len(exp.wordlist) == 1 and exp.isnameobj(exp.wordlist[0]) != None:
         return str(exp.isnameobj(exp.wordlist[0]))
-        
-        for obj in in_graph_tree.obj_list:
-            outstr += obj.name + ' '
-        if outstr != '':
-            return outstr[:-1]
-        else:
-            return "No objects"
     
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "objlist":
         outstr = ''
@@ -113,6 +108,14 @@ def runline(in_line, in_graph_tree, all_lines, line_from):
         for obj in in_graph_tree.obj_list:
             obj.visible = True
         return "All objects are shown"
+    
+    if len(exp.wordlist) == 1 and exp.wordlist[0] == "disturb":
+        in_graph_tree.disturb_all()
+        return "All movable objects disturbed"
+
+    if len(exp.wordlist) == 2 and exp.wordlist[0] == "perturb" and Explainer.is_float(exp.wordlist[1]):
+        in_graph_tree.disturb_all(float(exp.wordlist[1]))
+        return "All movable objects disturbed"
     
     """------------
     !!!   NEW   !!!---------------------------------------+----
