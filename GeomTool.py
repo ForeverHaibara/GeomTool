@@ -252,6 +252,119 @@ class GeomObj:
             self.freec = new_fc
             self.calcc()
             self.stupid_update()
+
+    def tdist_tree(self):
+        obj_list = [self]
+        dist_list = [0]
+        n_list = [self]
+        n = 0
+        new_list = []
+        has_distance_n_obj = True
+        while has_distance_n_obj:
+            n += 1
+            has_distance_n_obj = False
+            for obj in n_list:
+                for d in obj.item:
+                    if (d not in obj_list) and (d not in new_list):
+                        has_distance_n_obj = True
+                        new_list += [d]
+                # for d in obj.affect_item:
+                #     if (d not in obj_list) and (d not in new_list):
+                #         has_distance_n_obj = True
+                #         new_list += [d]
+            obj_list += new_list
+            dist_list += [n for i in range(len(new_list))]
+            n_list = new_list
+            new_list = []
+        return [obj_list, dist_list]
+    
+    def tdist_tree2(self, p2):
+        obj_list = [self,p2]
+        dist_list = [0,0]
+        n_list = [self,p2]
+        n = 0
+        new_list = []
+        has_distance_n_obj = True
+        while has_distance_n_obj:
+            n += 1
+            has_distance_n_obj = False
+            for obj in n_list:
+                for d in obj.item:
+                    if (not (d in obj_list)) and (not (d in new_list)):
+                        has_distance_n_obj = True
+                        new_list += [d]
+                # for d in obj.affect_item:
+                #     if (d not in obj_list) and (d not in new_list):
+                #         has_distance_n_obj = True
+                #         new_list += [d]
+            obj_list += new_list
+            dist_list += [n for i in range(len(new_list))]
+            n_list = new_list
+            new_list = []
+        return [obj_list, dist_list]
+    
+    def tdist_aux (t1 : list, t2:list):
+        dist_list = []
+        for i in t1[0]:
+            if i in t2[0]:
+                dist_list.append(t1[1][t1[0].index(i)] + t2[1][t2[0].index(i)])
+        if dist_list == []:
+            return 1000
+        else:
+            return min(dist_list)
+        
+    def tdist(self, p2):
+        t1 = self.tdist_tree()
+        t2 = p2.tdist_tree()
+        return GeomObj.tdist_aux(t1, t2)
+    
+    def tdist3max(list3:list): # max min
+        tdist_tree_list = []
+        for t in list3:
+            tlist = []
+            for i in t:
+                tlist += [i.tdist_tree()]
+            tdist_tree_list += [tlist]
+        pairwise_max_dist =[]
+        for i in range(len(tdist_tree_list)):
+            for j in range(i, len(tdist_tree_list)):
+                dist = [GeomObj.tdist_aux(tdist_tree_list[i][0], tdist_tree_list[j][0]),
+                        GeomObj.tdist_aux(tdist_tree_list[i][1], tdist_tree_list[j][1]),
+                        GeomObj.tdist_aux(tdist_tree_list[i][2], tdist_tree_list[j][2])]
+                pairwise_max_dist += [max(dist)]
+        return max(pairwise_max_dist)
+    
+    # def tdist3min(list3:list): #serves for eqarea
+    #     NotImplemented
+
+    def tdist4(list4:list): #min AB + CD AC + BD AD + BC 4line need line dist tree
+        tdist_tree_list = []
+        for t in list4:
+            for i in range(4):
+                tlist = [GeomObj.tdist_tree2(t[0],t[1]),GeomObj.tdist_tree2(t[2],t[3])]
+            tdist_tree_list += [tlist]
+        pairwise_min_dist =[]
+        for i in range(len(tdist_tree_list)):
+            for j in range(i, len(tdist_tree_list)):
+                tA = tdist_tree_list[i][0]
+                tB = tdist_tree_list[i][1]
+                tC = tdist_tree_list[j][0]
+                tD = tdist_tree_list[j][1]
+                print([i.name for i in tA[0]])
+                print(tA[1])
+                print([i.name for i in tC[0]])
+                print(tC[1])
+                print(GeomObj.tdist_aux(tA,tC))
+                dist = [GeomObj.tdist_aux(tA,tB) + GeomObj.tdist_aux(tC,tD),
+                        GeomObj.tdist_aux(tA,tC) + GeomObj.tdist_aux(tB,tD),
+                        GeomObj.tdist_aux(tA,tD) + GeomObj.tdist_aux(tB,tC)]
+            pairwise_min_dist += [min(dist)]
+        return max(pairwise_min_dist)
+        
+
+        # area ,3, min
+        # col triangle 3,1
+        # eqration 4, not symm max(min AC BC AD BD)
             
             
     
@@ -407,6 +520,9 @@ class GraphTree:
     def disturb_all(self, ds = disturb_strength):
         for obj in self.obj_list:
             obj.disturb(ds)
+
+
+
 
 
 ####################
@@ -689,18 +805,14 @@ if __name__ == '__main__':
     print("o calculated", o.hasc, o.c)
     i.calcc()
     print("i calculated", i.hasc, i.c)
-    print("the following points directly depends on p1")
-    print( [i.name for i in p1.affect_item] )
-    current_tree.calc_all()
-    print("all objs:")
-    print([i.name for i in current_tree.obj_list])
-    print( [i.c for i in current_tree.obj_list])
-    p1.disturb()
-    print("after disturb p1")
-    print( [i.name for i in current_tree.obj_list] )
-    print( [i.c for i in current_tree.obj_list])
-    current_tree.disturb_all()
-    print("after disturb all")
-    print( [i.name for i in current_tree.obj_list] )
-    print( [i.c for i in current_tree.obj_list])
+    m1 = mid_pt.apply("m1", [p1,p2])
+    m2 = mid_pt.apply("m2", [p1,p3])
+    m3 = mid_pt.apply("m3", [p1,p4]) 
+    m4 = mid_pt.apply("m4", [p2,p3])
+    m5 = mid_pt.apply("m5", [p2,p4])
+    m6 = mid_pt.apply("m6", [p3,p4])    
+    n = GeomObj.tdist4([[m1,m2,m3,m4],[m1,m2,m3,m4]])
+    print(n)
+    m = GeomObj.tdist3max([[m1,m2,m3],[p1,p2,p3]])
+    print(m)
     

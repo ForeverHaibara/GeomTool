@@ -64,27 +64,5 @@ check same Point
 在UI文件里写创建初始空节点, 获取初始空节点, 维护所有节点列表?
 
 
--1. 
-move函数
-movable false for all objective other than point
-
-1.GraphTree
-Dict : 
-key : 方法名, query:[cmd名, Method本身, input_type_list, output_type_list]
-
-3.kernel
-runline
-(waitfor)
-
-4.explainer
-
-2.write ang_bis in geomtool
-
--0.5
-constrution.txt 变method
-
--2.
-numeric check应该被提前
-
 
 
