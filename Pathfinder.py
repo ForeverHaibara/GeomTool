@@ -72,8 +72,9 @@ def complexdiv(x1, y1, x2, y2):
 
 class GeomInformation:
     # Get Geometric Informations from c
-    def __init__(self, in_graph_tree, disturb=False, disturb_strength=1e-4, disturb_times=10):
+    def __init__(self, in_graph_tree, disturb=False, disturb_strength=1e-4, disturb_times=10, output_lines=12):
         self.tree = in_graph_tree
+        self.output_lines = output_lines
         self.visible_list = in_graph_tree.get_visible()
         points = []
         lines = []
@@ -251,7 +252,9 @@ class GeomInformation:
                         newlst += objchecklist(self.simtri_nontriv_list[sub_num], fun=fun0)
                 self.simtri_nontriv_list = newlst
         
-        return printchecklist(self.simtri_nontriv_list, lambda x: "(" + x[0].name + " " + x[1].name + " " + x[2].name + ")", midsymbol="~", midsymbol2="\n")
+        self.simtri_nontriv_list.sort(key=lambda x: -GeomTool.tdist3max(x))
+
+        return printchecklist(self.simtri_nontriv_list[:self.output_lines], lambda x: "(" + x[0].name + " " + x[1].name + " " + x[2].name + ")", midsymbol="~", midsymbol2="\n")
 
     def eqarea(self):
         area_dict = dict()
@@ -282,22 +285,22 @@ class GeomInformation:
                             area_dict[area] = [(pt_num1, pt_num2, pt_num3)]
         vl = area_dict.values()
         del(area_dict)
-        self.area_nontriv_dict = nontrivchecklist(vl, lambda x: (self.points[x[0]], self.points[x[1]], self.points[x[2]]))
+        self.area_nontriv_list = nontrivchecklist(vl, lambda x: (self.points[x[0]], self.points[x[1]], self.points[x[2]]))
         
         if self.disturb:
             for disturb_num in range(self.disturb_times):
                 self.tree.disturb_all(self.disturb_strength)
                 newlst = []
-                for sub_num in range(len(self.area_nontriv_dict)):
-                    if len(self.area_nontriv_dict[sub_num]) > 1:
-                        newlst += objchecklist(self.area_nontriv_dict[sub_num], fun=fun0)
-                self.area_nontriv_dict = newlst
+                for sub_num in range(len(self.area_nontriv_list)):
+                    if len(self.area_nontriv_list[sub_num]) > 1:
+                        newlst += objchecklist(self.area_nontriv_list[sub_num], fun=fun0)
+                self.area_nontriv_list = newlst
         
-        
-        return printchecklist(self.area_nontriv_dict, lambda x: "[" + x[0].name + " " + x[1].name + " " + x[2].name + "]", midsymbol="=", midsymbol2="\n") 
+        self.area_nontriv_list.sort(key=lambda x: -GeomTool.tdist3max(x))
+        return printchecklist(self.area_nontriv_list, lambda x: "[" + x[0].name + " " + x[1].name + " " + x[2].name + "]", midsymbol="=", midsymbol2="\n") 
  
     def eqratio(self):
-        self.eqdist()
+        outstr = self.eqdist() + "\n"
         preplist = ["1/4", "1/3", "1/2", "1/sqrt(3)", "(sqrt(5)-1)/2", "2/3", "1/sqrt(2)", "3/4", "sqrt(2/3)"]
         prepval = [1/4, 1/3, 1/2, 1/(3**(1/2)), (5**(1/2)-1)/2, 2/3, 1/(2**(1/2)), 3/4, (2/3)**(1/2)]
         ratio_dict = dict()
@@ -336,10 +339,13 @@ class GeomInformation:
                         newlst += objchecklist(self.ratio_list[sub_num], fun=fun0)
                 self.ratio_list = newlst
         
-        return printchecklist(self.ratio_list, lambda x: x if type(x) == str else "|" + x[0].name + " " + x[1].name + "| / |" + x[2].name + " " + x[3].name + "|", midsymbol="~", midsymbol2 = "\n")
-    
+        sort_fun = lambda x: -99999999 if type(x[0]) == str else -GeomTool.tdist4(x)
+        self.ratio_list.sort(key=sort_fun)
+
+        return outstr + printchecklist(self.ratio_list[:self.output_lines], lambda x: x if type(x) == str else "|" + x[0].name + " " + x[1].name + "| / |" + x[2].name + " " + x[3].name + "|", midsymbol="~", midsymbol2 = "\n")
+
     def eqangle(self):
-        self.para()
+        outstr = self.para() + "\n"
         tan_dict = dict()
         tan_dict["inf"] = ["pi/2"]
         pre_dict = dict()
@@ -390,5 +396,8 @@ class GeomInformation:
                     if len(self.tan_list[sub_num]) > 1:
                         newlst += objchecklist(self.tan_list[sub_num], fun=fun0)
                 self.tan_list = newlst
+
+        sort_fun = lambda x: -99999999999999999999999999999999999 if type(x[0]) == str else -GeomTool.tdist4(x)
+        self.tan_list.sort(key=sort_fun)
         
-        return printchecklist(self.tan_list, lambda x: x if type(x) == str else "<" + x[0].name + " " + x[1].name + ", " + x[2].name + " " + x[3].name + ">", midsymbol="~", midsymbol2 = "\n")
+        return outstr + printchecklist(self.tan_list[:self.output_lines], lambda x: x if type(x) == str else "<" + x[0].name + " " + x[1].name + ", " + x[2].name + " " + x[3].name + ">", midsymbol="~", midsymbol2 = "\n")

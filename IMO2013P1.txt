@@ -1,0 +1,18 @@
+A = pt -0.104 0.870  
+O1 = pt -0.894 0.208  
+O2 = pt 1.101 0.295  
+circ O1 A  
+circ O2 A  
+B = pt c100 c101 -0.049 -0.383  
+C = pt c100 -1.852 0.647  
+line C A  
+D = pt l100 c101 2.111 1.168  
+line C B  
+line D B  
+F = pt l101 c101 1.099 -1.040  
+E = pt l102 c100 -0.604 -0.781  
+l1 = perp l100 A  
+l2 = pbis E F  
+P = pt l1 l2  
+descent eqdist A C A D
+lock A C O1 O2

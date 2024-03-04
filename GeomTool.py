@@ -309,7 +309,7 @@ class GeomObj:
             if i in t2[0]:
                 dist_list.append(t1[1][t1[0].index(i)] + t2[1][t2[0].index(i)])
         if dist_list == []:
-            return 1000
+            return 1000000
         else:
             return min(dist_list)
         
@@ -318,53 +318,63 @@ class GeomObj:
         t2 = p2.tdist_tree()
         return GeomObj.tdist_aux(t1, t2)
     
-    def tdist3max(list3:list): # max min
-        tdist_tree_list = []
-        for t in list3:
-            tlist = []
-            for i in t:
-                tlist += [i.tdist_tree()]
-            tdist_tree_list += [tlist]
-        pairwise_max_dist =[]
-        for i in range(len(tdist_tree_list)):
-            for j in range(i, len(tdist_tree_list)):
-                dist = [GeomObj.tdist_aux(tdist_tree_list[i][0], tdist_tree_list[j][0]),
-                        GeomObj.tdist_aux(tdist_tree_list[i][1], tdist_tree_list[j][1]),
-                        GeomObj.tdist_aux(tdist_tree_list[i][2], tdist_tree_list[j][2])]
-                pairwise_max_dist += [max(dist)]
-        return max(pairwise_max_dist)
+def tdist3max(list3:list): # max min
+    tdist_tree_list = []
+    for t in list3:
+        tlist = []
+        for i in t:
+            tlist += [i.tdist_tree()]
+        tdist_tree_list += [tlist]
+    pairwise_max_dist =[]
+    for i in range(len(tdist_tree_list)):
+        for j in range(i, len(tdist_tree_list)):
+            dist = [GeomObj.tdist_aux(tdist_tree_list[i][0], tdist_tree_list[j][0]),
+                    GeomObj.tdist_aux(tdist_tree_list[i][1], tdist_tree_list[j][1]),
+                    GeomObj.tdist_aux(tdist_tree_list[i][2], tdist_tree_list[j][2])]
+            pairwise_max_dist += [max(dist)]
+    return max(pairwise_max_dist)
+
+# def tdist3min(list3:list): #serves for eqarea
+#     NotImplemented
+
+def tdist4(list4:list): #min AB + CD AC + BD AD + BC 4line need line dist tree
+    tdist_tree_list = []
+    for t in list4:
+        tlist = [GeomObj.tdist_tree2(t[0],t[1]),GeomObj.tdist_tree2(t[2],t[3])]
+        tdist_tree_list += [tlist.copy()]
+    '''
+    each_tree_list = []
+    for t in list4:
+        tlist = [t[0].tdist_tree(), t[1].tdist_tree(), t[2].tdist_tree(), t[3].tdist_tree()]
+        each_tree_list += [tlist.copy()]
+    '''
+    pairwise_min_dist =[]
+    for i in range(len(tdist_tree_list)):
+        for j in range(i, len(tdist_tree_list)):
+            tA = tdist_tree_list[i][0]
+            tB = tdist_tree_list[i][1]
+            tC = tdist_tree_list[j][0]
+            tD = tdist_tree_list[j][1]
+            dist = [GeomObj.tdist_aux(tA,tB) + GeomObj.tdist_aux(tC,tD),
+                    GeomObj.tdist_aux(tA,tC) + GeomObj.tdist_aux(tB,tD),
+                    GeomObj.tdist_aux(tA,tD) + GeomObj.tdist_aux(tB,tC)]
+        pairwise_min_dist += [(dist[0] + 1) * (dist[1] + 1) * (dist[2] + 1)]
+    '''
+    each_dist = []
+    for l in each_tree_list:
+        each_dist_list = []
+        for i in range(len(l)):
+            for j in range(i, len(l)):
+                each_dist_list += [GeomObj.tdist_aux( l[i], l[j])]
+        each_dist += [max(each_dist_list)]
+    print("the dist of " + str([[i.name for i in _] for _ in list4]) + "equals" + str(max(pairwise_min_dist) + sum(each_dist)))
+    '''
+    return max(pairwise_min_dist) # + sum(each_dist)
     
-    # def tdist3min(list3:list): #serves for eqarea
-    #     NotImplemented
 
-    def tdist4(list4:list): #min AB + CD AC + BD AD + BC 4line need line dist tree
-        tdist_tree_list = []
-        for t in list4:
-            for i in range(4):
-                tlist = [GeomObj.tdist_tree2(t[0],t[1]),GeomObj.tdist_tree2(t[2],t[3])]
-            tdist_tree_list += [tlist]
-        pairwise_min_dist =[]
-        for i in range(len(tdist_tree_list)):
-            for j in range(i, len(tdist_tree_list)):
-                tA = tdist_tree_list[i][0]
-                tB = tdist_tree_list[i][1]
-                tC = tdist_tree_list[j][0]
-                tD = tdist_tree_list[j][1]
-                print([i.name for i in tA[0]])
-                print(tA[1])
-                print([i.name for i in tC[0]])
-                print(tC[1])
-                print(GeomObj.tdist_aux(tA,tC))
-                dist = [GeomObj.tdist_aux(tA,tB) + GeomObj.tdist_aux(tC,tD),
-                        GeomObj.tdist_aux(tA,tC) + GeomObj.tdist_aux(tB,tD),
-                        GeomObj.tdist_aux(tA,tD) + GeomObj.tdist_aux(tB,tC)]
-            pairwise_min_dist += [min(dist)]
-        return max(pairwise_min_dist)
-        
-
-        # area ,3, min
-        # col triangle 3,1
-        # eqration 4, not symm max(min AC BC AD BD)
+    # area ,3, min
+    # col triangle 3,1
+    # eqration 4, not symm max(min AC BC AD BD)
             
             
     
@@ -821,8 +831,8 @@ if __name__ == '__main__':
     m4 = mid_pt.apply("m4", [p2,p3])
     m5 = mid_pt.apply("m5", [p2,p4])
     m6 = mid_pt.apply("m6", [p3,p4])    
-    n = GeomObj.tdist4([[m1,m2,m3,m4],[m1,m2,m3,m4]])
+    n = tdist4([[m1,m2,m3,m4],[m1,m2,m3,m4]])
     print(n)
-    m = GeomObj.tdist3max([[m1,m2,m3],[p1,p2,p3]])
+    m = tdist3max([[m1,m2,m3],[p1,p2,p3]])
     print(m)
     

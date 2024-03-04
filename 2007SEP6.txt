@@ -1,0 +1,15 @@
+A = pt -1.381 0.160  
+B = pt 0.806 0.192  
+D = mdpt A B 
+ab = line A B 
+perp ab B  
+M = pt l100 0.790 1.804  
+circ D A  
+C = pt c100 0.519 0.862  
+line M D  
+line C A  
+N = pt l102 l101  
+line M C  
+E = pt ab l103 
+
+"angle DBN = angle BCE"

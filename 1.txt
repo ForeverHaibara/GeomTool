@@ -1,4 +1,2 @@
-a = pt 0 0
-b = pt 1 0
-c = pt 0 1
-itri a b
+o1 = pt 
+o2 = pt

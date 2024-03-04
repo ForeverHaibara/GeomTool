@@ -40,6 +40,12 @@ def calc_datum(descent_datum, in_geom_list):
         
         if data[0] == "perp":
             outsum += ((data[1].c[1] - data[2].c[1]) * (data[3].c[1] - data[4].c[1]) + (data[3].c[0] - data[4].c[0]) * (data[1].c[0] - data[2].c[0])) ** 2
+
+        if data[0] == "online":
+            outsum += (data[1].c[0] * data[2].c[0] + data[1].c[1] * data[2].c[1] + data[2].c[2]) ** 2
+        
+        if data[0] == "oncirc":
+            outsum += ((data[1].c[0] - data[2].c[0])**2 + (data[1].c[1] - data[2].c[1])**2 - data[2].c[2]**2) ** 2
         
             continue
         if data[0] == "Formula":

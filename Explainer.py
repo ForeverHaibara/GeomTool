@@ -261,6 +261,20 @@ class ExplainLine:
                 conditions.append(["perp", self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2]), self.isnameobj(self.wordlist[word_num + 3]), self.isnameobj(self.wordlist[word_num + 4])])
                 word_num += 5
                 continue
+            if self.wordlist[word_num] == "online":
+                if self.wordtype(self.wordlist[word_num + 1]) == "Point":
+                    conditions.append(["online", self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2])])
+                if self.wordtype(self.wordlist[word_num + 1]) == "Line":
+                    conditions.append(["online", self.isnameobj(self.wordlist[word_num + 2]), self.isnameobj(self.wordlist[word_num + 1])])
+                word_num += 3
+                continue
+            if self.wordlist[word_num] == "oncirc":
+                if self.wordtype(self.wordlist[word_num + 1]) == "Point":
+                    conditions.append(["oncirc", self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2])])
+                if self.wordtype(self.wordlist[word_num + 1]) == "Circle":
+                    conditions.append(["oncirc", self.isnameobj(self.wordlist[word_num + 2]), self.isnameobj(self.wordlist[word_num + 1])])
+                word_num += 3
+                continue
 
             if self.wordtype(self.wordlist[word_num]) == "Formula":
                 conditions.append(["Formula", self.wordlist[word_num]])

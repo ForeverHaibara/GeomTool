@@ -1,0 +1,15 @@
+O = pt 0.096 0.200  
+A = pt -1.070 0.303  
+circ O A  
+C = pt c100 -0.607 1.117  
+D = pt c100 0.934 1.014  
+line A O  
+B = pt l100 c100 1.262 0.097  
+perp l100 B  
+line C D  
+P = pt l102 l101  
+line O P  
+line A D  
+F = pt l104 l103  
+line A C  
+E = pt l103 l105 

@@ -1,0 +1,17 @@
+A = pt
+B = pt
+C = pt
+O = otri A B C
+I = itri A B C
+ab = line A B
+bc = line B C
+ca = line C A
+D = foot I bc
+E = foot I ca
+F = foot I ab
+fd = line F D
+P = pt fd ca
+de = line D E
+Q = pt de ab
+M = mdpt P E
+N = mdpt Q F
