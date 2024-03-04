@@ -630,6 +630,10 @@ perp_line_method_list = [perp_line_pt, line]
 perp_line_indicator_list = [[("i",0), ("i",1)], [("i",0), ("m",0)]]
 perp_line.implement(perp_line_method_list, perp_line_indicator_list)
 
+parallelogram = BasicMethod("parallelogram", ["Point"], ["Point", "Point", "Point"], "parallelogram")
+parallelogram_fun = lambda self: (self.item[1].c[0] + self.item[2].c[0] - self.item[0].c[0], self.item[1].c[1] + self.item[2].c[1] - self.item[0].c[1])
+parallelogram.implement_check_triv(parallelogram_fun)
+
 '''
 # Old Versions of para and perp as Basic Methods
 
@@ -789,6 +793,7 @@ The global variable of GraphTree is created here, use in other file as GeomTool.
 current_tree = GraphTree()
     
 if __name__ == '__main__':
+    print([(_[0], _[1].name) for _ in list(MethodDict.values())])
     p1 = free_pt.apply("p1",[])
     print("p1 created")
     p2 = free_pt.apply("p2",[])

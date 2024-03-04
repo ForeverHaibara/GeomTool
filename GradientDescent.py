@@ -34,6 +34,13 @@ def calc_datum(descent_datum, in_geom_list):
             continue
         if data[0] == "cyc":
             outsum += (cyclic_det(data[2].c[0]-data[1].c[0], data[2].c[1]-data[1].c[1], data[3].c[0]-data[1].c[0], data[3].c[1]-data[1].c[1], data[4].c[0]-data[1].c[0], data[4].c[1]-data[1].c[1])) ** 2
+        
+        if data[0] == "para":
+            outsum += ((data[1].c[1] - data[2].c[1]) * (data[3].c[0] - data[4].c[0]) - (data[3].c[1] - data[4].c[1]) * (data[1].c[0] - data[2].c[0])) ** 2
+        
+        if data[0] == "perp":
+            outsum += ((data[1].c[1] - data[2].c[1]) * (data[3].c[1] - data[4].c[1]) + (data[3].c[0] - data[4].c[0]) * (data[1].c[0] - data[2].c[0])) ** 2
+        
             continue
         if data[0] == "Formula":
             outsum += Explainer.calculate(data[1], in_geom_list) ** 2

@@ -119,6 +119,8 @@ class GeomUI:
         
         self.cmdlines = ["GeomToolKernel Version 1.0", "All rights reserved to Euclid", ""]
         self.cmdline_from = [0, 0, 1]
+        self.exp = Explainer.ExplainLine(self.cmdlines[-1], self.geom_list)
+        self.expwait = Explainer.ExplainLine(self.cmdlines[-1], self.geom_list).waitfor()
         self.CMD_SHOW_LINE = int((self.DRAW_HEIGHT - 80)/CMD_LINE_HEIGHT)
         self.CMD_LINE_CHAR = int((self.SCREEN_WIDTH - self.DRAW_WIDTH - 30) / 12)
         self.cmdview = 0
@@ -534,14 +536,17 @@ class GeomUI:
             return self.r * abs(c[2] - ((c0[0] - c[0]) * (c0[0] - c[0]) + (c0[1] - c[1]) * (c0[1] - c[1])) ** (1/2))
         return 1e10
         
-    def cmd_clearline(self, line_num):
+    def cmd_clearline(self, line_num=-1):
         self.cmdlines[line_num] = ''
         self.load_chosen_and_mode_from_cmdline(line_num)
+        self.exp = Explainer.ExplainLine(self.cmdlines[-1], self.geom_list)    
+        self.expwait = Explainer.ExplainLine(self.cmdlines[-1], self.geom_list).waitfor()
+        
         
     def load_chosen_and_mode_from_cmdline(self, line_num):
-        exp = Explainer.ExplainLine(self.cmdlines[line_num], self.geom_list)
-        self.geom_chosen = exp.geom_appear
-        self.cmd_modechange(exp.mode_appear)
+        self.exp = Explainer.ExplainLine(self.cmdlines[line_num], self.geom_list)
+        self.geom_chosen = self.exp.geom_appear
+        self.cmd_modechange(self.exp.mode_appear)
         self.draw_init()
         
     def cmd_modenamechangeline(self, line_num, mode_name):
@@ -930,14 +935,11 @@ class GeomUI:
                 if bt[0]-20 <= mouse[0] <= bt[0]+20 and bt[1]-20 <= mouse[1] <= bt[1]+20:
                     mouse_in = button_num + 20
             
-            exp = Explainer.ExplainLine(self.cmdlines[-1], self.geom_list)
             
             if mouse_in == -1:
                 
-                expwait = Explainer.ExplainLine(self.cmdlines[-1], self.geom_list).waitfor()
-                
-                if "Pt" not in expwait:
-                    self.choose_fig1(mouse, expwait)
+                if "Pt" not in self.expwait:
+                    self.choose_fig1(mouse, self.expwait)
                     if len(self.geom_picked_list) == 0:
                         mouse_in = -1
                     else:
@@ -994,6 +996,7 @@ class GeomUI:
                 pygame.quit()
             
             if ("MOUSEBUTTONDOWN" in eventlist) and ("MOUSEBUTTONDOWN" not in last_eventlist):
+
                 # The moment when the mouse is clicked on the button
                 if mouse_in >= 0 and mouse_in < 10:
                     cvalue = None
@@ -1090,14 +1093,18 @@ class GeomUI:
                         fig2 = round((mouse_in - fig1) / 1000)
                         self.cmdlines[-1] += self.geom_list[fig1 - 100].name + ' '
                         self.cmdlines[-1] += self.geom_list[fig2 - 100].name + ' '
-                    if "Pt" in expwait and cvalue != None and "LEFTMOUSEDOWN" in eventlist:
+                    if "Pt" in self.expwait and cvalue != None and "LEFTMOUSEDOWN" in eventlist:
                         self.cmdlines[-1] += numberform(cvalue[0]) + ' ' + numberform(cvalue[1]) + ' '
                     self.load_chosen_and_mode_from_cmdline(-1)
                     cvalue = None
-                
-                exp = Explainer.ExplainLine(self.cmdlines[-1], self.geom_list)
-                if "Done" in exp.waitfor():
+
+                self.exp = Explainer.ExplainLine(self.cmdlines[-1], self.geom_list)    
+                self.expwait = Explainer.ExplainLine(self.cmdlines[-1], self.geom_list).waitfor()
+
+                if ["Done"] == self.expwait:
                     self.run_kernel()
+                
+
             
             
             
@@ -1195,6 +1202,8 @@ class GeomUI:
                     if event == "K_PAGEDOWN":
                         self.cmdview = max(0, self.cmdview - self.CMD_SHOW_LINE)
                         self.draw_cmd()
+                self.exp = Explainer.ExplainLine(self.cmdlines[-1], self.geom_list)    
+                self.expwait = Explainer.ExplainLine(self.cmdlines[-1], self.geom_list).waitfor()
             
                 
             if ("KEYDOWN" in eventlist) and ("KEYDOWN" not in last_eventlist) and (self.yn_button_pressed[0] == -1):

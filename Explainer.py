@@ -108,10 +108,23 @@ class ExplainLine:
         return None
     
     def kerneluse(self):
+
+        MethodList = list(GeomTool.MethodDict.values())
+        NewMethodDict = dict()
+        for term in MethodList:
+            if term[0] in NewMethodDict:
+                NewMethodDict[term[0]].append([term[1], term[2], term[3]])
+            else:
+                NewMethodDict[term[0]] = [[term[1], term[2], term[3]]]
+
         mode_name = ""
+
         word_num = -1
         for word_num in range(len(self.wordlist)):
             if self.wordlist[word_num] in self.mode_list:
+                mode_name = self.wordlist[word_num]
+                break
+            if self.wordlist[word_num] in NewMethodDict:
                 mode_name = self.wordlist[word_num]
                 break
             
@@ -200,9 +213,24 @@ class ExplainLine:
                 return [GeomTool.MethodDict['perp_line'][1], [self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2])]]
             if word_num == len(self.wordlist) - 3 and self.wordtype(self.wordlist[word_num + 1]) == "Line" and self.wordtype(self.wordlist[word_num + 2]) == "Point":
                 return [GeomTool.MethodDict['perp_line'][1], [self.isnameobj(self.wordlist[word_num + 2]), self.isnameobj(self.wordlist[word_num + 1])]]
+        
+        if mode_name != "":
+            for usage in NewMethodDict[mode_name]:
+                method = usage[0]
+                in_item_list = usage[1]
 
-        
-        
+                FINISHED = True
+                if word_num == len(self.wordlist) - 1 - len(in_item_list):
+                    item_list = []
+                    for item_num in range(1, len(in_item_list) + 1):
+                        if self.wordtype(self.wordlist[word_num + item_num]) != in_item_list[item_num - 1]:
+                            FINISHED = False
+                            break
+                        item_list.append(self.isnameobj(self.wordlist[word_num + item_num]))
+                    if FINISHED:
+                        return [method, item_list]
+
+
         return None
     
     def descent_conditions(self):
@@ -225,21 +253,46 @@ class ExplainLine:
                 conditions.append(["cyc", self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2]), self.isnameobj(self.wordlist[word_num + 3]), self.isnameobj(self.wordlist[word_num + 4])])
                 word_num += 5
                 continue
+            if self.wordlist[word_num] == "para":
+                conditions.append(["para", self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2]), self.isnameobj(self.wordlist[word_num + 3]), self.isnameobj(self.wordlist[word_num + 4])])
+                word_num += 5
+                continue
+            if self.wordlist[word_num] == "perp":
+                conditions.append(["perp", self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2]), self.isnameobj(self.wordlist[word_num + 3]), self.isnameobj(self.wordlist[word_num + 4])])
+                word_num += 5
+                continue
+
             if self.wordtype(self.wordlist[word_num]) == "Formula":
                 conditions.append(["Formula", self.wordlist[word_num]])
                 word_num += 1
                 continue
             word_num += 1
-        return conditions
-         
+        return conditions     
     
     def waitfor(self):
+        # print("Hi")
+        if len(self.wordlist) > 0 and self.wordlist[0] == "descent":
+            return ["Point", "Line", "Circle", "Done"]
+
+        MethodList = list(GeomTool.MethodDict.values())
+        NewMethodDict = dict()
+        for term in MethodList:
+            if term[0] in NewMethodDict:
+                NewMethodDict[term[0]].append([term[1], term[2], term[3]])
+            else:
+                NewMethodDict[term[0]] = [[term[1], term[2], term[3]]]
+
         mode_name = ""
+
         word_num = -1
         for word_num in range(len(self.wordlist)):
             if self.wordlist[word_num] in self.mode_list:
                 mode_name = self.wordlist[word_num]
                 break
+            if self.wordlist[word_num] in NewMethodDict:
+                mode_name = self.wordlist[word_num]
+                break
+
             
         """
         The Built in Methods! 
@@ -328,6 +381,28 @@ class ExplainLine:
                 return ["Point"]
             if word_num == len(self.wordlist) - 3 and self.wordtype(self.wordlist[word_num + 1]) == "Line" and self.wordtype(self.wordlist[word_num + 2]) == "Point":
                 return ["Done"]
+            
+        if mode_name != "":
+            outlst = []
+            for usage in NewMethodDict[mode_name]:
+                in_item_list = usage[1]
+
+                if word_num >= len(self.wordlist) - 1 - len(in_item_list):
+                    SUCCESS = True
+                    for item_num in range(word_num + 1, len(self.wordlist)):
+                        if self.wordtype(self.wordlist[item_num]) != in_item_list[item_num - word_num - 1]:
+                            SUCCESS = False
+                    if not SUCCESS:
+                        continue
+                    elif word_num == len(self.wordlist) - 1 - len(in_item_list):
+                        outlst.append("Done")
+                    else:
+                        outlst.append(in_item_list[len(self.wordlist) - 1 - word_num])
+                else:
+                    continue
+            
+            if len(outlst) > 0:
+                return outlst
             
             
         return ["Point", "Line", "Circle"]

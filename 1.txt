@@ -1,11 +1,4 @@
 a = pt 0 0
 b = pt 1 0
 c = pt 0 1
-p = pt 1 1
-lock a b c
-lab = pbis a b
-lbc = pbis b c
-o = pt lab lbc
-hide lab lbc
-circ o a
-descent cyc a b c p
+itri a b

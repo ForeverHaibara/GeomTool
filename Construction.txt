@@ -14,3 +14,19 @@ lab = line A B, lac = line A C, l1 = perp_line C lab, l2 = perp_line B lac, H = 
 centroid "gtri" G : Point 
 A B C : Point Point Point 
 mab = mid_pt A B, mac = mid_pt A C, l1 = line C mab, l2 = line B mac, G = inx_line_line l1 l2 
+
+reflection_to_point "rfpt" C : Point
+A B : Point Point
+C = parallelogram B A A
+
+perp_foot "foot" Q : Point
+P l : Point Line
+l1 = perp_line P l, Q = inx_line_line l l1
+
+point_reflection_to_line "rfln" Q : Point
+l P : Line Point
+F = perp_foot P l, Q = reflection_to_point F P
+
+point_reflection_to_line2 "rfln" Q : Point
+P l : Point Line
+Q = point_reflection_to_line l P
