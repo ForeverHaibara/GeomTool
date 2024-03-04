@@ -14,7 +14,7 @@ def default_name (Type : str) :
     Generate a default name for GeomObj if no name is specified.
     '''
     name_list = [obj.name for obj in current_tree.obj_list]
-    name_num = 0
+    name_num = 100
     if Type in name_initial.keys():
         while (name_initial[Type] + str(name_num)) in name_list:
             name_num += 1

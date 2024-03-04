@@ -12,14 +12,41 @@ def get_value(vl, vnl):
             outlst.append(vl[obj_num].freec[1])
     return outlst
 
-def calc_value(instr, inlst, vl, vnl):
+def cyclic_det(x1, y1, x2, y2, x3, y3):
+    return x2**2 * (x3 * y1 - x1 * y3) + x2 * (-x3**2 * y1 + y3 * (x1**2 + y1**2 - y1 * y3)) + y2 * (-x1**2 * x3 + x3 * y1 * (-y1 + y2) + x1 * (x3**2 - y2 * y3 + y3**2))
+
+def calc_datum(descent_datum, in_geom_list):
+    outsum = 0
+    for data in descent_datum:
+        if data[0] == "eq":
+            if data[1].type == "Point":
+                outsum += (data[1].c[0] - data[2].c[0]) **2 + (data[1].c[1] - data[2].c[1]) **2
+            if data[1].type == "Circle":
+                outsum += (data[1].c[0] - data[2].c[0]) **2 + (data[1].c[1] - data[2].c[1]) **2 + (data[1].c[2] - data[2].c[2]) **2
+            if data[1].type == "Line":
+                outsum += (data[1].c[0] * data[2].c[1] - data[2].c[0] * data[1].c[1]) **2 + (data[1].c[1] * data[2].c[2] - data[2].c[1] * data[1].c[2]) **2 + (data[1].c[2] * data[2].c[0] - data[2].c[2] * data[1].c[0]) **2
+            continue
+        if data[0] == "eqdist":
+            outsum += ((data[1].c[0] - data[2].c[0]) **2 + (data[1].c[1] - data[2].c[1]) **2 - (data[3].c[0] - data[4].c[0]) **2 - (data[3].c[1] - data[4].c[1]) **2) **2
+            continue
+        if data[0] == "col":
+            outsum += (data[1].c[0] * data[2].c[1] + data[2].c[0] * data[3].c[1] + data[3].c[0] * data[1].c[1] - data[1].c[1] * data[2].c[0] - data[2].c[1] * data[3].c[0] - data[3].c[1] * data[1].c[0]) ** 2
+            continue
+        if data[0] == "cyc":
+            outsum += (cyclic_det(data[2].c[0]-data[1].c[0], data[2].c[1]-data[1].c[1], data[3].c[0]-data[1].c[0], data[3].c[1]-data[1].c[1], data[4].c[0]-data[1].c[0], data[4].c[1]-data[1].c[1])) ** 2
+            continue
+        if data[0] == "Formula":
+            outsum += Explainer.calculate(data[1], in_geom_list) ** 2
+    return outsum
+
+def calc_value(datum, inlst, vl, vnl):
     for obj_num in range(len(vl)):
         if vnl[obj_num] == 0:
             vl[obj_num].freec = inlst[obj_num]
         if vnl[obj_num] == 1:
             vl[obj_num].freec = (inlst[obj_num], inlst[obj_num + 1])
-    vl[obj_num].tree.calc_all()
-    return Explainer.calculate(instr, vl[obj_num].tree.obj_list)
+    vl[0].tree.calc_all()
+    return calc_datum(datum, vl[0].tree.obj_list)
 
 def update_value(inlst, vl, vnl):
     for obj_num in range(len(vl)):
@@ -27,16 +54,16 @@ def update_value(inlst, vl, vnl):
             vl[obj_num].freec = inlst[obj_num]
         if vnl[obj_num] == 1:
             vl[obj_num].freec = (inlst[obj_num], inlst[obj_num + 1])
-    vl[obj_num].tree.calc_all()
+    vl[0].tree.calc_all()
 
 DELTA = 3e-5
-FIRST_STEP = 1e-4
+FIRST_STEP = 1e-6
 TIMES = 100
 
 STEP = FIRST_STEP
 
-def descent(in_str, in_tree):
-    instr = in_str
+def descent(in_datum, in_tree):
+    datum = in_datum
     variable_list = []
     variable_num_list = []
     for obj in in_tree.get_movable():
@@ -59,19 +86,19 @@ def descent(in_str, in_tree):
         for obj_num in range(len(value_list)):
             value_list0 = value_list.copy()
             value_list0[obj_num] -= DELTA * 2
-            fmm = calc_value(instr, value_list0, variable_list, variable_num_list)
+            fmm = calc_value(datum, value_list0, variable_list, variable_num_list)
 
             value_list0 = value_list.copy()
             value_list0[obj_num] -= DELTA
-            fm = calc_value(instr, value_list0, variable_list, variable_num_list)
+            fm = calc_value(datum, value_list0, variable_list, variable_num_list)
 
             value_list0 = value_list.copy()
             value_list0[obj_num] += DELTA
-            fp = calc_value(instr, value_list0, variable_list, variable_num_list)
+            fp = calc_value(datum, value_list0, variable_list, variable_num_list)
 
             value_list0 = value_list.copy()
             value_list0[obj_num] += DELTA * 2
-            fpp = calc_value(instr, value_list0, variable_list, variable_num_list)
+            fpp = calc_value(datum, value_list0, variable_list, variable_num_list)
 
             der = ((fmm - fpp) - (fm - fp)*8) / (12 * DELTA)
             grad_list.append(der)

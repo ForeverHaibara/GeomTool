@@ -204,7 +204,34 @@ class ExplainLine:
         
         
         return None
-        
+    
+    def descent_conditions(self):
+        word_num = 0
+        conditions = []
+        while word_num < len(self.wordlist):
+            if self.wordlist[word_num] == "eq":
+                conditions.append(["eq", self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2])])
+                word_num += 3
+                continue
+            if self.wordlist[word_num] == "eqdist":
+                conditions.append(["eqdist", self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2]), self.isnameobj(self.wordlist[word_num + 3]), self.isnameobj(self.wordlist[word_num + 4])])
+                word_num += 5
+                continue
+            if self.wordlist[word_num] == "col":
+                conditions.append(["col", self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2]), self.isnameobj(self.wordlist[word_num + 3])])
+                word_num += 4
+                continue
+            if self.wordlist[word_num] == "cyc":
+                conditions.append(["cyc", self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2]), self.isnameobj(self.wordlist[word_num + 3]), self.isnameobj(self.wordlist[word_num + 4])])
+                word_num += 5
+                continue
+            if self.wordtype(self.wordlist[word_num]) == "Formula":
+                conditions.append(["Formula", self.wordlist[word_num]])
+                word_num += 1
+                continue
+            word_num += 1
+        return conditions
+         
     
     def waitfor(self):
         mode_name = ""
@@ -307,6 +334,6 @@ class ExplainLine:
 
             
 if __name__ == '__main__':
-    a = ExplainLine('  1 2 33 456 74 4 adsf  asfd56445 5', [])
+    a = ExplainLine('descent col p a b ', [])
     print(a.wordlist)
     print(a.geom_appear)

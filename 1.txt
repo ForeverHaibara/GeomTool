@@ -1,7 +1,11 @@
-A = pt 0 0
-B = pt 2 3
-l = line A B
-lock A B
-C = pt l 4 5
-D = pt l 6 7
-descent $C.x - 1$ $D.x + 1$
+a = pt 0 0
+b = pt 1 0
+c = pt 0 1
+p = pt 1 1
+lock a b c
+lab = pbis a b
+lbc = pbis b c
+o = pt lab lbc
+hide lab lbc
+circ o a
+descent cyc a b c p

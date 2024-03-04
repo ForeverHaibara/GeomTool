@@ -1,0 +1,41 @@
+GT: GeomToolKernel Version 1.0
+GT: All rights reserved to Euclid
+>>> run 1 
+GT: a is created
+GT: b is created
+GT: l is created
+GT: a b locked
+GT: p is created
+>>> p 
+GT: Point p, method = free_pt, visible = True, c = (0.9999996808464918, 2.0000027848151793)
+>>> descent col p a b 
+GT: Tried 6 times
+>>> p  
+GT: Point p, method = free_pt, visible = True, c = (0.5882339989925562, 0.35294172019608394)
+>>> col 
+GT: Colinear: None
+>>> col 
+GT: Colinear: None
+>>> descent col p a b 
+GT: Tried 1 times
+>>> col 
+GT: Colinear: None
+>>> col0 
+GT: Failed to run 'col0 ', use 'help' for help
+>>> col 
+GT: Colinear: None
+>>> descent col p a b 
+GT: Tried 5 times
+>>> p 
+GT: Point p, method = free_pt, visible = True, c = (-0.0163488064338576, 0.5040875741406972)
+>>> col 
+GT: Colinear: None
+>>> lock p 
+GT: p locked
+>>> line a p  
+GT: l0 is created
+>>> l 
+GT: Line l, method = line, visible = True, c = (1.0000007436840896, 3.999999182449918, -2.000001064848774)
+>>> l0 
+GT: Line l0, method = line, visible = True, c = (0.4959132002787361, 1.9836509214764098, -0.9918261920296501)
+>>> save 3 
