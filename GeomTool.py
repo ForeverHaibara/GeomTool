@@ -642,6 +642,11 @@ perp_line_fun = lambda self: (self.item[1].c[1], -self.item[1].c[0], -self.item[
 perp_line.implement_check_triv(perp_line_fun)
 '''
 
+perp_bis = ComplexMethod("perp_bis", ["Point", "Line", "Line"], ["Point", "Point"], "pbis")
+perp_method_list = [mid_pt, line, perp_line]
+perp_indicator_list = [[("i",0), ("i",1)], [("i", 0), ("i",1)], [("m",0), ("m",1)]]
+perp_bis.implement(perp_method_list, perp_indicator_list)
+
 angle_bis_pt = BasicMethod("angle_bis_pt", ["Point"], ["Point", "Point", "Point"], "abispoint")
 angle_bis_pt_check = lambda self: ((abs(self.item[0].c[0] - self.item[1].c[0]) > ERROR) or (abs(self.item[0].c[1] - self.item[1].c[1]) > ERROR)) and ((abs(self.item[2].c[0] - self.item[1].c[0]) > ERROR) or (abs(self.item[2].c[1] - self.item[1].c[1]) > ERROR))
 angle_bis_pt_errorinfo = lambda self: "Point " + self.item[0].name + " and Point " + self.item[1].name + " and Point " + self.item[2].name + " do not form an angle" if not(angle_bis_pt_check(self)) else ""
@@ -795,7 +800,7 @@ if __name__ == '__main__':
     print("l1 created", l1)
     l = line.apply("l", [p1, p3])
     print("l created")
-    o = MethodDict["circum_center"][1].apply("o", [p1, p2, p4])
+    o = MethodDict["circumcenter"][1].apply("o", [p1, p2, p4])
     print("o created")
     i = angle_bis.apply("i", [p1, p2, p4])
     print("i created")

@@ -1,10 +1,16 @@
-perp_bis "pbis" l : Line
-A B : Point Point
-M = mid_pt A B, l0 = line A B, l = perp_line M l0 
-    #left for DD
-
-circum_center "circ_cent" O : Point # MethodName, CMDName, Output Variable, Output Type. No whitespace is allowed in any of these names 
+circumcenter "otri" O : Point # MethodName, CMDName, Output Variable, Output Type. No whitespace is allowed in any of these names 
 A B C : Point Point Point # Input variable, Input type. (please make sure no repeated varible is used)
 l1 = perp_bis A B, l2 = perp_bis A C, O = inx_line_line l1 l2 #Constructions
     # this line is left for DD. Methods are separated by empty lines.
 
+incenter "itri" I : Point 
+A B C : Point Point Point 
+l1 = angle_bis A B C, l2 = angle_bis A C B, I = inx_line_line l1 l2 
+
+orthocenter "htri" H : Point 
+A B C : Point Point Point 
+lab = line A B, lac = line A C, l1 = perp_line C lab, l2 = perp_line B lac, H = inx_line_line l1 l2 
+
+centroid "gtri" G : Point 
+A B C : Point Point Point 
+mab = mid_pt A B, mac = mid_pt A C, l1 = line C mab, l2 = line B mac, G = inx_line_line l1 l2 

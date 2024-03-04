@@ -58,7 +58,8 @@ def update_value(inlst, vl, vnl):
 
 DELTA = 3e-5
 FIRST_STEP = 1e-6
-TIMES = 100
+BIGTIMES = 3
+TIMES = 70
 
 STEP = FIRST_STEP
 
@@ -73,59 +74,60 @@ def descent(in_datum, in_tree):
         else:
             variable_list += [obj]
             variable_num_list += [0]
-    value_list = get_value(variable_list, variable_num_list)
-
-    last_grad_list = []
-    last_value_list = []
-    for timer in range(TIMES):
+    for bigtimer in range(BIGTIMES):
         
-        if timer > 0:
-            last_grad_list = grad_list.copy()
+        value_list = get_value(variable_list, variable_num_list)
+        last_grad_list = []
+        last_value_list = []
+        for timer in range(TIMES):
+            
+            if timer > 0:
+                last_grad_list = grad_list.copy()
 
-        grad_list = []
-        for obj_num in range(len(value_list)):
-            value_list0 = value_list.copy()
-            value_list0[obj_num] -= DELTA * 2
-            fmm = calc_value(datum, value_list0, variable_list, variable_num_list)
-
-            value_list0 = value_list.copy()
-            value_list0[obj_num] -= DELTA
-            fm = calc_value(datum, value_list0, variable_list, variable_num_list)
-
-            value_list0 = value_list.copy()
-            value_list0[obj_num] += DELTA
-            fp = calc_value(datum, value_list0, variable_list, variable_num_list)
-
-            value_list0 = value_list.copy()
-            value_list0[obj_num] += DELTA * 2
-            fpp = calc_value(datum, value_list0, variable_list, variable_num_list)
-
-            der = ((fmm - fpp) - (fm - fp)*8) / (12 * DELTA)
-            grad_list.append(der)
-            update_value(value_list, variable_list, variable_num_list)
-        
-        # print(timer, grad_list)
-
-        if timer == 0:
-            STEP = FIRST_STEP
-        else:
-            delta_value_list = []
+            grad_list = []
             for obj_num in range(len(value_list)):
-                delta_value_list.append(value_list[obj_num] - last_value_list[obj_num])
-            delta_grad_list = []
-            for obj_num in range(len(grad_list)):
-                delta_grad_list.append(grad_list[obj_num] - last_grad_list[obj_num])
-            A = sum(delta_value_list[_] * delta_grad_list[_] for _ in range(len(value_list)))
-            if A == 0:
-                return timer
-            B = sum(delta_grad_list[_] * delta_grad_list[_] for _ in range(len(grad_list)))
-            STEP = abs(A / B)
-            # print(timer, delta_grad_list, grad_list, last_grad_list, delta_value_list, value_list, last_value_list, A, B, STEP)
+                value_list0 = value_list.copy()
+                value_list0[obj_num] -= DELTA * 2
+                fmm = calc_value(datum, value_list0, variable_list, variable_num_list)
 
-        last_value_list = value_list.copy()
+                value_list0 = value_list.copy()
+                value_list0[obj_num] -= DELTA
+                fm = calc_value(datum, value_list0, variable_list, variable_num_list)
 
-        for obj_num in range(len(value_list)):
-            value_list[obj_num] -= STEP * grad_list[obj_num]
-        update_value(value_list, variable_list, variable_num_list)
+                value_list0 = value_list.copy()
+                value_list0[obj_num] += DELTA
+                fp = calc_value(datum, value_list0, variable_list, variable_num_list)
 
-    return TIMES
+                value_list0 = value_list.copy()
+                value_list0[obj_num] += DELTA * 2
+                fpp = calc_value(datum, value_list0, variable_list, variable_num_list)
+
+                der = ((fmm - fpp) - (fm - fp)*8) / (12 * DELTA)
+                grad_list.append(der)
+                update_value(value_list, variable_list, variable_num_list)
+            
+            # print(timer, grad_list)
+
+            if timer == 0:
+                STEP = FIRST_STEP
+            else:
+                delta_value_list = []
+                for obj_num in range(len(value_list)):
+                    delta_value_list.append(value_list[obj_num] - last_value_list[obj_num])
+                delta_grad_list = []
+                for obj_num in range(len(grad_list)):
+                    delta_grad_list.append(grad_list[obj_num] - last_grad_list[obj_num])
+                A = sum(delta_value_list[_] * delta_grad_list[_] for _ in range(len(value_list)))
+                if A == 0:
+                    return timer + bigtimer * TIMES
+                B = sum(delta_grad_list[_] * delta_grad_list[_] for _ in range(len(grad_list)))
+                STEP = abs(A / B)
+                # print(timer, delta_grad_list, grad_list, last_grad_list, delta_value_list, value_list, last_value_list, A, B, STEP)
+
+            last_value_list = value_list.copy()
+
+            for obj_num in range(len(value_list)):
+                value_list[obj_num] -= STEP * grad_list[obj_num]
+            update_value(value_list, variable_list, variable_num_list)
+
+    return BIGTIMES * TIMES
