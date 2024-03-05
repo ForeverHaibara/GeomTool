@@ -8,7 +8,7 @@ def runline(in_line, in_UI):
     
     in_line = in_line + ' '
     exp = Explainer.ExplainLine(in_line, in_graph_tree.obj_list)
-    protectedwordlist = ["=", ".", "+", "-", "*", "/", "?", ",", "!", "^", " ", "'", '"', "help", "hide", "hidenlist", "show", "showall", "objlist", "run", "save", "disturb", "clearall", "lock", "lockall", "unlock", "unlockall", "descent"
+    protectedwordlist = ["=", ".", "+", "-", "*", "/", "?", ",", "!", "^", " ", "'", '"', "help", "hide", "hidenlist", "show", "showall", "objlist", "run", "save", "disturb", "clearall", "lock", "lockall", "unlock", "unlockall", "descent", "methods", 
                          "pt", "line", "circ", "mdpt", "para", "perp", "pbis", "abis"]
     
     if len(exp.wordlist) == 0:
@@ -48,9 +48,11 @@ def runline(in_line, in_UI):
         if exp.wordlist[1] == "unlock":
             return "unlock [Objects]: Unlock geometric objects which is movable(free points on the plane, line or circle). When unlocked, you can move these objects by your mouse. "
         if exp.wordlist[1] == "lockall":
-            return "lockall : Lock all geometric objects which is movable(free points on the plane, line or circle). When locked, you cannot move these objects by your mouse. "
+            return "lockall: Lock all geometric objects which is movable(free points on the plane, line or circle). When locked, you cannot move these objects by your mouse. "
         if exp.wordlist[1] == "unlockall":
-            return "unlockall : Unlock all geometric objects which is movable(free points on the plane, line or circle). When unlocked, you can move these objects by your mouse. "
+            return "unlockall: Unlock all geometric objects which is movable(free points on the plane, line or circle). When unlocked, you can move these objects by your mouse. "
+        if exp.wordlist[1] == "methods":
+            return "methods: Print a list of all methods, (the geometric constructions, including those implemented). "
 
 
         if exp.wordlist[1] == "pt":
@@ -103,6 +105,15 @@ def runline(in_line, in_UI):
         outstr = ''
         for obj in in_graph_tree.obj_list:
             outstr += obj.name + ' '
+        if outstr != '':
+            return outstr[:-1]
+        else:
+            return "No objects"
+
+    if len(exp.wordlist) == 1 and exp.wordlist[0] == "methods":
+        outstr = ''
+        for method in GeomTool.MethodDict:
+            outstr += 'method name = ' + method + ', cmd name = ' + GeomTool.MethodDict[method][0] + '\n'
         if outstr != '':
             return outstr[:-1]
         else:
