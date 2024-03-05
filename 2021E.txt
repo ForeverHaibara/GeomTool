@@ -1,0 +1,14 @@
+A = pt -0.671 1.277  
+B = pt -1.500 0.040  
+C = pt 0.766 8.072e-03  
+I = itri A B C  
+line B I  
+line C I  
+line B C  
+D = pt l104 -0.048 0.040  
+perp D l102  
+E = pt l105 l103  
+perp D l103  
+F = pt l102 l106  
+line E F  
+S = rfln A l102  

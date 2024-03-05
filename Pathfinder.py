@@ -212,7 +212,7 @@ class GeomInformation:
         simtri_dict = dict()
 
         def fun0(x):
-            re, im = complexdiv(x[1].c[0] - x[0].c[0], x[1].c[1] - x[0].c[1], x[2].c[0] - x[0].c[0], x[2].c[1] - x[2].c[1])
+            re, im = complexdiv(x[1].c[0] - x[0].c[0], x[1].c[1] - x[0].c[1], x[2].c[0] - x[0].c[0], x[2].c[1] - x[0].c[1])
             re2 = re**2 - re - im**2
             im2 = 2*re*im - im
             re3 = re2**2 - im2**2
@@ -220,7 +220,7 @@ class GeomInformation:
             re4 = 1 - 3*im2**2 + 3*re2 - 3*im2**2*re2 + 3*re2**2 + re2**3
             im4 = 3*im2 - im2**3 + 6*im2*re2 + 3*im2*re2**2
             c0 = complexdiv(re3, im3, re4, im4)
-            return (c0[0], abs(c0[1]))
+            return (rnd(c0[0]), abs(rnd(c0[1])))
 
         for pt_num1 in range(len(self.points)):
             for pt_num2 in range(pt_num1 + 1, len(self.points)):
