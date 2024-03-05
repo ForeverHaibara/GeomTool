@@ -70,14 +70,14 @@ def calc_datum(descent_datum, in_geom_list):
             continue
 
         if data[0] == "eqangle":
-            dx1 = x[2].c[0] - x[1].c[0]
-            dy1 = x[2].c[1] - x[1].c[1]
-            dx2 = x[4].c[0] - x[3].c[0]
-            dy2 = x[4].c[1] - x[3].c[1]
-            dx3 = x[6].c[0] - x[5].c[0]
-            dy3 = x[6].c[1] - x[5].c[1]
-            dx4 = x[8].c[0] - x[7].c[0]
-            dy4 = x[8].c[1] - x[7].c[1]
+            dx1 = data[2].c[0] - data[1].c[0]
+            dy1 = data[2].c[1] - data[1].c[1]
+            dx2 = data[4].c[0] - data[3].c[0]
+            dy2 = data[4].c[1] - data[3].c[1]
+            dx3 = data[6].c[0] - data[5].c[0]
+            dy3 = data[6].c[1] - data[5].c[1]
+            dx4 = data[8].c[0] - data[7].c[0]
+            dy4 = data[8].c[1] - data[7].c[1]
             outsum += ((dy1 * dx2 - dy2 * dx1) * (dy3 * dy4 + dx3 * dx4) - (dy3 * dx4 - dy4 * dx3) * (dy1 * dy2 + dx1 * dx2)) ** 2
             continue
 

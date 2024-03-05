@@ -245,6 +245,14 @@ class ExplainLine:
                 conditions.append(["eqdist", self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2]), self.isnameobj(self.wordlist[word_num + 3]), self.isnameobj(self.wordlist[word_num + 4])])
                 word_num += 5
                 continue
+            if self.wordlist[word_num] == "eqangle":
+                if word_num <= len(self.wordlist) - 9 and (self.wordtype(self.wordlist[word_num + 7]) == self.wordtype(self.wordlist[word_num + 8]) == "Point"):
+                    conditions.append(["eqangle", self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2]), self.isnameobj(self.wordlist[word_num + 3]), self.isnameobj(self.wordlist[word_num + 4]), self.isnameobj(self.wordlist[word_num + 5]), self.isnameobj(self.wordlist[word_num + 6]), self.isnameobj(self.wordlist[word_num + 7]), self.isnameobj(self.wordlist[word_num + 8])])
+                    word_num += 9
+                else:
+                    conditions.append(["eqangle", self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2]), self.isnameobj(self.wordlist[word_num + 3]), self.isnameobj(self.wordlist[word_num + 2]), self.isnameobj(self.wordlist[word_num + 4]), self.isnameobj(self.wordlist[word_num + 5]), self.isnameobj(self.wordlist[word_num + 6]), self.isnameobj(self.wordlist[word_num + 5])])
+                    word_num += 7
+                continue
             if self.wordlist[word_num] == "col":
                 conditions.append(["col", self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2]), self.isnameobj(self.wordlist[word_num + 3])])
                 word_num += 4
