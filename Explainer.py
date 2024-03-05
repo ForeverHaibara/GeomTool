@@ -253,6 +253,10 @@ class ExplainLine:
                     conditions.append(["eqangle", self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2]), self.isnameobj(self.wordlist[word_num + 3]), self.isnameobj(self.wordlist[word_num + 2]), self.isnameobj(self.wordlist[word_num + 4]), self.isnameobj(self.wordlist[word_num + 5]), self.isnameobj(self.wordlist[word_num + 6]), self.isnameobj(self.wordlist[word_num + 5])])
                     word_num += 7
                 continue
+            if self.wordlist[word_num] == "simtri":
+                conditions.append(["simtri", self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2]), self.isnameobj(self.wordlist[word_num + 3]), self.isnameobj(self.wordlist[word_num + 4]), self.isnameobj(self.wordlist[word_num + 5]), self.isnameobj(self.wordlist[word_num + 6])])
+                word_num += 7
+                continue
             if self.wordlist[word_num] == "col":
                 conditions.append(["col", self.isnameobj(self.wordlist[word_num + 1]), self.isnameobj(self.wordlist[word_num + 2]), self.isnameobj(self.wordlist[word_num + 3])])
                 word_num += 4

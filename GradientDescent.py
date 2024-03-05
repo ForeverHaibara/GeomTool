@@ -1,5 +1,6 @@
 import GeomTool
 import Explainer
+import Pathfinder
 
 def get_value(vl, vnl):
     outlst = []
@@ -67,6 +68,12 @@ def calc_datum(descent_datum, in_geom_list):
         
         if data[0] == "oncirc":
             outsum += ((data[1].c[0] - data[2].c[0])**2 + (data[1].c[1] - data[2].c[1])**2 - data[2].c[2]**2) ** 2
+            continue
+
+        if data[0] == "simtri":
+            re1, im1 = Pathfinder.complexdiv(data[2].c[0] - data[1].c[0], data[2].c[1] - data[1].c[1], data[3].c[0] - data[1].c[0], data[3].c[1] - data[1].c[1])
+            re2, im2 = Pathfinder.complexdiv(data[5].c[0] - data[4].c[0], data[5].c[1] - data[4].c[1], data[6].c[0] - data[4].c[0], data[6].c[1] - data[4].c[1])
+            outsum += (re1 - re2)**2 + (im1 - im2)**2
             continue
 
         if data[0] == "eqangle":
