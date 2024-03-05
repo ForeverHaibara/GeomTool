@@ -185,10 +185,10 @@ class GeomUI:
                     drawtool = self.draw_circle
                 if self.geom_list[fig_num].type == 'Point':
                     ordernum = 3
-                    width = 4
+                    width = 3
                     drawtool = self.draw_point
                     if self.yn_button_pressed[1] == 1 and (not self.moving_background) and (not self.moving_point):
-                        self.screen.blit(pygame.font.SysFont('TimesNewRoman', 20, bold=True).render(self.geom_list[fig_num].name , True , TAG_COLOR), self.cc(self.geom_list[fig_num].c))
+                        self.screen.blit(pygame.font.SysFont('TimesNewRoman', 20, bold=True).render(self.geom_list[fig_num].name , True , TAG_COLOR), (self.cc(self.geom_list[fig_num].c)[0] + 3, self.cc(self.geom_list[fig_num].c)[1] + 3))
                 if (fig_num not in self.geom_chosen) and (fig_num not in self.geom_picked_list):
                     ordernum += 0.1
                     if self.geom_list[fig_num].movable:
@@ -1187,8 +1187,10 @@ class GeomUI:
                         self.cmdlines[-1] = self.cmdlines[-1][:-1]
                         self.load_chosen_and_mode_from_cmdline(-1)
                     if event == "CLEARCMDLINE":
+                        self.cmdview = 0
                         self.cmd_clearline(-1)
                     if event == "K_ENTER":
+                        self.cmdview = 0
                         self.run_kernel()
                     if event == "K_UP":
                         self.cmdview += 1

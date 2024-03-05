@@ -27,7 +27,19 @@ def calc_datum(descent_datum, in_geom_list):
                 outsum += (data[1].c[0] * data[2].c[1] - data[2].c[0] * data[1].c[1]) **2 + (data[1].c[1] * data[2].c[2] - data[2].c[1] * data[1].c[2]) **2 + (data[1].c[2] * data[2].c[0] - data[2].c[2] * data[1].c[0]) **2
             continue
         if data[0] == "eqdist":
-            outsum += ((data[1].c[0] - data[2].c[0]) **2 + (data[1].c[1] - data[2].c[1]) **2 - (data[3].c[0] - data[4].c[0]) **2 - (data[3].c[1] - data[4].c[1]) **2) **2
+            if data[1].type == "Line":
+                d1 = (data[1].c[0] * data[2].c[0] + data[1].c[1] * data[2].c[1] + data[1].c[2])**2 / (data[1].c[0] ** 2 + data[1].c[1] ** 2)
+            elif data[2].type == "Line":
+                d1 = (data[2].c[0] * data[1].c[0] + data[2].c[1] * data[1].c[1] + data[2].c[2])**2 / (data[2].c[0] ** 2 + data[2].c[1] ** 2)
+            else:
+                d1 = (data[1].c[0] - data[2].c[0]) **2 + (data[1].c[1] - data[2].c[1]) **2
+            if data[3].type == "Line":
+                d2 = (data[3].c[0] * data[4].c[0] + data[3].c[1] * data[4].c[1] + data[3].c[2])**2 / (data[3].c[0] ** 2 + data[3].c[1] ** 2)
+            elif data[4].type == "Line":
+                d2 = (data[4].c[0] * data[3].c[0] + data[4].c[1] * data[3].c[1] + data[4].c[2])**2 / (data[4].c[0] ** 2 + data[4].c[1] ** 2)
+            else:
+                d2 = (data[3].c[0] - data[4].c[0]) **2 + (data[3].c[1] - data[4].c[1]) **2
+            outsum += (d1 - d2) **2
             continue
         if data[0] == "col":
             outsum += (data[1].c[0] * data[2].c[1] + data[2].c[0] * data[3].c[1] + data[3].c[0] * data[1].c[1] - data[1].c[1] * data[2].c[0] - data[2].c[1] * data[3].c[0] - data[3].c[1] * data[1].c[0]) ** 2
