@@ -324,6 +324,10 @@ def runline(in_line, in_UI):
         return "Failed to run '" + in_line[:-1] + "', use 'help' for help" # Should return information want to print
 
 def runfile(file_name, in_UI):
+    all_lines = in_UI.cmdlines
+    line_from = in_UI.cmdline_from
+    all_lines.pop()
+    line_from.pop()
     try:
         if file_name[-4:] != '.txt':
             file_name = file_name + '.txt'
@@ -335,8 +339,11 @@ def runfile(file_name, in_UI):
         outstr = ""
         for line in lines:
             if line[0] != "#":
-                outstr += runline(line.replace('\n', '') + ' ', in_UI) + "\n"
-        return outstr[:-1]
+                all_lines.append(line[:-1])
+                line_from.append(1)
+                all_lines.append(runline(line.replace('\n', '') + ' ', in_UI))
+                line_from.append(0)
+        return "Done"
     
     except FileNotFoundError:
         return "File " + file_name + " do not Exist"
