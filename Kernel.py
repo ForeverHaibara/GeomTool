@@ -8,16 +8,16 @@ def runline(in_line, in_UI):
     
     in_line = in_line + ' '
     exp = Explainer.ExplainLine(in_line, in_graph_tree.obj_list)
-    protectedwordlist = ["=", ".", "+", "-", "*", "/", "?", ",", "!", "^", " ", "'", '"', "help", "hide", "hidenlist", "show", "showall", "objlist", "run", "save", "disturb", "clearall", 
+    protectedwordlist = ["=", ".", "+", "-", "*", "/", "?", ",", "!", "^", " ", "'", '"', "help", "hide", "hidenlist", "show", "showall", "objlist", "run", "save", "disturb", "clearall", "lock", "lockall", "unlock", "unlockall", "descent"
                          "pt", "line", "circ", "mdpt", "para", "perp", "pbis", "abis"]
     
     if len(exp.wordlist) == 0:
         return ""
     
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "help":
-        return "Commands list: help, hide, hidenlist, show, showall, objlist, run, save. \nUse commands like 'help hide' to see details. \nUse 'help1' to get help about built-in commands. "
+        return "Commands list: help, hide, hidenlist, show, showall, objlist, run, save, disturb, clearall, lock, lockall, unlock, unlockall. \nUse commands like 'help hide' to see details. \nUse 'help1' to get help about built-in constructions. "
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "help1":
-        return "Built-in commands list: pt, line, circ, mdpt, para, perp, pbis, abis. \nUse commands like 'help pt' to see details. \nYou can also input the name of an object to see details of the object. \nUse commands like 'A = B' to rename object B by A. Use commands like 'A = pt' to create an object with given name. \nUse 'help2' to see more. "
+        return "Built-in constructions list: pt, line, circ, mdpt, para, perp, pbis, abis. \nUse commands like 'help pt' to see details. \nYou can also input the name of an object to see details of the object. \nUse commands like 'A = B' to rename object B by A. Use commands like 'A = pt' to create an object with given name. \nUse 'help2' to see more. "
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "help2":
         return "For point, c = (x, y) is the coordinate of the point. \nFor line, c = (p, q, r) defines a line equation px+qy+r=0. \nAnd for circle, c = (x0, y0, r) determines the center (x0, y0) and radius r. \nUse 'help3' to see more. "
     if len(exp.wordlist) == 1 and exp.wordlist[0] == "help3":
@@ -43,6 +43,14 @@ def runline(in_line, in_UI):
             return "disturb [Number]: Disturb all movable objects by a given scale, use 'disturb' to disturb by default value = 1e-4. "
         if exp.wordlist[1] == "clearall":
             return "clearall: Delete all geometric objects. "
+        if exp.wordlist[1] == "lock":
+            return "lock [Objects]: Lock geometric objects which is movable(free points on the plane, line or circle). When locked, you cannot move these objects by your mouse. "
+        if exp.wordlist[1] == "unlock":
+            return "unlock [Objects]: Unlock geometric objects which is movable(free points on the plane, line or circle). When unlocked, you can move these objects by your mouse. "
+        if exp.wordlist[1] == "lockall":
+            return "lockall : Lock all geometric objects which is movable(free points on the plane, line or circle). When locked, you cannot move these objects by your mouse. "
+        if exp.wordlist[1] == "unlockall":
+            return "unlockall : Unlock all geometric objects which is movable(free points on the plane, line or circle). When unlocked, you can move these objects by your mouse. "
 
 
         if exp.wordlist[1] == "pt":
@@ -70,7 +78,7 @@ def runline(in_line, in_UI):
         try:
             file = open(exp.wordlist[1] + ".txt", "w")
             wrdata = ""
-            for line_num in range(len(all_lines)):
+            for line_num in range(len(all_lines) - 1):
                 if line_from[line_num] == 1:
                     wrdata += all_lines[line_num] + "\n"
             file.write(wrdata)
@@ -225,11 +233,13 @@ def runline(in_line, in_UI):
         outstr = ''
         for word_num in range(1, len(exp.wordlist)):
             obj = exp.isnameobj(exp.wordlist[word_num])
-            if obj != None:
+            if obj != None and obj.method.name in ("free_pt", "pt_on_line", "pt_on_circle"):
                 obj.movable = True
                 outstr += obj.name + ' '
         if outstr != '':
             return outstr + 'unlocked'
+        else:
+            return 'no object to unlock'
     
     if exp.wordlist[0] == "lock":
         outstr = ''
@@ -240,6 +250,30 @@ def runline(in_line, in_UI):
                 outstr += obj.name + ' '
         if outstr != '':
             return outstr + 'locked'
+        else:
+            return 'no object to lock'
+
+    if exp.wordlist[0] == "unlockall":
+        outstr = ''
+        for obj in in_graph_tree.obj_list:
+            if obj != None and obj.method.name in ("free_pt", "pt_on_line", "pt_on_circle"):
+                obj.movable = True
+                outstr += obj.name + ' '
+        if outstr != '':
+            return outstr + 'unlocked'
+        else:
+            return 'no object to unlock'
+    
+    if exp.wordlist[0] == "lockall":
+        outstr = ''
+        for obj in in_graph_tree.obj_list:
+            if obj != None and obj.movable:
+                obj.movable = False
+                outstr += obj.name + ' '
+        if outstr != '':
+            return outstr + 'locked'
+        else:
+            return 'no object to lock'
     
     kerneluse = exp.kerneluse()
     newname = exp.newname()
